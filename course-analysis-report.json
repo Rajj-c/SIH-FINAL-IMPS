@@ -1,0 +1,674 @@
+{
+  "totalCourses": 165,
+  "summary": {
+    "lessThan3": 139,
+    "exactly3": 10,
+    "moreThan3": 16
+  },
+  "coursesWithLessThan3": [
+    {
+      "course": "B.A. (Hons)",
+      "count": 1
+    },
+    {
+      "course": "B.A. (Hons) Comparative Literature",
+      "count": 1
+    },
+    {
+      "course": "B.A. (Hons) Economics",
+      "count": 2
+    },
+    {
+      "course": "B.A. (Hons) History",
+      "count": 1
+    },
+    {
+      "course": "B.A. (Hons) Journalism",
+      "count": 1
+    },
+    {
+      "course": "B.A. (Hons) Political Science",
+      "count": 1
+    },
+    {
+      "course": "B.A. (Hons) Psychology",
+      "count": 1
+    },
+    {
+      "course": "B.A. (Hons) Sociology",
+      "count": 1
+    },
+    {
+      "course": "B.A. (Hons) in Foreign Languages",
+      "count": 1
+    },
+    {
+      "course": "B.A. Bengali",
+      "count": 1
+    },
+    {
+      "course": "B.A. Economics (Hons)",
+      "count": 1
+    },
+    {
+      "course": "B.A. English Literature",
+      "count": 1
+    },
+    {
+      "course": "B.A. Journalism",
+      "count": 1
+    },
+    {
+      "course": "B.A. Philosophy",
+      "count": 1
+    },
+    {
+      "course": "B.A. Political Science",
+      "count": 2
+    },
+    {
+      "course": "B.A. Psychology",
+      "count": 2
+    },
+    {
+      "course": "B.A. Sociology",
+      "count": 2
+    },
+    {
+      "course": "B.A. Tamil",
+      "count": 1
+    },
+    {
+      "course": "B.Com (Accounting & Finance)",
+      "count": 1
+    },
+    {
+      "course": "B.Com (Finance & Accountancy)",
+      "count": 1
+    },
+    {
+      "course": "B.Com (Financial Markets)",
+      "count": 1
+    },
+    {
+      "course": "B.Com (International Accounting)",
+      "count": 1
+    },
+    {
+      "course": "B.E.",
+      "count": 1
+    },
+    {
+      "course": "B.E. Artificial Intelligence",
+      "count": 1
+    },
+    {
+      "course": "B.E. CSE",
+      "count": 1
+    },
+    {
+      "course": "B.E. Civil",
+      "count": 1
+    },
+    {
+      "course": "B.E. Civil Engineering",
+      "count": 1
+    },
+    {
+      "course": "B.E. Computer Science",
+      "count": 2
+    },
+    {
+      "course": "B.E. Construction Engg.",
+      "count": 1
+    },
+    {
+      "course": "B.E. ECE",
+      "count": 1
+    },
+    {
+      "course": "B.E. Information Technology",
+      "count": 1
+    },
+    {
+      "course": "B.E. Mechanical",
+      "count": 1
+    },
+    {
+      "course": "B.E. Mechanical Engg.",
+      "count": 1
+    },
+    {
+      "course": "B.E/B.Tech",
+      "count": 1
+    },
+    {
+      "course": "B.Pharm",
+      "count": 2
+    },
+    {
+      "course": "B.S. in Mathematics",
+      "count": 1
+    },
+    {
+      "course": "B.Sc (Hons) Chemistry",
+      "count": 1
+    },
+    {
+      "course": "B.Sc (Hons) Economics",
+      "count": 1
+    },
+    {
+      "course": "B.Sc (Hons) Geology",
+      "count": 1
+    },
+    {
+      "course": "B.Sc (Hons) Nursing",
+      "count": 1
+    },
+    {
+      "course": "B.Sc (Hons) Physics",
+      "count": 1
+    },
+    {
+      "course": "B.Sc Agriculture",
+      "count": 1
+    },
+    {
+      "course": "B.Sc MLT",
+      "count": 2
+    },
+    {
+      "course": "B.Sc Medical Technology in Radiography",
+      "count": 1
+    },
+    {
+      "course": "B.Sc Visual Communication",
+      "count": 1
+    },
+    {
+      "course": "B.Sc in Economics",
+      "count": 1
+    },
+    {
+      "course": "B.Sc. (Hons)",
+      "count": 1
+    },
+    {
+      "course": "B.Sc. (Hons) Agriculture",
+      "count": 1
+    },
+    {
+      "course": "B.Sc. Biotechnology",
+      "count": 1
+    },
+    {
+      "course": "B.Sc. Computer Science",
+      "count": 1
+    },
+    {
+      "course": "B.Sc. Data Science",
+      "count": 1
+    },
+    {
+      "course": "B.Sc. IT",
+      "count": 2
+    },
+    {
+      "course": "B.Sc. Maths",
+      "count": 1
+    },
+    {
+      "course": "B.Sc. Physics",
+      "count": 1
+    },
+    {
+      "course": "B.Sc. Statistics",
+      "count": 1
+    },
+    {
+      "course": "B.Sc. Visual Communication",
+      "count": 2
+    },
+    {
+      "course": "B.Tech AI & ML",
+      "count": 1
+    },
+    {
+      "course": "B.Tech Aerospace Engg.",
+      "count": 1
+    },
+    {
+      "course": "B.Tech Chemical",
+      "count": 1
+    },
+    {
+      "course": "B.Tech Chemical Engg.",
+      "count": 1
+    },
+    {
+      "course": "B.Tech Civil",
+      "count": 2
+    },
+    {
+      "course": "B.Tech Civil Engg.",
+      "count": 2
+    },
+    {
+      "course": "B.Tech Computer Engg.",
+      "count": 2
+    },
+    {
+      "course": "B.Tech EEE",
+      "count": 2
+    },
+    {
+      "course": "B.Tech Electrical Engg.",
+      "count": 1
+    },
+    {
+      "course": "B.Tech Electronics",
+      "count": 1
+    },
+    {
+      "course": "B.Tech Information Technology",
+      "count": 1
+    },
+    {
+      "course": "B.Tech Instrumentation & Control",
+      "count": 1
+    },
+    {
+      "course": "B.Tech Metallurgical",
+      "count": 1
+    },
+    {
+      "course": "B.Tech Metallurgy",
+      "count": 1
+    },
+    {
+      "course": "B.Tech Mining",
+      "count": 1
+    },
+    {
+      "course": "B.Tech Petroleum Engg.",
+      "count": 1
+    },
+    {
+      "course": "B.Tech Production Engg.",
+      "count": 1
+    },
+    {
+      "course": "B.Tech Textile Technology",
+      "count": 1
+    },
+    {
+      "course": "B.Tech in Aerospace Engg.",
+      "count": 1
+    },
+    {
+      "course": "B.Tech in Agriculture & Food Engg.",
+      "count": 1
+    },
+    {
+      "course": "B.Tech in Biotechnology & Biochemical Engg.",
+      "count": 1
+    },
+    {
+      "course": "B.Tech in Chemical Engg.",
+      "count": 1
+    },
+    {
+      "course": "B.Tech in Computer Science",
+      "count": 2
+    },
+    {
+      "course": "B.Tech in Dairy Technology",
+      "count": 1
+    },
+    {
+      "course": "B.Tech in ECE",
+      "count": 1
+    },
+    {
+      "course": "B.Tech in Engineering Physics",
+      "count": 1
+    },
+    {
+      "course": "B.Tech in Mathematics and Computing",
+      "count": 1
+    },
+    {
+      "course": "B.Tech in Mechanical Engg.",
+      "count": 1
+    },
+    {
+      "course": "B.Voc",
+      "count": 1
+    },
+    {
+      "course": "B.Voc 3D Animation",
+      "count": 1
+    },
+    {
+      "course": "BBA (Entrepreneurship)",
+      "count": 1
+    },
+    {
+      "course": "BBA (FinTech)",
+      "count": 1
+    },
+    {
+      "course": "BDS",
+      "count": 1
+    },
+    {
+      "course": "BMM (Mass Media)",
+      "count": 1
+    },
+    {
+      "course": "BMS",
+      "count": 2
+    },
+    {
+      "course": "BOT",
+      "count": 1
+    },
+    {
+      "course": "BPMT",
+      "count": 1
+    },
+    {
+      "course": "BSW (Social Work)",
+      "count": 1
+    },
+    {
+      "course": "Bachelor of Physiotherapy (BPT)",
+      "count": 1
+    },
+    {
+      "course": "Bachelor of Science (Research)",
+      "count": 1
+    },
+    {
+      "course": "Computer Operator & Programming Assistant (COPA)",
+      "count": 1
+    },
+    {
+      "course": "Course 1",
+      "count": 1
+    },
+    {
+      "course": "Course 2",
+      "count": 1
+    },
+    {
+      "course": "Diesel Mechanic",
+      "count": 1
+    },
+    {
+      "course": "Diploma in Aeronautical Engineering",
+      "count": 1
+    },
+    {
+      "course": "Diploma in Apparel Design",
+      "count": 1
+    },
+    {
+      "course": "Diploma in Automobile Engineering",
+      "count": 1
+    },
+    {
+      "course": "Diploma in Computer Engg.",
+      "count": 2
+    },
+    {
+      "course": "Diploma in Computer Engineering",
+      "count": 2
+    },
+    {
+      "course": "Diploma in Computer Science",
+      "count": 2
+    },
+    {
+      "course": "Diploma in Dress Designing",
+      "count": 1
+    },
+    {
+      "course": "Diploma in E&TC",
+      "count": 1
+    },
+    {
+      "course": "Diploma in Electrical & Electronics",
+      "count": 1
+    },
+    {
+      "course": "Diploma in Electrical Engg.",
+      "count": 1
+    },
+    {
+      "course": "Diploma in Electrical Engineering",
+      "count": 1
+    },
+    {
+      "course": "Diploma in Electronics",
+      "count": 2
+    },
+    {
+      "course": "Diploma in Electronics Engg.",
+      "count": 1
+    },
+    {
+      "course": "Diploma in IT",
+      "count": 1
+    },
+    {
+      "course": "Diploma in Mechanical Engg.",
+      "count": 2
+    },
+    {
+      "course": "Diploma in Mechanical Engineering",
+      "count": 2
+    },
+    {
+      "course": "Diploma in Mechatronics",
+      "count": 1
+    },
+    {
+      "course": "Diploma in Printing Technology",
+      "count": 1
+    },
+    {
+      "course": "Diploma in Production Engineering",
+      "count": 1
+    },
+    {
+      "course": "Diploma in Textile Technology",
+      "count": 1
+    },
+    {
+      "course": "Draughtsman (Civil)",
+      "count": 1
+    },
+    {
+      "course": "Draughtsman Civil",
+      "count": 2
+    },
+    {
+      "course": "Dual Degree Programs",
+      "count": 1
+    },
+    {
+      "course": "Electronic Mechanic",
+      "count": 1
+    },
+    {
+      "course": "Electronics Mechanic",
+      "count": 1
+    },
+    {
+      "course": "Information Technology",
+      "count": 1
+    },
+    {
+      "course": "Integrated B.Sc.-M.Sc. in Ayurveda Biology",
+      "count": 1
+    },
+    {
+      "course": "Integrated M.A. in Humanities (5 years)",
+      "count": 1
+    },
+    {
+      "course": "Integrated M.Sc. (5 years)",
+      "count": 1
+    },
+    {
+      "course": "LLB",
+      "count": 1
+    },
+    {
+      "course": "M.Com",
+      "count": 1
+    },
+    {
+      "course": "M.Tech",
+      "count": 1
+    },
+    {
+      "course": "Machinist",
+      "count": 2
+    },
+    {
+      "course": "Mechanic (Motor Vehicle)",
+      "count": 1
+    },
+    {
+      "course": "Motor Mechanic Vehicle",
+      "count": 1
+    },
+    {
+      "course": "Plumber",
+      "count": 1
+    },
+    {
+      "course": "R&AC",
+      "count": 1
+    },
+    {
+      "course": "Refrigeration & AC",
+      "count": 1
+    },
+    {
+      "course": "Surveyor",
+      "count": 1
+    }
+  ],
+  "coursesWithExactly3": [
+    {
+      "course": "B.A. History",
+      "count": 3
+    },
+    {
+      "course": "B.Com.",
+      "count": 3
+    },
+    {
+      "course": "B.Tech Computer Science",
+      "count": 3
+    },
+    {
+      "course": "B.Tech Mechanical Engg.",
+      "count": 3
+    },
+    {
+      "course": "BPT",
+      "count": 3
+    },
+    {
+      "course": "Diploma in Civil Engg.",
+      "count": 3
+    },
+    {
+      "course": "Diploma in Civil Engineering",
+      "count": 3
+    },
+    {
+      "course": "MBA",
+      "count": 3
+    },
+    {
+      "course": "Turner",
+      "count": 3
+    },
+    {
+      "course": "Welder",
+      "count": 3
+    }
+  ],
+  "coursesWithMoreThan3": [
+    {
+      "course": "B.A.",
+      "count": 19
+    },
+    {
+      "course": "B.A. Economics",
+      "count": 4
+    },
+    {
+      "course": "B.A. English",
+      "count": 5
+    },
+    {
+      "course": "B.Arch",
+      "count": 5
+    },
+    {
+      "course": "B.Com",
+      "count": 20
+    },
+    {
+      "course": "B.Com (Hons)",
+      "count": 7
+    },
+    {
+      "course": "B.Sc Nursing",
+      "count": 6
+    },
+    {
+      "course": "B.Sc.",
+      "count": 19
+    },
+    {
+      "course": "B.Tech CSE",
+      "count": 8
+    },
+    {
+      "course": "B.Tech ECE",
+      "count": 6
+    },
+    {
+      "course": "B.Tech Mechanical",
+      "count": 4
+    },
+    {
+      "course": "BBA",
+      "count": 17
+    },
+    {
+      "course": "BCA",
+      "count": 8
+    },
+    {
+      "course": "Electrician",
+      "count": 6
+    },
+    {
+      "course": "Fitter",
+      "count": 6
+    },
+    {
+      "course": "MBBS",
+      "count": 7
+    }
+  ]
+}

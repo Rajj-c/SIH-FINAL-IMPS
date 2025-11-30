@@ -1,0 +1,218 @@
+{
+  "totalAfter10thColleges": 8,
+  "totalCourses": 28,
+  "summary": {
+    "lessThan3": 26,
+    "exactly3": 0,
+    "moreThan3": 2
+  },
+  "coursesNeedingColleges": [
+    {
+      "course": "B.Tech Computer Science",
+      "count": 1,
+      "colleges": [
+        "gp-bangalore-1"
+      ]
+    },
+    {
+      "course": "B.Tech Electrical Engg.",
+      "count": 1,
+      "colleges": [
+        "gp-bangalore-1"
+      ]
+    },
+    {
+      "course": "B.Tech Mechanical Engg.",
+      "count": 1,
+      "colleges": [
+        "gp-bangalore-1"
+      ]
+    },
+    {
+      "course": "Computer Operator & Programming Assistant (COPA)",
+      "count": 1,
+      "colleges": [
+        "math"
+      ]
+    },
+    {
+      "course": "Diesel Mechanic",
+      "count": 1,
+      "colleges": [
+        "govt-iti-bangalore"
+      ]
+    },
+    {
+      "course": "Diploma in Aeronautical Engineering",
+      "count": 1,
+      "colleges": [
+        "spmvv-tirupati"
+      ]
+    },
+    {
+      "course": "Diploma in Apparel Design",
+      "count": 1,
+      "colleges": [
+        "spmvv-tirupati"
+      ]
+    },
+    {
+      "course": "Diploma in Computer Engineering",
+      "count": 1,
+      "colleges": [
+        "pusa-poly-delhi"
+      ]
+    },
+    {
+      "course": "Diploma in Computer Science",
+      "count": 1,
+      "colleges": [
+        "spmvv-tirupati"
+      ]
+    },
+    {
+      "course": "Diploma in Dress Designing",
+      "count": 1,
+      "colleges": [
+        "pusa-poly-delhi"
+      ]
+    },
+    {
+      "course": "Diploma in E&TC",
+      "count": 1,
+      "colleges": [
+        "pusa-poly-delhi"
+      ]
+    },
+    {
+      "course": "Diploma in IT",
+      "count": 1,
+      "colleges": [
+        "pusa-poly-delhi"
+      ]
+    },
+    {
+      "course": "Diploma in Mechatronics",
+      "count": 1,
+      "colleges": [
+        "spmvv-tirupati"
+      ]
+    },
+    {
+      "course": "Draughtsman (Civil)",
+      "count": 1,
+      "colleges": [
+        "gp-visakhapatnam-1"
+      ]
+    },
+    {
+      "course": "Draughtsman Civil",
+      "count": 1,
+      "colleges": [
+        "govt-iti-bangalore"
+      ]
+    },
+    {
+      "course": "Dual Degree Programs",
+      "count": 1,
+      "colleges": [
+        "gp-bangalore-1"
+      ]
+    },
+    {
+      "course": "Electronic Mechanic",
+      "count": 1,
+      "colleges": [
+        "gp-visakhapatnam-1"
+      ]
+    },
+    {
+      "course": "Electronics Mechanic",
+      "count": 1,
+      "colleges": [
+        "govt-iti-mumbai"
+      ]
+    },
+    {
+      "course": "Machinist",
+      "count": 1,
+      "colleges": [
+        "thiagarajar-poly-salem"
+      ]
+    },
+    {
+      "course": "Mechanic (Motor Vehicle)",
+      "count": 1,
+      "colleges": [
+        "gp-visakhapatnam-1"
+      ]
+    },
+    {
+      "course": "Motor Mechanic Vehicle",
+      "count": 1,
+      "colleges": [
+        "thiagarajar-poly-salem"
+      ]
+    },
+    {
+      "course": "Plumber",
+      "count": 1,
+      "colleges": [
+        "govt-iti-mumbai"
+      ]
+    },
+    {
+      "course": "R&AC",
+      "count": 1,
+      "colleges": [
+        "govt-iti-bangalore"
+      ]
+    },
+    {
+      "course": "Surveyor",
+      "count": 1,
+      "colleges": [
+        "govt-iti-mumbai"
+      ]
+    },
+    {
+      "course": "Turner",
+      "count": 2,
+      "colleges": [
+        "gp-visakhapatnam-1",
+        "thiagarajar-poly-salem"
+      ]
+    },
+    {
+      "course": "Welder",
+      "count": 2,
+      "colleges": [
+        "math",
+        "thiagarajar-poly-salem"
+      ]
+    }
+  ],
+  "coursesWithExactly3": [],
+  "coursesWithMoreThan3": [
+    {
+      "course": "Electrician",
+      "count": 4,
+      "colleges": [
+        "math",
+        "thiagarajar-poly-salem",
+        "govt-iti-mumbai",
+        "govt-iti-bangalore"
+      ]
+    },
+    {
+      "course": "Fitter",
+      "count": 4,
+      "colleges": [
+        "math",
+        "thiagarajar-poly-salem",
+        "govt-iti-mumbai",
+        "govt-iti-bangalore"
+      ]
+    }
+  ]
+}

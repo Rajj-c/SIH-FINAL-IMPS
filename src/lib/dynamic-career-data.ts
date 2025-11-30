@@ -1,0 +1,443 @@
+import { Node } from '@xyflow/react';
+
+export type NodeType = 'root' | 'stream' | 'degree' | 'industry' | 'opportunity' | 'role' | 'outcome';
+
+export interface CareerNodeData {
+    id: string;
+    label: string;
+    type: NodeType;
+    description?: string;
+    subtitle?: string;
+    icon?: string;
+    salary?: string;
+    demand?: string;
+    skills?: string[];
+    companies?: string;
+    children?: string[]; // IDs of child nodes
+    learningPath?: { step: string; detail: string }[];
+}
+
+export const careerMap: Record<string, CareerNodeData> = {
+    // ==================== ROOTS ====================
+    'root-10': {
+        id: 'root-10',
+        label: 'Class 10',
+        type: 'root',
+        icon: '🎓',
+        description: 'The first major milestone. Choose your stream wisely.',
+        subtitle: 'Secondary School',
+        children: ['stream-science', 'stream-commerce', 'stream-arts']
+    },
+    'root-12': {
+        id: 'root-12',
+        label: 'Class 12',
+        type: 'root',
+        icon: '🏫',
+        description: 'The gateway to higher education and professional careers.',
+        subtitle: 'Higher Secondary',
+        children: ['stream-science-pcm', 'stream-science-pcb', 'stream-commerce-math', 'stream-commerce-nonmath', 'stream-arts']
+    },
+
+    // ==================== STREAMS (Class 10) ====================
+    'stream-science': {
+        id: 'stream-science',
+        label: 'Science Stream',
+        type: 'stream',
+        icon: '🔬',
+        description: 'Opens doors to Engineering, Medicine, Research, and Technology.',
+        subtitle: 'Engineering & Medical',
+        children: ['degree-engg-entrance', 'degree-med-entrance']
+    },
+    'stream-commerce': {
+        id: 'stream-commerce',
+        label: 'Commerce Stream',
+        type: 'stream',
+        icon: '💼',
+        description: 'Ideal for Finance, Business, Management, and Economics.',
+        subtitle: 'Business & Finance',
+        children: ['degree-ca-foundation', 'degree-bcom']
+    },
+    'stream-arts': {
+        id: 'stream-arts',
+        label: 'Arts / Humanities',
+        type: 'stream',
+        icon: '🎨',
+        description: 'Focus on Social Sciences, Law, Design, and Civil Services.',
+        subtitle: 'Creativity & Humanities',
+        children: ['degree-law-entrance', 'degree-ba', 'degree-design']
+    },
+
+    // ==================== STREAMS (Class 12) ====================
+    'stream-science-pcm': {
+        id: 'stream-science-pcm',
+        label: 'Science (PCM)',
+        type: 'stream',
+        icon: '⚙️',
+        description: 'Physics, Chemistry, Math. The path to Engineering & Tech.',
+        subtitle: 'Engineering Focus',
+        children: ['degree-btech-cs', 'degree-btech-mech']
+    },
+    'stream-science-pcb': {
+        id: 'stream-science-pcb',
+        label: 'Science (PCB)',
+        type: 'stream',
+        icon: '🧬',
+        description: 'Physics, Chemistry, Biology. The path to Medicine & Bio-sciences.',
+        subtitle: 'Medical Focus',
+        children: ['degree-mbbs', 'degree-bpharma']
+    },
+    'stream-commerce-math': {
+        id: 'stream-commerce-math',
+        label: 'Commerce (with Math)',
+        type: 'stream',
+        icon: '📊',
+        description: 'Best for CA, CFA, Data Analytics in Finance.',
+        subtitle: 'Finance & Analytics',
+        children: ['degree-bcom-hons', 'degree-ca']
+    },
+    'stream-commerce-nonmath': {
+        id: 'stream-commerce-nonmath',
+        label: 'Commerce (w/o Math)',
+        type: 'stream',
+        icon: '📝',
+        description: 'Focus on Management, Marketing, and General Business.',
+        subtitle: 'Business Mgmt',
+        children: ['degree-bba']
+    },
+
+    // ==================== DEGREES ====================
+    // Engineering
+    'degree-btech-cs': {
+        id: 'degree-btech-cs',
+        label: 'B.Tech CSE',
+        type: 'degree',
+        icon: '💻',
+        description: 'Computer Science & Engineering.',
+        subtitle: '4 Years',
+        children: ['ind-it-software']
+    },
+    'degree-btech-mech': {
+        id: 'degree-btech-mech',
+        label: 'B.Tech Mechanical',
+        type: 'degree',
+        icon: '🔧',
+        description: 'Mechanical Engineering.',
+        subtitle: '4 Years',
+        children: ['ind-manufacturing']
+    },
+    // Medical
+    'degree-mbbs': {
+        id: 'degree-mbbs',
+        label: 'MBBS',
+        type: 'degree',
+        icon: '🩺',
+        description: 'Bachelor of Medicine, Bachelor of Surgery.',
+        subtitle: '5.5 Years',
+        children: ['ind-healthcare']
+    },
+    // Commerce
+    'degree-bcom-hons': {
+        id: 'degree-bcom-hons',
+        label: 'B.Com (Hons)',
+        type: 'degree',
+        icon: '📈',
+        description: 'Bachelor of Commerce with Honors.',
+        subtitle: '3 Years',
+        children: ['ind-banking-finance']
+    },
+    'degree-ca': {
+        id: 'degree-ca',
+        label: 'Chartered Accountancy',
+        type: 'degree',
+        icon: '📜',
+        description: 'Professional Accounting Course.',
+        subtitle: '5 Years',
+        children: ['ind-audit-tax']
+    },
+    'degree-bba': {
+        id: 'degree-bba',
+        label: 'BBA',
+        type: 'degree',
+        icon: '👔',
+        description: 'Bachelor of Business Administration.',
+        subtitle: '3 Years',
+        children: ['ind-corporate-mgmt']
+    },
+    // Arts
+    'degree-ba': {
+        id: 'degree-ba',
+        label: 'BA (Pol Sci/History)',
+        type: 'degree',
+        icon: '📚',
+        description: 'Bachelor of Arts.',
+        subtitle: '3 Years',
+        children: ['ind-civil-services']
+    },
+
+    // ==================== INDUSTRIES ====================
+    'ind-it-software': {
+        id: 'ind-it-software',
+        label: 'IT & Software Industry',
+        type: 'industry',
+        icon: '🌐',
+        description: 'Software development, cloud, AI.',
+        subtitle: 'High Growth',
+        children: ['opp-it-govt', 'opp-it-private', 'opp-it-higher', 'opp-it-startup']
+    },
+    'ind-manufacturing': {
+        id: 'ind-manufacturing',
+        label: 'Manufacturing & Auto',
+        type: 'industry',
+        icon: '🏭',
+        description: 'Production, R&D, Supply Chain.',
+        subtitle: 'Core Sector',
+        children: ['opp-mech-govt', 'opp-mech-private', 'opp-mech-higher']
+    },
+    'ind-healthcare': {
+        id: 'ind-healthcare',
+        label: 'Healthcare Sector',
+        type: 'industry',
+        icon: '🏥',
+        description: 'Hospitals, Clinics, Research.',
+        subtitle: 'Essential Service',
+        children: ['opp-med-govt', 'opp-med-private', 'opp-med-higher']
+    },
+    'ind-banking-finance': {
+        id: 'ind-banking-finance',
+        label: 'Banking & Finance',
+        type: 'industry',
+        icon: '🏦',
+        description: 'Banks, Insurance, Fintech.',
+        subtitle: 'Financial Sector',
+        children: ['opp-fin-govt', 'opp-fin-private', 'opp-fin-higher']
+    },
+    'ind-audit-tax': {
+        id: 'ind-audit-tax',
+        label: 'Audit & Taxation',
+        type: 'industry',
+        icon: '📑',
+        description: 'Big 4, Audit Firms, Practice.',
+        subtitle: 'Professional Services',
+        children: ['opp-ca-practice', 'opp-ca-corporate']
+    },
+    'ind-corporate-mgmt': {
+        id: 'ind-corporate-mgmt',
+        label: 'Corporate Management',
+        type: 'industry',
+        icon: '🏢',
+        description: 'MNCs, Startups, Business Roles.',
+        subtitle: 'Business World',
+        children: ['opp-mgmt-private', 'opp-mgmt-higher', 'opp-mgmt-startup']
+    },
+    'ind-civil-services': {
+        id: 'ind-civil-services',
+        label: 'Public Administration',
+        type: 'industry',
+        icon: '🏛️',
+        description: 'Government Policy & Admin.',
+        subtitle: 'Public Service',
+        children: ['opp-civil-govt', 'opp-civil-higher']
+    },
+
+    // ==================== OPPORTUNITIES ====================
+    // IT Opportunities
+    'opp-it-govt': {
+        id: 'opp-it-govt',
+        label: 'Govt Exams / Jobs',
+        type: 'opportunity',
+        icon: '🇮🇳',
+        description: 'GATE (PSUs), ISRO, DRDO, NIC.',
+        subtitle: 'Public Sector',
+        children: ['sal-it-govt']
+    },
+    'opp-it-private': {
+        id: 'opp-it-private',
+        label: 'Private Jobs',
+        type: 'opportunity',
+        icon: '💼',
+        description: 'SDE, Data Scientist, DevOps at MNCs/Startups.',
+        subtitle: 'Corporate',
+        children: ['sal-it-private']
+    },
+    'opp-it-higher': {
+        id: 'opp-it-higher',
+        label: 'Higher Education',
+        type: 'opportunity',
+        icon: '🎓',
+        description: 'M.Tech, MS (Abroad), MBA.',
+        subtitle: 'Masters',
+        children: ['sal-it-higher']
+    },
+    'opp-it-startup': {
+        id: 'opp-it-startup',
+        label: 'Entrepreneurship',
+        type: 'opportunity',
+        icon: '🚀',
+        description: 'Build your own SaaS or Tech Startup.',
+        subtitle: 'Founder',
+        children: ['sal-it-startup']
+    },
+
+    // Mechanical Opportunities
+    'opp-mech-govt': {
+        id: 'opp-mech-govt',
+        label: 'Govt Exams / Jobs',
+        type: 'opportunity',
+        icon: '🇮🇳',
+        description: 'IES, GATE (ONGC, BHEL, GAIL), Railways.',
+        subtitle: 'Public Sector',
+        children: ['sal-mech-govt']
+    },
+    'opp-mech-private': {
+        id: 'opp-mech-private',
+        label: 'Private Jobs',
+        type: 'opportunity',
+        icon: '🏭',
+        description: 'Design Engineer, Production Manager (Tata, L&T).',
+        subtitle: 'Core Industry',
+        children: ['sal-mech-private']
+    },
+    'opp-mech-higher': {
+        id: 'opp-mech-higher',
+        label: 'Higher Education',
+        type: 'opportunity',
+        icon: '🎓',
+        description: 'M.Tech, MS in Robotics/Auto.',
+        subtitle: 'Specialization',
+        children: ['sal-mech-higher']
+    },
+
+    // Medical Opportunities
+    'opp-med-govt': {
+        id: 'opp-med-govt',
+        label: 'Govt Hospitals',
+        type: 'opportunity',
+        icon: '🏥',
+        description: 'Medical Officer (UPSC CMS), AIIMS.',
+        subtitle: 'Public Health',
+        children: ['sal-med-govt']
+    },
+    'opp-med-private': {
+        id: 'opp-med-private',
+        label: 'Private Practice/Hospitals',
+        type: 'opportunity',
+        icon: '🩺',
+        description: 'Consultant at Apollo, Max, Fortis.',
+        subtitle: 'Clinical',
+        children: ['sal-med-private']
+    },
+    'opp-med-higher': {
+        id: 'opp-med-higher',
+        label: 'Higher Education (MD/MS)',
+        type: 'opportunity',
+        icon: '🎓',
+        description: 'Specialization via NEET PG.',
+        subtitle: 'Specialist',
+        children: ['sal-med-higher']
+    },
+
+    // Finance Opportunities
+    'opp-fin-govt': {
+        id: 'opp-fin-govt',
+        label: 'Govt Banking Exams',
+        type: 'opportunity',
+        icon: '🏦',
+        description: 'IBPS PO, SBI PO, RBI Grade B.',
+        subtitle: 'Public Banking',
+        children: ['sal-fin-govt']
+    },
+    'opp-fin-private': {
+        id: 'opp-fin-private',
+        label: 'Private Banking/Finance',
+        type: 'opportunity',
+        icon: '💳',
+        description: 'Investment Banking, Analyst, Wealth Mgmt.',
+        subtitle: 'Corporate Fin',
+        children: ['sal-fin-private']
+    },
+    'opp-fin-higher': {
+        id: 'opp-fin-higher',
+        label: 'Higher Education',
+        type: 'opportunity',
+        icon: '🎓',
+        description: 'MBA in Finance, CFA, FRM.',
+        subtitle: 'Masters',
+        children: ['sal-fin-higher']
+    },
+
+    // CA Opportunities
+    'opp-ca-practice': {
+        id: 'opp-ca-practice',
+        label: 'Independent Practice',
+        type: 'opportunity',
+        icon: '⚖️',
+        description: 'Start your own CA Firm.',
+        subtitle: 'Self Employed',
+        children: ['sal-ca-practice']
+    },
+    'opp-ca-corporate': {
+        id: 'opp-ca-corporate',
+        label: 'Corporate Job',
+        type: 'opportunity',
+        icon: '🏢',
+        description: 'Internal Audit, Finance Manager, CFO.',
+        subtitle: 'Corporate',
+        children: ['sal-ca-corporate']
+    },
+
+    // Civil Services Opportunities
+    'opp-civil-govt': {
+        id: 'opp-civil-govt',
+        label: 'UPSC / State PSC',
+        type: 'opportunity',
+        icon: '🇮🇳',
+        description: 'IAS, IPS, IFS, State Admin Services.',
+        subtitle: 'Civil Services',
+        children: ['sal-civil-govt']
+    },
+    'opp-civil-higher': {
+        id: 'opp-civil-higher',
+        label: 'Higher Education',
+        type: 'opportunity',
+        icon: '🎓',
+        description: 'MA in Public Policy, PhD.',
+        subtitle: 'Academia',
+        children: ['sal-civil-higher']
+    },
+
+
+    // ==================== SALARY / OUTCOMES ====================
+    'sal-it-govt': { id: 'sal-it-govt', label: '₹8 - 15 LPA', type: 'outcome', icon: '💰', description: 'Stable job with perks.', subtitle: 'Entry Level' },
+    'sal-it-private': { id: 'sal-it-private', label: '₹6 - 25 LPA', type: 'outcome', icon: '💰', description: 'High growth potential.', subtitle: 'Entry Level' },
+    'sal-it-higher': { id: 'sal-it-higher', label: 'Future: ₹15 - 40 LPA', type: 'outcome', icon: '📈', description: 'After Masters.', subtitle: 'Post-Grad' },
+    'sal-it-startup': { id: 'sal-it-startup', label: 'High Risk / High Reward', type: 'outcome', icon: '🚀', description: 'Equity + Salary.', subtitle: 'Founder' },
+
+    'sal-mech-govt': { id: 'sal-mech-govt', label: '₹10 - 18 LPA', type: 'outcome', icon: '💰', description: 'Prestigious PSU jobs.', subtitle: 'Entry Level' },
+    'sal-mech-private': { id: 'sal-mech-private', label: '₹4 - 12 LPA', type: 'outcome', icon: '💰', description: 'Core engineering roles.', subtitle: 'Entry Level' },
+    'sal-mech-higher': { id: 'sal-mech-higher', label: 'Future: ₹12 - 30 LPA', type: 'outcome', icon: '📈', description: 'Specialized R&D roles.', subtitle: 'Post-Grad' },
+
+    'sal-med-govt': { id: 'sal-med-govt', label: '₹10 - 15 LPA', type: 'outcome', icon: '💰', description: 'Govt Medical Officer.', subtitle: 'Entry Level' },
+    'sal-med-private': { id: 'sal-med-private', label: '₹12 - 20 LPA', type: 'outcome', icon: '💰', description: 'Private Hospital Junior.', subtitle: 'Entry Level' },
+    'sal-med-higher': { id: 'sal-med-higher', label: 'Future: ₹25 - 50 LPA', type: 'outcome', icon: '📈', description: 'Specialist Doctor.', subtitle: 'Post-MD/MS' },
+
+    'sal-fin-govt': { id: 'sal-fin-govt', label: '₹8 - 14 LPA', type: 'outcome', icon: '💰', description: 'Bank PO / RBI.', subtitle: 'Entry Level' },
+    'sal-fin-private': { id: 'sal-fin-private', label: '₹6 - 18 LPA', type: 'outcome', icon: '💰', description: 'Analyst roles.', subtitle: 'Entry Level' },
+    'sal-fin-higher': { id: 'sal-fin-higher', label: 'Future: ₹15 - 35 LPA', type: 'outcome', icon: '📈', description: 'Investment Banking.', subtitle: 'Post-MBA' },
+
+    'sal-ca-practice': { id: 'sal-ca-practice', label: 'Variable (High Potential)', type: 'outcome', icon: '📈', description: 'Depends on client base.', subtitle: 'Business' },
+    'sal-ca-corporate': { id: 'sal-ca-corporate', label: '₹9 - 20 LPA', type: 'outcome', icon: '💰', description: 'Corporate Finance.', subtitle: 'Entry Level' },
+
+    'sal-civil-govt': { id: 'sal-civil-govt', label: '₹56k/mo + Perks', type: 'outcome', icon: '🇮🇳', description: 'Govt Pay Scale Level 10.', subtitle: 'Starting' },
+    'sal-civil-higher': { id: 'sal-civil-higher', label: 'Academic Career', type: 'outcome', icon: '📚', description: 'Professor / Researcher.', subtitle: 'Education' },
+};
+
+export const getInitialNodes = (rootId: 'root-10' | 'root-12' = 'root-10'): Node[] => {
+    return [
+        {
+            id: rootId,
+            type: 'root', // Use custom root type
+            position: { x: 0, y: 0 },
+            data: { ...careerMap[rootId] },
+        }
+    ];
+};

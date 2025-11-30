@@ -1,0 +1,32 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // Users collection
+    match /users/{userId} {
+      // Allow users to read and write their own data
+      allow read, write: if request.auth != null && request.auth.uid == userId;
+      
+      // Saved Colleges subcollection
+      match /savedColleges/{collegeId} {
+        allow read, write: if request.auth != null && request.auth.uid == userId;
+      }
+      
+      // Saved Career Paths subcollection
+      match /savedCareerPaths/{pathId} {
+        allow read, write: if request.auth != null && request.auth.uid == userId;
+      }
+      
+      // Quiz History subcollection (for future use)
+      match /quizHistory/{quizId} {
+        allow read, write: if request.auth != null && request.auth.uid == userId;
+      }
+      
+      // Reminders subcollection (for future use)
+      match /reminders/{reminderId} {
+        allow read, write: if request.auth != null && request.auth.uid == userId;
+      }
+    }
+  }
+}
