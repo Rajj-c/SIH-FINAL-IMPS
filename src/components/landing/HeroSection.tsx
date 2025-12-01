@@ -1,50 +1,210 @@
 'use client';
 
-import Link from 'next/link';
+import { Link } from '@/navigation';
 import { Button } from '@/components/ui/button';
-import { motion } from 'framer-motion';
-import { ArrowRight, Sparkles } from 'lucide-react';
+import { motion, useScroll, useTransform } from 'framer-motion';
+import { ArrowRight, Sparkles, ChevronDown, GraduationCap, Compass, Brain } from 'lucide-react';
+import { useEffect, useRef, useState } from 'react';
 
-export function HeroSection() {
+interface HeroSectionProps {
+    title?: string;
+    subtitle?: string;
+}
+
+export function HeroSection({ title, subtitle }: HeroSectionProps) {
+    const canvasRef = useRef<HTMLCanvasElement>(null);
+
+    // Particle Constellation Logic
+    useEffect(() => {
+        const canvas = canvasRef.current;
+        if (!canvas) return;
+        const ctx = canvas.getContext('2d');
+        if (!ctx) return;
+
+        let animationFrameId: number;
+        let particles: Particle[] = [];
+        let mouse = { x: -1000, y: -1000 };
+
+        const resize = () => {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+            initParticles();
+        };
+
+        class Particle {
+            x: number;
+            y: number;
+            vx: number;
+            vy: number;
+            size: number;
+
+            constructor() {
+                this.x = Math.random() * canvas!.width;
+                this.y = Math.random() * canvas!.height;
+                this.vx = (Math.random() - 0.5) * 0.5;
+                this.vy = (Math.random() - 0.5) * 0.5;
+                this.size = Math.random() * 2 + 1;
+            }
+
+            update() {
+                this.x += this.vx;
+                this.y += this.vy;
+
+                if (this.x < 0 || this.x > canvas!.width) this.vx *= -1;
+                if (this.y < 0 || this.y > canvas!.height) this.vy *= -1;
+            }
+
+            draw() {
+                if (!ctx) return;
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fillStyle = 'rgba(100, 100, 255, 0.5)'; // Blue-ish particles
+                ctx.fill();
+            }
+        }
+
+        const initParticles = () => {
+            particles = [];
+            const particleCount = Math.min(window.innerWidth / 10, 100); // Responsive count
+            for (let i = 0; i < particleCount; i++) {
+                particles.push(new Particle());
+            }
+        };
+
+        const animate = () => {
+            if (!ctx || !canvas) return;
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            particles.forEach(particle => {
+                particle.update();
+                particle.draw();
+
+                // Connect to mouse
+                const dx = mouse.x - particle.x;
+                const dy = mouse.y - particle.y;
+                const distance = Math.sqrt(dx * dx + dy * dy);
+                if (distance < 150) {
+                    ctx.beginPath();
+                    ctx.strokeStyle = `rgba(100, 100, 255, ${1 - distance / 150})`;
+                    ctx.lineWidth = 1;
+                    ctx.moveTo(particle.x, particle.y);
+                    ctx.lineTo(mouse.x, mouse.y);
+                    ctx.stroke();
+                }
+
+                // Connect to nearby particles
+                particles.forEach(other => {
+                    const dx = particle.x - other.x;
+                    const dy = particle.y - other.y;
+                    const distance = Math.sqrt(dx * dx + dy * dy);
+                    if (distance < 100) {
+                        ctx.beginPath();
+                        ctx.strokeStyle = `rgba(100, 100, 255, ${(1 - distance / 100) * 0.2})`;
+                        ctx.lineWidth = 0.5;
+                        ctx.moveTo(particle.x, particle.y);
+                        ctx.lineTo(other.x, other.y);
+                        ctx.stroke();
+                    }
+                });
+            });
+
+            animationFrameId = requestAnimationFrame(animate);
+        };
+
+        const handleMouseMove = (e: MouseEvent) => {
+            const rect = canvas.getBoundingClientRect();
+            mouse.x = e.clientX - rect.left;
+            mouse.y = e.clientY - rect.top;
+        };
+
+        window.addEventListener('resize', resize);
+        canvas.addEventListener('mousemove', handleMouseMove);
+
+        resize();
+        animate();
+
+        return () => {
+            window.removeEventListener('resize', resize);
+            canvas.removeEventListener('mousemove', handleMouseMove);
+            cancelAnimationFrame(animationFrameId);
+        };
+    }, []);
+
     return (
-        <section className="relative w-full py-20 md:py-32 lg:py-40 overflow-hidden bg-background">
-            {/* Background Effects */}
-            <div className="absolute inset-0 w-full h-full bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-primary/20 via-background to-background opacity-50" />
-            <div className="absolute top-0 left-0 w-full h-full bg-[url('/grid-pattern.svg')] opacity-[0.03]" />
+        <section className="relative w-full min-h-[90vh] flex items-center justify-center overflow-hidden bg-background">
+            {/* Canvas Background */}
+            <canvas
+                ref={canvasRef}
+                className="absolute inset-0 w-full h-full opacity-40 pointer-events-auto"
+            />
 
-            <div className="container relative z-10 px-4 md:px-6 mx-auto text-center">
+            {/* Gradient Blobs */}
+            <div className="absolute inset-0 w-full h-full overflow-hidden pointer-events-none">
+                <div className="absolute top-[-20%] left-[-10%] w-[50%] h-[50%] rounded-full bg-primary/10 blur-[120px] animate-pulse" />
+                <div className="absolute bottom-[-20%] right-[-10%] w-[50%] h-[50%] rounded-full bg-blue-500/10 blur-[120px] animate-pulse delay-1000" />
+            </div>
+
+            {/* Floating Icons */}
+            <div className="absolute inset-0 pointer-events-none overflow-hidden">
                 <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.5 }}
-                    className="space-y-6 max-w-4xl mx-auto"
+                    className="absolute top-[15%] left-[15%] text-primary/20"
+                    animate={{ y: [0, -20, 0], rotate: [0, 10, 0] }}
+                    transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
                 >
-                    <div className="inline-flex items-center rounded-full border px-3 py-1 text-sm font-medium bg-secondary/50 backdrop-blur-sm">
-                        <Sparkles className="mr-2 h-4 w-4 text-primary" />
-                        <span className="text-muted-foreground">AI-Powered Career Guidance</span>
-                    </div>
-
-                    <h1 className="text-4xl font-bold tracking-tighter sm:text-6xl xl:text-7xl/none font-headline">
-                        Find Your <span className="bg-gradient-to-r from-primary to-purple-600 bg-clip-text text-transparent">Future</span>, Today.
-                    </h1>
-
-                    <p className="mx-auto max-w-[700px] text-muted-foreground md:text-xl leading-relaxed">
-                        Confused about your career after 10th or 12th? EduPath Navigator provides personalized guidance to help you choose the right stream, course, and college.
-                    </p>
-
-                    <div className="flex flex-col sm:flex-row gap-4 justify-center mt-8">
-                        <Button asChild size="lg" className="h-12 px-8 text-lg rounded-full shadow-lg hover:shadow-primary/25 transition-all">
-                            <Link href="/signup">
-                                Get Started
-                                <ArrowRight className="ml-2 h-5 w-5" />
-                            </Link>
-                        </Button>
-                        <Button asChild variant="outline" size="lg" className="h-12 px-8 text-lg rounded-full border-2">
-                            <Link href="/parent-zone/signup">Join as a Parent</Link>
-                        </Button>
-                    </div>
+                    <GraduationCap size={64} />
+                </motion.div>
+                <motion.div
+                    className="absolute top-[20%] right-[15%] text-blue-500/20"
+                    animate={{ y: [0, 20, 0], rotate: [0, -10, 0] }}
+                    transition={{ duration: 6, repeat: Infinity, ease: "easeInOut", delay: 1 }}
+                >
+                    <Compass size={64} />
+                </motion.div>
+                <motion.div
+                    className="absolute bottom-[20%] left-[20%] text-purple-500/20"
+                    animate={{ y: [0, -15, 0], scale: [1, 1.1, 1] }}
+                    transition={{ duration: 7, repeat: Infinity, ease: "easeInOut", delay: 2 }}
+                >
+                    <Brain size={64} />
                 </motion.div>
             </div>
+
+            <div className="container relative z-10 px-4 md:px-6 mx-auto text-center pointer-events-none">
+                <motion.div
+                    initial={{ opacity: 0, y: 30 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.8, ease: "easeOut" }}
+                    className="space-y-8 max-w-5xl mx-auto"
+                >
+                    <motion.div
+                        initial={{ opacity: 0, scale: 0.9 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        transition={{ delay: 0.2, duration: 0.5 }}
+                        className="inline-flex items-center rounded-full border border-primary/20 px-4 py-1.5 text-sm font-medium bg-primary/5 backdrop-blur-md text-primary shadow-sm"
+                    >
+                        <Sparkles className="mr-2 h-4 w-4" />
+                        <span className="tracking-wide">AI-Powered Career Guidance</span>
+                    </motion.div>
+
+                    <h1 className="text-5xl md:text-7xl lg:text-8xl font-bold tracking-tight font-headline bg-clip-text text-transparent bg-gradient-to-b from-foreground to-foreground/70 pb-2">
+                        Find Your <span className="text-primary">Future</span>, <br className="hidden md:block" />
+                        <span className="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">Today.</span>
+                    </h1>
+
+                    <p className="mx-auto max-w-2xl text-muted-foreground text-lg md:text-xl leading-relaxed font-medium">
+                        One-Stop Personalized Career & Education Advisor
+                    </p>
+                </motion.div>
+            </div>
+
+            {/* Scroll Indicator */}
+            <motion.div
+                className="absolute bottom-10 left-1/2 -translate-x-1/2 text-muted-foreground"
+                animate={{ y: [0, 10, 0] }}
+                transition={{ duration: 2, repeat: Infinity }}
+            >
+                <ChevronDown className="h-8 w-8" />
+            </motion.div>
         </section>
     );
 }

@@ -9,12 +9,21 @@ import {
   type ReactNode,
   useCallback,
 } from 'react';
-import { onAuthStateChangeWrapper, getUserProfile, updateUserProfile as fbUpdateUserProfile, logOut } from '@/lib/firebase/auth';
-import type { User } from 'firebase/auth';
+import {
+  onAuthStateChangeWrapper,
+  getUserProfile,
+  updateUserProfile as fbUpdateUserProfile,
+  logOut,
+  startPhoneLogin,
+  completePhoneLogin,
+  setupRecaptcha,
+  signInWithGoogle
+} from '@/lib/firebase/auth';
+import type { User, ConfirmationResult, RecaptchaVerifier } from 'firebase/auth';
 import type { UserProfile, College, CareerPathNode, SignUpData } from '@/lib/types';
 import { usePathname, useRouter } from 'next/navigation';
 import { Skeleton } from '@/components/ui/skeleton';
-import { setDoc, doc, deleteField } from 'firebase/firestore';
+import { setDoc, doc, deleteField, deleteDoc } from 'firebase/firestore';
 import { db } from '@/lib/firebase/client';
 import {
   saveCollege as fbSaveCollege,
@@ -44,6 +53,11 @@ interface AuthContextType {
   isCareerPathSaved: (pathName: string) => boolean;
   logout: () => Promise<void>;
   setGuestProfile: (type: 'student' | 'parent') => void;
+  // New Auth Methods
+  startPhoneLogin: (phoneNumber: string, recaptchaVerifier: RecaptchaVerifier) => Promise<ConfirmationResult>;
+  completePhoneLogin: (confirmationResult: ConfirmationResult, otp: string, isSignup?: boolean) => Promise<User>;
+  setupRecaptcha: (elementId: string) => RecaptchaVerifier;
+  signInWithGoogle: () => Promise<User>;
 }
 
 const AuthContext = createContext<AuthContextType>({
@@ -64,6 +78,10 @@ const AuthContext = createContext<AuthContextType>({
   isCareerPathSaved: () => false,
   logout: async () => { },
   setGuestProfile: () => { },
+  startPhoneLogin: async () => { throw new Error('Not implemented') },
+  completePhoneLogin: async () => { throw new Error('Not implemented') },
+  setupRecaptcha: () => { throw new Error('Not implemented') },
+  signInWithGoogle: async () => { throw new Error('Not implemented') },
 });
 
 function AuthLoadingSkeleton() {
@@ -260,8 +278,21 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     }
 
     const unsubscribe = onAuthStateChangeWrapper(async (authUser) => {
-      console.log('Auth state changed:', authUser?.email);
-      if (authUser && authUser.emailVerified) {
+      console.log('Auth state changed:', authUser?.email || authUser?.phoneNumber);
+      if (authUser) { // Removed emailVerified check for Phone/Google auth compatibility
+        // For email/password, we might still want to check emailVerified, but for Phone it's always verified.
+        // Google is also usually verified.
+        // We can check providerData to see if it's password provider and if so check emailVerified.
+        const isPasswordProvider = authUser.providerData.some(p => p.providerId === 'password');
+        if (isPasswordProvider && !authUser.emailVerified) {
+          // If it's password auth and not verified, treat as not logged in (or handle appropriately)
+          // But existing logic in signIn throws error if not verified.
+          // Here we just want to avoid auto-login if not verified.
+          if (!guestProfileRaw) clearState();
+          setLoading(false);
+          return;
+        }
+
         sessionStorage.removeItem('guestProfile');
         setUser(authUser);
         console.log('Fetching user profile...');
@@ -302,25 +333,51 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   useEffect(() => {
     if (loading) return;
 
-    const isAuthPage = pathname.startsWith('/login') || pathname.startsWith('/signup') || pathname.startsWith('/forgot-password') || pathname.startsWith('/parent-zone/login') || pathname.startsWith('/parent-zone/signup');
-    const isPublicPage = ['/'].includes(pathname);
-    const isGuest = !user && userProfile;
+    // Normalize pathname to remove locale prefix (e.g., /en/login -> /login)
+    // This assumes the locale is always the first segment if present.
+    // We can use a regex or simple string manipulation.
+    // Since we don't know the exact list of locales here easily without importing, 
+    // we can check if the second segment matches our known routes.
+
+    let normalizedPathname = pathname;
+    const segments = pathname.split('/');
+    // segments[0] is empty string, segments[1] is locale (e.g., 'en', 'hi') or the route if no locale (but middleware enforces locale usually)
+    // If segments[1] is a 2-letter code (approx check for locale), we strip it.
+    // Better yet, we can check if the path starts with /en/, /hi/, etc. or just use a regex.
+
+    // Robust way: Remove the first path segment if it looks like a locale (2-3 chars)
+    if (segments.length > 1 && segments[1].length <= 3) {
+      normalizedPathname = '/' + segments.slice(2).join('/');
+    }
+
+    // Ensure root path is handled
+    if (normalizedPathname === '') normalizedPathname = '/';
+
+    const isAuthPage = normalizedPathname.startsWith('/login') || normalizedPathname.startsWith('/signup') || normalizedPathname.startsWith('/forgot-password') || normalizedPathname.startsWith('/parent-zone/login') || normalizedPathname.startsWith('/parent-zone/signup');
+    const isPublicPage = ['/'].includes(normalizedPathname);
+    const isCompleteProfilePage = normalizedPathname === '/complete-profile';
 
     // If not logged in, not a guest, and on a protected page
-    if (!user && !userProfile && !isAuthPage && !isPublicPage) {
+    if (!user && !userProfile && !isAuthPage && !isPublicPage && !isCompleteProfilePage) {
       router.replace('/');
       return;
     }
 
+    // If logged in but no profile (New Phone/Google User)
+    if (user && !userProfile && !isCompleteProfilePage && !isPublicPage) {
+      router.replace('/complete-profile');
+      return;
+    }
+
     // If a student (real or guest) is trying to access parent-specific auth pages
-    if (userProfile?.userType === 'student' && (pathname.startsWith('/parent-zone/login') || pathname.startsWith('/parent-zone/signup'))) {
+    if (userProfile?.userType === 'student' && (normalizedPathname.startsWith('/parent-zone/login') || normalizedPathname.startsWith('/parent-zone/signup'))) {
       router.replace('/dashboard');
     }
 
-    // If logged in
+    // If logged in and has profile
     if (user && userProfile) {
-      // Redirect from auth pages to appropriate dashboard
-      if (isAuthPage) {
+      // Redirect from auth pages (and complete-profile) to appropriate dashboard
+      if (isAuthPage || isCompleteProfilePage) {
         router.replace(userProfile.userType === 'parent' ? '/parent-zone' : '/dashboard');
       }
     }
@@ -345,6 +402,24 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     updateUserProfile,
     logout: handleLogout,
     setGuestProfile,
+    startPhoneLogin,
+    completePhoneLogin: async (confirmationResult: ConfirmationResult, otp: string, isSignup?: boolean) => {
+      const user = await completePhoneLogin(confirmationResult, otp);
+      if (isSignup) {
+        // If it's a signup attempt, we want to treat it as a new user.
+        // If a profile exists, we delete it to force the "Complete Profile" flow.
+        try {
+          await deleteDoc(doc(db, 'users', user.uid));
+          // Also clear local state so the useEffect triggers the redirect
+          setUserProfile(null);
+        } catch (e) {
+          console.error("Error resetting profile on signup:", e);
+        }
+      }
+      return user;
+    },
+    setupRecaptcha,
+    signInWithGoogle,
   };
 
   return (

@@ -5,7 +5,12 @@ import {
   onAuthStateChanged,
   sendPasswordResetEmail,
   sendEmailVerification,
+  signInWithPhoneNumber,
+  RecaptchaVerifier,
+  GoogleAuthProvider,
+  signInWithPopup,
   type User,
+  type ConfirmationResult,
 } from 'firebase/auth';
 import { doc, setDoc, getDoc, updateDoc } from 'firebase/firestore';
 import { auth, db } from './client';
@@ -73,9 +78,37 @@ export async function getUserProfile(userId: string): Promise<UserProfile | null
 
 export async function updateUserProfile(userId: string, data: Partial<UserProfile>): Promise<void> {
   const userDocRef = doc(db, 'users', userId);
-  await updateDoc(userDocRef, data);
+  await setDoc(userDocRef, data, { merge: true });
 }
 
 export async function sendPasswordReset(email: string): Promise<void> {
   await sendPasswordResetEmail(auth, email);
+}
+
+// --- Phone Auth ---
+
+export function setupRecaptcha(elementId: string): RecaptchaVerifier {
+  return new RecaptchaVerifier(auth, elementId, {
+    'size': 'invisible', // or 'normal'
+    'callback': () => {
+      // reCAPTCHA solved, allow signInWithPhoneNumber.
+    }
+  });
+}
+
+export async function startPhoneLogin(phoneNumber: string, recaptchaVerifier: RecaptchaVerifier): Promise<ConfirmationResult> {
+  return await signInWithPhoneNumber(auth, phoneNumber, recaptchaVerifier);
+}
+
+export async function completePhoneLogin(confirmationResult: ConfirmationResult, otp: string): Promise<User> {
+  const result = await confirmationResult.confirm(otp);
+  return result.user;
+}
+
+// --- Google Auth ---
+
+export async function signInWithGoogle(): Promise<User> {
+  const provider = new GoogleAuthProvider();
+  const result = await signInWithPopup(auth, provider);
+  return result.user;
 }

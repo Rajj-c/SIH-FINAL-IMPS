@@ -1,8 +1,7 @@
 
 'use client';
 
-import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { Link, usePathname, useRouter } from '@/navigation';
 import {
   Compass,
   GraduationCap,
@@ -24,7 +23,6 @@ import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { Logo } from '@/components/common/Logo';
 import { cn } from '@/lib/utils';
 import { useAuth } from '@/hooks/use-auth';
-import { useRouter } from 'next/navigation';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -34,6 +32,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { LanguageSwitcher } from '@/components/LanguageSwitcher';
 
 
 const studentNavLinks = [
@@ -104,6 +103,7 @@ export function Header() {
         )}
 
         <div className="flex flex-1 items-center justify-end gap-2">
+          <LanguageSwitcher />
           {user && userProfile ? (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
