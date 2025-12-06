@@ -4,14 +4,15 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
-import { ReactFlow, Background, Controls, MiniMap, useNodesState, useEdgesState, type Node, type Edge } from '@xyflow/react';
+import { ReactFlow, Background, useNodesState, useEdgesState, type Node, type Edge } from '@xyflow/react';
 import '@xyflow/react/dist/style.css';
 import { StartNode, StreamNode, DegreeNode, CareerNode } from '@/components/career-flow/CustomNodes';
 import { TrendingUp, Clock, GraduationCap, Sparkles, ChevronRight } from 'lucide-react';
 import Link from 'next/link';
 import type { Course } from '@/lib/courses-database';
 import { colleges } from '@/lib/data';
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
+import { SmartInsightsPanel } from '@/components/career-flow/SmartInsightsPanel';
 import { CollegeDetailsModal } from '@/components/colleges/CollegeDetailsModal';
 import { createGenericCollege } from '@/lib/utils';
 
@@ -37,6 +38,8 @@ export function PersonalizedPath({
     stream,
     onExploreMore
 }: PersonalizedPathProps) {
+    const [selectedNode, setSelectedNode] = useState<any>(null);
+
     // Generate filtered flowchart for recommended course
     const { nodes, edges } = useMemo(() => {
         const branchLabel = recommendedCourse.branch
@@ -75,6 +78,11 @@ export function PersonalizedPath({
                     salary: recommendedCourse.avgSalary,
                     demand: recommendedCourse.demand,
                     icon: recommendedCourse.icon,
+                    // Pass rich data
+                    futureRole: recommendedCourse.futureRole,
+                    higherEducation: recommendedCourse.higherEducation,
+                    roiAnalysis: recommendedCourse.roiAnalysis,
+                    salaryInsights: recommendedCourse.salaryInsights,
                 },
             },
             ...recommendedCourse.careers.slice(0, 3).map((career, idx) => ({
@@ -86,6 +94,16 @@ export function PersonalizedPath({
                     companies: recommendedCourse.topColleges[0] || 'Top Companies',
                     growth: 'Excellent',
                     icon: '💼',
+                    // Propagate Parent Course Insights (Contextual)
+                    roiAnalysis: recommendedCourse.roiAnalysis,
+                    higherEducation: recommendedCourse.higherEducation,
+                    // Construct specifics or use parent's if generic
+                    salaryInsights: recommendedCourse.salaryInsights || {
+                        entry: recommendedCourse.avgSalary,
+                        mid: "Market Standard",
+                        senior: recommendedCourse.topSalary,
+                        growth: "High Potential"
+                    }
                 },
             })),
         ];
@@ -180,15 +198,15 @@ export function PersonalizedPath({
                             edges={flowEdges}
                             onNodesChange={onNodesChange}
                             onEdgesChange={onEdgesChange}
-                            nodeTypes={nodeTypes}
+                            nodeTypes={nodeTypes as any}
+                            onNodeClick={(_, node) => setSelectedNode(node.data)}
                             fitView
                             className="bg-gradient-to-br from-gray-50 to-blue-50"
                         >
                             <Background color="#aaa" gap={16} />
-                            <Controls className="bg-white border rounded-lg shadow-lg" />
-                            <MiniMap className="bg-white border rounded-lg shadow-lg" />
                         </ReactFlow>
                     </div>
+                    <SmartInsightsPanel nodeData={selectedNode} onClose={() => setSelectedNode(null)} />
                 </CardContent>
             </Card>
 
@@ -210,12 +228,22 @@ export function PersonalizedPath({
             <Card>
                 <CardHeader>
                     <CardTitle>Top Government Colleges</CardTitle>
-                    <CardDescription>Offering {recommendedCourse.fullName}</CardDescription>
+                    <CardDescription>
+                        Offering {recommendedCourse.fullName}.
+                        <span className="text-xs text-muted-foreground ml-2">
+                            ({colleges.length} verified govt colleges loaded)
+                        </span>
+                    </CardDescription>
                 </CardHeader>
                 <CardContent>
                     <div className="grid md:grid-cols-2 gap-3">
                         {recommendedCourse.topColleges.map((collegeName, idx) => {
-                            const collegeData = colleges.find(c => c.name === collegeName) || createGenericCollege(collegeName);
+                            const cleanName = collegeName.trim().toLowerCase();
+                            // Robust lookup matching
+                            const collegeData = colleges.find(c => c.name.trim().toLowerCase() === cleanName) ||
+                                colleges.find(c => c.name.toLowerCase().includes(cleanName)) ||
+                                colleges.find(c => cleanName.includes(c.name.toLowerCase())) ||
+                                createGenericCollege(collegeName);
 
                             return (
                                 <CollegeDetailsModal
@@ -224,7 +252,7 @@ export function PersonalizedPath({
                                     trigger={
                                         <div className="flex items-center gap-2 p-3 border rounded-lg hover:border-primary hover:bg-primary/5 transition-colors cursor-pointer">
                                             <GraduationCap className="h-5 w-5 text-primary" />
-                                            <span className="font-medium">{collegeName}</span>
+                                            <span className="font-medium">{collegeData.name}</span>
                                         </div>
                                     }
                                 />
@@ -240,6 +268,6 @@ export function PersonalizedPath({
                     Explore More Career Options
                 </Button>
             </div>
-        </div>
+        </div >
     );
 }

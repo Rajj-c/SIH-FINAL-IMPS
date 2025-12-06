@@ -1,7 +1,7 @@
 'use client';
 
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, TrendingUp, IndianRupee, GraduationCap, Briefcase, BookOpen, Building2, Award, Map, ExternalLink } from 'lucide-react';
+import { X, TrendingUp, IndianRupee, GraduationCap, Briefcase, BookOpen, Building2, Award, Map, ExternalLink, Target, Banknote } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { ScrollArea } from '@/components/ui/scroll-area';
@@ -77,6 +77,108 @@ export function SmartInsightsPanel({ nodeData, onClose }: SmartInsightsPanelProp
                                         "{nodeData.description} Demand is <span className="font-bold">{nodeData.demand?.toLowerCase()}</span> and salaries are competitive."
                                     </p>
                                 </div>
+
+                            )}
+
+                            {/* ROI / Value Analysis */}
+                            {nodeData.roiAnalysis && (
+                                <div className="space-y-2">
+                                    <h3 className="text-sm font-semibold flex items-center gap-2">
+                                        <Target className="h-4 w-4 text-emerald-600" />
+                                        Is it Worth it? (ROI Analysis)
+                                    </h3>
+                                    <div className="bg-emerald-50/50 dark:bg-emerald-950/10 p-3 rounded-lg border border-emerald-100 dark:border-emerald-900 text-sm text-slate-700 dark:text-slate-300 leading-relaxed">
+                                        {nodeData.roiAnalysis}
+                                    </div>
+                                </div>
+                            )}
+
+                            {/* Detailed Salary Trajectory */}
+                            {nodeData.salaryInsights && (
+                                <div>
+                                    <h3 className="text-sm font-semibold flex items-center gap-2 mb-3">
+                                        <Banknote className="h-4 w-4 text-amber-600" />
+                                        Salary & Growth Trajectory
+                                    </h3>
+                                    <div className="bg-white dark:bg-slate-900 border rounded-xl overflow-hidden shadow-sm">
+                                        <div className="grid grid-cols-3 divide-x border-b bg-slate-50 dark:bg-slate-950">
+                                            <div className="p-2 text-center">
+                                                <div className="text-[10px] uppercase text-muted-foreground font-bold tracking-wider">Entry</div>
+                                                <div className="text-xs font-semibold mt-1">{nodeData.salaryInsights.entry}</div>
+                                            </div>
+                                            <div className="p-2 text-center bg-amber-50/30 dark:bg-amber-950/10">
+                                                <div className="text-[10px] uppercase text-amber-600/80 font-bold tracking-wider">Mid-Level</div>
+                                                <div className="text-xs font-bold text-amber-700 dark:text-amber-400 mt-1">{nodeData.salaryInsights.mid}</div>
+                                            </div>
+                                            <div className="p-2 text-center">
+                                                <div className="text-[10px] uppercase text-muted-foreground font-bold tracking-wider">Senior</div>
+                                                <div className="text-xs font-semibold mt-1">{nodeData.salaryInsights.senior}</div>
+                                            </div>
+                                        </div>
+                                        <div className="p-3 bg-gradient-to-r from-transparent to-amber-50/50 dark:to-amber-950/20 text-xs text-center text-muted-foreground">
+                                            <span className="font-semibold text-amber-600 dark:text-amber-400">Growth Trend:</span> {nodeData.salaryInsights.growth}
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
+
+                            {/* Future Prospects */}
+                            {(nodeData.futureRole || nodeData.higherEducation) && (
+                                <div className="grid gap-3 p-3 bg-slate-50 dark:bg-slate-900 rounded-xl border">
+                                    {nodeData.futureRole && (
+                                        <div className="space-y-3">
+                                            <div className="text-xs font-bold text-muted-foreground uppercase flex items-center gap-1.5">
+                                                <Briefcase className="h-3 w-3 text-primary" />
+                                                Career Progression Ladder
+                                            </div>
+
+                                            {nodeData.futureRole.includes('->') ? (
+                                                <div className="relative pl-1 space-y-1">
+                                                    {/* Vertical Line connecting dots */}
+                                                    <div className="absolute left-[5.5px] top-3 bottom-5 w-0.5 bg-gradient-to-b from-primary/30 via-primary/20 to-transparent rounded-full" />
+
+                                                    {nodeData.futureRole.split('->').map((role: string, idx: number, arr: string[]) => (
+                                                        <motion.div
+                                                            key={idx}
+                                                            initial={{ opacity: 0, x: -10 }}
+                                                            whileInView={{ opacity: 1, x: 0 }}
+                                                            viewport={{ once: true }}
+                                                            transition={{ delay: idx * 0.15, duration: 0.4 }}
+                                                            className="relative flex items-center gap-3 group"
+                                                        >
+                                                            {/* Visual Dot */}
+                                                            <div className={`h-2.5 w-2.5 rounded-full border-[2px] border-white dark:border-slate-950 z-10 flex-shrink-0 transition-colors duration-300 ${idx === 0 ? 'bg-slate-400 dark:bg-slate-600' :
+                                                                    idx === arr.length - 1 ? 'bg-purple-600 ring-4 ring-purple-100 dark:ring-purple-900/30' : 'bg-primary/60'
+                                                                }`} />
+
+                                                            {/* Role Card */}
+                                                            <div className={`text-sm py-2 px-3 rounded-lg border w-full transition-all duration-300 hover:shadow-sm ${idx === arr.length - 1
+                                                                    ? 'bg-gradient-to-r from-purple-50 to-white dark:from-purple-900/20 dark:to-slate-900 border-purple-200 dark:border-purple-800 font-semibold text-purple-900 dark:text-purple-100 shadow-sm'
+                                                                    : 'bg-white dark:bg-slate-900/50 border-slate-100 dark:border-slate-800 text-slate-600 dark:text-slate-300'
+                                                                }`}>
+                                                                {role.trim()}
+                                                            </div>
+                                                        </motion.div>
+                                                    ))}
+                                                </div>
+                                            ) : (
+                                                <p className="text-sm border-l-2 border-primary/30 pl-2 leading-snug text-slate-600 dark:text-slate-300">
+                                                    {nodeData.futureRole}
+                                                </p>
+                                            )}
+                                        </div>
+                                    )}
+                                    {nodeData.higherEducation && (
+                                        <div className="space-y-1 pt-2 border-t border-slate-200 dark:border-slate-800">
+                                            <div className="text-xs font-bold text-muted-foreground uppercase flex items-center gap-1.5">
+                                                <GraduationCap className="h-3 w-3" /> Higher Education Paths
+                                            </div>
+                                            <p className="text-sm border-l-2 border-blue-400/30 pl-2 leading-snug">
+                                                {nodeData.higherEducation}
+                                            </p>
+                                        </div>
+                                    )}
+                                </div>
                             )}
 
                             {/* Quick Stats Grid */}
@@ -91,7 +193,7 @@ export function SmartInsightsPanel({ nodeData, onClose }: SmartInsightsPanelProp
 
                                 <Card className="p-3 border flex flex-col gap-1 bg-amber-50 text-amber-700 border-amber-200">
                                     <div className="flex items-center gap-1.5 text-xs font-medium opacity-80">
-                                        <IndianRupee className="h-3.5 w-3.5" />
+                                        <Banknote className="h-3.5 w-3.5" />
                                         Avg. Salary
                                     </div>
                                     <div className="font-bold text-sm">{nodeData.salary || 'Market Std.'}</div>
@@ -196,10 +298,10 @@ export function SmartInsightsPanel({ nodeData, onClose }: SmartInsightsPanelProp
                         <Button variant="outline" onClick={onClose} className="w-full">Close Panel</Button>
                     </div>
                 </motion.div>
-            </AnimatePresence>
+            </AnimatePresence >
 
             {/* College Details Modal */}
-            <Dialog open={showCollegeModal} onOpenChange={setShowCollegeModal}>
+            < Dialog open={showCollegeModal} onOpenChange={setShowCollegeModal} >
                 <DialogContent className="max-w-3xl max-h-[80vh] overflow-y-auto">
                     <DialogHeader>
                         <DialogTitle>Top Colleges for {nodeData.label}</DialogTitle>
@@ -225,12 +327,13 @@ export function SmartInsightsPanel({ nodeData, onClose }: SmartInsightsPanelProp
                         ))}
                     </div>
                 </DialogContent>
-            </Dialog>
+            </Dialog >
 
             {/* Learning Roadmap Modal */}
-            <LearningRoadmapModal
+            < LearningRoadmapModal
                 isOpen={showRoadmapModal}
-                onClose={() => setShowRoadmapModal(false)}
+                onClose={() => setShowRoadmapModal(false)
+                }
                 careerName={nodeData.label}
                 steps={nodeData.learningPath || []}
             />

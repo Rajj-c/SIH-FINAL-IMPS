@@ -132,36 +132,36 @@ export function HeroSection({ title, subtitle }: HeroSectionProps) {
 
     return (
         <section className="relative w-full min-h-[90vh] flex items-center justify-center overflow-hidden bg-background">
-            {/* Canvas Background */}
+            {/* Canvas Background - Increased Opacity */}
             <canvas
                 ref={canvasRef}
-                className="absolute inset-0 w-full h-full opacity-40 pointer-events-auto"
+                className="absolute inset-0 w-full h-full opacity-60 pointer-events-auto"
             />
 
-            {/* Gradient Blobs */}
-            <div className="absolute inset-0 w-full h-full overflow-hidden pointer-events-none">
-                <div className="absolute top-[-20%] left-[-10%] w-[50%] h-[50%] rounded-full bg-primary/10 blur-[120px] animate-pulse" />
-                <div className="absolute bottom-[-20%] right-[-10%] w-[50%] h-[50%] rounded-full bg-blue-500/10 blur-[120px] animate-pulse delay-1000" />
+            {/* Gradient Blobs - Removed for cleaner look */}
+            <div className="absolute inset-0 w-full h-full overflow-hidden pointer-events-none opacity-30">
+                <div className="absolute top-[-20%] left-[-10%] w-[50%] h-[50%] rounded-full bg-primary/5 blur-[120px]" />
+                <div className="absolute bottom-[-20%] right-[-10%] w-[50%] h-[50%] rounded-full bg-blue-500/5 blur-[120px]" />
             </div>
 
             {/* Floating Icons */}
             <div className="absolute inset-0 pointer-events-none overflow-hidden">
                 <motion.div
-                    className="absolute top-[15%] left-[15%] text-primary/20"
+                    className="absolute top-[15%] left-[15%] text-primary/50"
                     animate={{ y: [0, -20, 0], rotate: [0, 10, 0] }}
                     transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
                 >
                     <GraduationCap size={64} />
                 </motion.div>
                 <motion.div
-                    className="absolute top-[20%] right-[15%] text-blue-500/20"
+                    className="absolute top-[20%] right-[15%] text-blue-500/50"
                     animate={{ y: [0, 20, 0], rotate: [0, -10, 0] }}
                     transition={{ duration: 6, repeat: Infinity, ease: "easeInOut", delay: 1 }}
                 >
                     <Compass size={64} />
                 </motion.div>
                 <motion.div
-                    className="absolute bottom-[20%] left-[20%] text-purple-500/20"
+                    className="absolute bottom-[20%] left-[20%] text-purple-500/50"
                     animate={{ y: [0, -15, 0], scale: [1, 1.1, 1] }}
                     transition={{ duration: 7, repeat: Infinity, ease: "easeInOut", delay: 2 }}
                 >
@@ -187,12 +187,11 @@ export function HeroSection({ title, subtitle }: HeroSectionProps) {
                     </motion.div>
 
                     <h1 className="text-5xl md:text-7xl lg:text-8xl font-bold tracking-tight font-headline bg-clip-text text-transparent bg-gradient-to-b from-foreground to-foreground/70 pb-2">
-                        Find Your <span className="text-primary">Future</span>, <br className="hidden md:block" />
-                        <span className="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">Today.</span>
+                        {title}
                     </h1>
 
                     <p className="mx-auto max-w-2xl text-muted-foreground text-lg md:text-xl leading-relaxed font-medium">
-                        One-Stop Personalized Career & Education Advisor
+                        {subtitle}
                     </p>
                 </motion.div>
             </div>

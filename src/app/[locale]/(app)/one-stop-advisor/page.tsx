@@ -19,9 +19,10 @@ import { SmartGuidance } from '@/components/one-stop/SmartGuidance';
 import { questionBankFor10th, questionBankFor12th } from '@/lib/quiz/question-bank';
 import { calculateRIASECScores } from '@/lib/quiz/riasec-scoring';
 import type { RIASECScores, QuizResponse } from '@/lib/quiz/riasec-scoring';
+import { OneStopAdvisorHero } from '@/components/dashboard/OneStopAdvisorHero';
 
 function AdvisorContent() {
-    const { userProfile, quizAnswers } = useAuth();
+    const { userProfile, quizAnswers, loading: authLoading } = useAuth();
     const searchParams = useSearchParams();
     const router = useRouter();
 
@@ -31,9 +32,11 @@ function AdvisorContent() {
     const [showAllCareers, setShowAllCareers] = useState(false);
 
     useEffect(() => {
+        if (authLoading) return;
+
         if (!quizAnswers || !userProfile) {
-            // Redirect to quiz if no answers
-            router.push('/quiz');
+            // Don't redirect, just stop loading to show locked state
+            setLoading(false);
             return;
         }
 
@@ -56,12 +59,12 @@ function AdvisorContent() {
             : undefined;
 
         // Get AI recommendation with RIASEC scores
-        const rec = getCareerRecommendation(quizAnswers, userProfile, riasecScores);
-        if (rec) {
-            setRecommendation(rec);
+        const recs = getCareerRecommendation(quizAnswers, userProfile, riasecScores);
+        if (recs && recs.length > 0) {
+            setRecommendation(recs[0]);
         }
         setLoading(false);
-    }, [quizAnswers, userProfile, router]);
+    }, [quizAnswers, userProfile, router, authLoading]);
 
     if (loading) {
         return (
@@ -74,14 +77,9 @@ function AdvisorContent() {
 
     if (!recommendation) {
         return (
-            <Card>
-                <CardHeader>
-                    <CardTitle>Unable to Generate Recommendation</CardTitle>
-                    <CardDescription>
-                        Please complete the quiz to get personalized career recommendations.
-                    </CardDescription>
-                </CardHeader>
-            </Card>
+            <div className="container mx-auto py-8">
+                <OneStopAdvisorHero hasCompletedQuiz={false} />
+            </div>
         );
     }
 
@@ -197,7 +195,12 @@ function AdvisorContent() {
                     </TabsContent>
 
                     <TabsContent value="all-paths" className="mt-0">
-                        <AllPaths streamFilter={recommendation.stream} />
+                        <AllPaths
+                            streamFilter={recommendation.stream}
+                            userClass={userProfile?.classLevel}
+                            userStream={userProfile?.stream}
+                            recommendedCourseId={recommendation?.courseId}
+                        />
                     </TabsContent>
 
                     <TabsContent value="degrees" className="mt-0">

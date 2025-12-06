@@ -135,397 +135,300 @@ export default function CollegesPage() {
         </p>
       </div>
 
-      <Card className="mb-8 p-4 shadow-md">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 items-end">
-          <div className="space-y-2">
-            <label htmlFor="search" className="text-sm font-medium">Search by Name</label>
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-              <Input
-                id="search"
-                placeholder="Search college name..."
-                value={searchQuery}
-                onChange={e => setSearchQuery(e.target.value)}
-                className="pl-10"
-              />
+      <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
+        <div className="lg:col-span-3 space-y-6">
+          <Card className="p-4 shadow-md">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 items-end">
+              <div className="space-y-2">
+                <label htmlFor="search" className="text-sm font-medium">Search by Name</label>
+                <div className="relative">
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                  <Input
+                    id="search"
+                    placeholder="Search college name..."
+                    value={searchQuery}
+                    onChange={e => setSearchQuery(e.target.value)}
+                    className="pl-10"
+                  />
+                </div>
+              </div>
+              <div className="space-y-2">
+                <label htmlFor="district" className="text-sm font-medium">Filter by District</label>
+                <Select value={districtFilter} onValueChange={setDistrictFilter}>
+                  <SelectTrigger id="district">
+                    <SelectValue placeholder="Select a district" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {districts.map(d => <SelectItem key={d} value={d}>{d === 'all' ? 'All Districts' : d}</SelectItem>)}
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="space-y-2">
+                <label htmlFor="course" className="text-sm font-medium">Filter by Course</label>
+                <Select value={courseFilter} onValueChange={setCourseFilter}>
+                  <SelectTrigger id="course">
+                    <SelectValue placeholder="Select a course" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {courses.map(c => <SelectItem key={c} value={c}>{c === 'all' ? 'All Courses' : c}</SelectItem>)}
+                  </SelectContent>
+                </Select>
+              </div>
             </div>
-          </div>
-          <div className="space-y-2">
-            <label htmlFor="district" className="text-sm font-medium">Filter by District</label>
-            <Select value={districtFilter} onValueChange={setDistrictFilter}>
-              <SelectTrigger id="district">
-                <SelectValue placeholder="Select a district" />
-              </SelectTrigger>
-              <SelectContent>
-                {districts.map(d => <SelectItem key={d} value={d}>{d === 'all' ? 'All Districts' : d}</SelectItem>)}
-              </SelectContent>
-            </Select>
-          </div>
-          <div className="space-y-2">
-            <label htmlFor="course" className="text-sm font-medium">Filter by Course</label>
-            <Select value={courseFilter} onValueChange={setCourseFilter}>
-              <SelectTrigger id="course">
-                <SelectValue placeholder="Select a course" />
-              </SelectTrigger>
-              <SelectContent>
-                {courses.map(c => <SelectItem key={c} value={c}>{c === 'all' ? 'All Courses' : c}</SelectItem>)}
-              </SelectContent>
-            </Select>
-          </div>
+          </Card>
+
+
+
+          {showNearby ? (
+            /* Nearby Colleges Display */
+            <div className="space-y-6">
+              <h2 className="text-2xl font-bold font-headline">Colleges Near You</h2>
+              {displayedNearbyColleges.length > 0 ? (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {displayedNearbyColleges.map((college, index) => (
+                    <motion.div
+                      key={college.id}
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ duration: 0.3, delay: index * 0.05 }}
+                    >
+                      <Card className={`h-full flex flex-col shadow-md hover:shadow-lg transition-shadow duration-300 border-t-4 ${college.type === 'Government' ? 'border-t-green-600' : 'border-t-primary'
+                        }`}>
+                        <CardHeader className="pb-2">
+                          <div className="flex items-start justify-between gap-2">
+                            <CardTitle className="font-headline text-lg leading-tight flex-1">{college.name}</CardTitle>
+                            <Badge
+                              variant={college.source === 'database' ? 'default' : 'secondary'}
+                              className="shrink-0"
+                            >
+                              {college.source === 'database' ? 'In DB' : 'OSM'}
+                            </Badge>
+                          </div>
+                          <div className="flex items-center justify-between text-sm mt-1">
+                            <div className="flex items-center text-muted-foreground">
+                              <MapPin className="h-3.5 w-3.5 mr-1.5" />
+                              {college.district}
+                            </div>
+                            <Badge variant="outline" className="bg-green-50 dark:bg-green-950/20 text-green-700 dark:text-green-300">
+                              <Navigation className="h-3 w-3 mr-1" />
+                              {formatDistance(college.distance)}
+                            </Badge>
+                          </div>
+                        </CardHeader>
+                        <CardContent className="flex-grow space-y-4 py-2">
+                          {college.courses && college.courses.length > 0 && (
+                            <div>
+                              <div className="flex items-center text-xs font-semibold mb-2 text-primary uppercase tracking-wide">
+                                <Book className="h-3.5 w-3.5 mr-1.5" />
+                                Courses Offered
+                              </div>
+                              <div className="flex flex-wrap gap-1.5">
+                                {college.courses.slice(0, 3).map((course: string) => (
+                                  <Badge key={course} variant="secondary" className="text-xs font-normal">
+                                    {course}
+                                  </Badge>
+                                ))}
+                                {college.courses.length > 3 && (
+                                  <Badge variant="outline" className="text-xs font-normal">
+                                    +{college.courses.length - 3} more
+                                  </Badge>
+                                )}
+                              </div>
+                            </div>
+                          )}
+
+                          {college.fee && (
+                            <div className="pt-2 border-t border-border/50">
+                              <div className="text-xs font-semibold mb-1 text-primary uppercase tracking-wide">Fee</div>
+                              <p className="text-sm text-foreground/80 font-medium">{college.fee}</p>
+                            </div>
+                          )}
+                        </CardContent>
+                        <CardFooter className={`p-4 mt-auto ${college.type === 'Government' ? 'bg-green-50 dark:bg-green-950/20' : 'bg-secondary/10'
+                          }`}>
+                          {college.source === 'database' ? (
+                            <Button asChild className="w-full" variant="outline">
+                              <Link href={`/colleges/${college.id}`}>View Details</Link>
+                            </Button>
+                          ) : (
+                            <Button asChild className="w-full" variant="outline">
+                              <a href={college.googleMapsUrl} target="_blank" rel="noopener noreferrer">
+                                <Navigation className="mr-2 h-4 w-4" />
+                                Get Directions
+                              </a>
+                            </Button>
+                          )}
+                        </CardFooter>
+                      </Card>
+                    </motion.div>
+                  ))}
+                </div>
+              ) : (
+                <div className="text-center py-16">
+                  <p className="text-xl font-semibold">No colleges found within {distanceFilter}km</p>
+                  <p className="text-muted-foreground mb-4">Try increasing the distance filter or view all colleges below</p>
+                  <Button onClick={() => setShowNearby(false)} variant="outline">
+                    View All Colleges
+                  </Button>
+                </div>
+              )}
+            </div>
+          ) : (
+            /* Standard List View */
+            <div className="space-y-6">
+              <div className="mb-4 p-4 bg-primary/10 border-l-4 border-primary rounded-md">
+                <h3 className="font-semibold text-lg mb-1">Government Colleges</h3>
+                <p className="text-sm text-muted-foreground">
+                  Affordable, quality education from government-run institutions. These colleges offer subsidized fees and are recognized by the government.
+                </p>
+              </div>
+
+              {filteredAllColleges.length > 0 ? (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {filteredAllColleges.map((college, index) => (
+                    <motion.div
+                      key={college.id}
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ duration: 0.3, delay: index * 0.05 }}
+                    >
+                      <Card className="h-full flex flex-col shadow-md hover:shadow-lg transition-shadow duration-300 border-t-4 border-t-green-600">
+                        <CardHeader className="pb-2">
+                          <div className="flex items-start justify-between gap-2">
+                            <CardTitle className="font-headline text-lg leading-tight flex-1">{college.name}</CardTitle>
+                            <Badge variant="default" className="shrink-0 bg-green-600">Government</Badge>
+                          </div>
+                          <div className="flex items-center text-sm text-muted-foreground mt-1">
+                            <MapPin className="h-3.5 w-3.5 mr-1.5" />
+                            {college.district}
+                          </div>
+                        </CardHeader>
+                        <CardContent className="flex-grow space-y-4 py-2">
+                          <div>
+                            <div className="flex items-center text-xs font-semibold mb-2 text-primary uppercase tracking-wide">
+                              <Book className="h-3.5 w-3.5 mr-1.5" />
+                              Courses Offered
+                            </div>
+                            <div className="flex flex-wrap gap-1.5">
+                              {college.courses.slice(0, 4).map(course => (
+                                <Badge key={course} variant="secondary" className="text-xs font-normal">
+                                  {course}
+                                </Badge>
+                              ))}
+                              {college.courses.length > 4 && (
+                                <Badge variant="outline" className="text-xs font-normal">
+                                  +{college.courses.length - 4} more
+                                </Badge>
+                              )}
+                            </div>
+                          </div>
+
+                          <div className="pt-2 border-t border-border/50">
+                            <div className="text-xs font-semibold mb-1 text-primary uppercase tracking-wide">Fee Structure</div>
+                            <p className="text-sm text-foreground/80 font-medium">{college.fee}</p>
+                          </div>
+                        </CardContent>
+                        <CardFooter className="p-4 bg-green-50 dark:bg-green-950/20 mt-auto">
+                          <Button asChild className="w-full" variant="outline">
+                            <Link href={`/colleges/${college.id}`}>View Details</Link>
+                          </Button>
+                        </CardFooter>
+                      </Card>
+                    </motion.div>
+                  ))}
+                </div>
+              ) : (
+                <div className="text-center py-16">
+                  <p className="text-xl font-semibold">No government colleges found</p>
+                  <p className="text-muted-foreground">Try adjusting your filters.</p>
+                </div>
+              )}
+            </div>
+          )}
         </div>
-      </Card>
 
-      {/* Location-Based Search Section */}
-      <Card className="mb-8 p-6 shadow-md border-2 border-primary/20">
-        <div className="space-y-4">
-          <div className="flex items-center gap-3">
-            <MapPinned className="h-6 w-6 text-primary" />
-            <div>
-              <h3 className="text-lg font-semibold">Find Colleges Near You</h3>
-              <p className="text-sm text-muted-foreground">
-                Search for colleges based on your current location (database + OpenStreetMap)
+        {/* Sidebar - Location Search */}
+        <div className="lg:col-span-1">
+          <Card className="p-4 shadow-md border-2 border-primary/20 sticky top-4">
+            <div className="space-y-4">
+              <div className="flex items-center gap-2">
+                <MapPinned className="h-5 w-5 text-primary" />
+                <h3 className="font-semibold">Find Nearby</h3>
+              </div>
+              <p className="text-xs text-muted-foreground">
+                Locate government colleges near you.
               </p>
-            </div>
-          </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <label htmlFor="distance" className="text-sm font-medium">Maximum Distance</label>
-              <Select
-                value={distanceFilter.toString()}
-                onValueChange={(v) => setDistanceFilter(Number(v))}
-              >
-                <SelectTrigger id="distance">
-                  <SelectValue placeholder="Select distance" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="50">Within 50 km</SelectItem>
-                  <SelectItem value="100">Within 100 km</SelectItem>
-                  <SelectItem value="150">Within 150 km</SelectItem>
-                  <SelectItem value="200">Within 200 km</SelectItem>
-                  <SelectItem value="300">Within 300 km</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
+              <div className="space-y-3">
+                <div className="space-y-1">
+                  <label htmlFor="distance" className="text-xs font-medium">Max Distance</label>
+                  <Select
+                    value={distanceFilter.toString()}
+                    onValueChange={(v) => setDistanceFilter(Number(v))}
+                  >
+                    <SelectTrigger id="distance" className="h-8 text-xs">
+                      <SelectValue placeholder="Select distance" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="50">Within 50 km</SelectItem>
+                      <SelectItem value="100">Within 100 km</SelectItem>
+                      <SelectItem value="150">Within 150 km</SelectItem>
+                      <SelectItem value="200">Within 200 km</SelectItem>
+                      <SelectItem value="300">Within 300 km</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
 
-            <div className="flex items-end">
-              <Button
-                onClick={handleSearchNearby}
-                disabled={locationLoading || fetchingNearby}
-                className="w-full"
-                size="lg"
-              >
-                {locationLoading || fetchingNearby ? (
-                  <>
-                    <Loader2 className="mr-2 h-5 w-5 animate-spin" />
-                    {locationLoading ? 'Getting Location...' : 'Searching...'}
-                  </>
-                ) : location ? (
-                  <>
-                    <Navigation className="mr-2 h-5 w-5" />
-                    Search Nearby Colleges
-                  </>
-                ) : (
-                  <>
-                    <MapPin className="mr-2 h-5 w-5" />
-                    Enable Location & Search
-                  </>
-                )}
-              </Button>
-            </div>
-          </div>
+                <Button
+                  onClick={handleSearchNearby}
+                  disabled={locationLoading || fetchingNearby}
+                  className="w-full h-8 text-xs"
+                  size="sm"
+                >
+                  {locationLoading || fetchingNearby ? (
+                    <>
+                      <Loader2 className="mr-2 h-3 w-3 animate-spin" />
+                      Searching...
+                    </>
+                  ) : location ? (
+                    <>
+                      <Navigation className="mr-2 h-3 w-3" />
+                      Search Nearby
+                    </>
+                  ) : (
+                    <>
+                      <MapPin className="mr-2 h-3 w-3" />
+                      Enable Location
+                    </>
+                  )}
+                </Button>
+              </div>
 
-          {locationError && (
-            <Alert variant="destructive">
-              <AlertDescription>{locationError}</AlertDescription>
-            </Alert>
-          )}
+              {locationError && (
+                <p className="text-xs text-destructive">{locationError}</p>
+              )}
 
-          {location && !showNearby && (
-            <Alert>
-              <AlertDescription className="flex items-center gap-2">
-                <MapPin className="h-4 w-4" />
-                Location enabled. Click "Search Nearby Colleges" to find colleges within {distanceFilter}km.
-              </AlertDescription>
-            </Alert>
-          )}
+              {location && !showNearby && (
+                <p className="text-xs text-green-600 flex items-center gap-1">
+                  <MapPin className="h-3 w-3" />
+                  Location active
+                </p>
+              )}
 
-          {showNearby && (
-            <Alert>
-              <AlertDescription className="flex items-center justify-between">
-                <span className="flex items-center gap-2">
-                  <MapPin className="h-4 w-4" />
-                  Showing {displayedNearbyColleges.length} colleges within {distanceFilter}km (Database + OpenStreetMap)
-                </span>
+              {showNearby && (
                 <Button
                   variant="outline"
                   size="sm"
+                  className="w-full h-8 text-xs mt-2"
                   onClick={() => setShowNearby(false)}
                 >
-                  View All Colleges
+                  Clear Search
                 </Button>
-              </AlertDescription>
-            </Alert>
-          )}
+              )}
+            </div>
+          </Card>
         </div>
-      </Card>
-
-      {showNearby ? (
-        /* Nearby Colleges Display */
-        <div className="space-y-6">
-          <h2 className="text-2xl font-bold font-headline">Colleges Near You</h2>
-          {displayedNearbyColleges.length > 0 ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {displayedNearbyColleges.map((college, index) => (
-                <motion.div
-                  key={college.id}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.3, delay: index * 0.05 }}
-                >
-                  <Card className={`h-full flex flex-col shadow-md hover:shadow-lg transition-shadow duration-300 border-t-4 ${college.type === 'Government' ? 'border-t-green-600' : 'border-t-primary'
-                    }`}>
-                    <CardHeader className="pb-2">
-                      <div className="flex items-start justify-between gap-2">
-                        <CardTitle className="font-headline text-lg leading-tight flex-1">{college.name}</CardTitle>
-                        <Badge
-                          variant={college.source === 'database' ? 'default' : 'secondary'}
-                          className="shrink-0"
-                        >
-                          {college.source === 'database' ? 'In DB' : 'OSM'}
-                        </Badge>
-                      </div>
-                      <div className="flex items-center justify-between text-sm mt-1">
-                        <div className="flex items-center text-muted-foreground">
-                          <MapPin className="h-3.5 w-3.5 mr-1.5" />
-                          {college.district}
-                        </div>
-                        <Badge variant="outline" className="bg-green-50 dark:bg-green-950/20 text-green-700 dark:text-green-300">
-                          <Navigation className="h-3 w-3 mr-1" />
-                          {formatDistance(college.distance)}
-                        </Badge>
-                      </div>
-                    </CardHeader>
-                    <CardContent className="flex-grow space-y-4 py-2">
-                      {college.courses && college.courses.length > 0 && (
-                        <div>
-                          <div className="flex items-center text-xs font-semibold mb-2 text-primary uppercase tracking-wide">
-                            <Book className="h-3.5 w-3.5 mr-1.5" />
-                            Courses Offered
-                          </div>
-                          <div className="flex flex-wrap gap-1.5">
-                            {college.courses.slice(0, 3).map((course: string) => (
-                              <Badge key={course} variant="secondary" className="text-xs font-normal">
-                                {course}
-                              </Badge>
-                            ))}
-                            {college.courses.length > 3 && (
-                              <Badge variant="outline" className="text-xs font-normal">
-                                +{college.courses.length - 3} more
-                              </Badge>
-                            )}
-                          </div>
-                        </div>
-                      )}
-
-                      {college.fee && (
-                        <div className="pt-2 border-t border-border/50">
-                          <div className="text-xs font-semibold mb-1 text-primary uppercase tracking-wide">Fee</div>
-                          <p className="text-sm text-foreground/80 font-medium">{college.fee}</p>
-                        </div>
-                      )}
-                    </CardContent>
-                    <CardFooter className={`p-4 mt-auto ${college.type === 'Government' ? 'bg-green-50 dark:bg-green-950/20' : 'bg-secondary/10'
-                      }`}>
-                      {college.source === 'database' ? (
-                        <Button asChild className="w-full" variant="outline">
-                          <Link href={`/colleges/${college.id}`}>View Details</Link>
-                        </Button>
-                      ) : (
-                        <Button asChild className="w-full" variant="outline">
-                          <a href={college.googleMapsUrl} target="_blank" rel="noopener noreferrer">
-                            <Navigation className="mr-2 h-4 w-4" />
-                            Get Directions
-                          </a>
-                        </Button>
-                      )}
-                    </CardFooter>
-                  </Card>
-                </motion.div>
-              ))}
-            </div>
-          ) : (
-            <div className="text-center py-16">
-              <p className="text-xl font-semibold">No colleges found within{distanceFilter}km</p>
-              <p className="text-muted-foreground mb-4">Try increasing the distance filter or view all colleges below</p>
-              <Button onClick={() => setShowNearby(false)} variant="outline">
-                View All Colleges
-              </Button>
-            </div>
-          )}
-        </div>
-      ) : (
-        /* Original Tabs View */
-        <Tabs defaultValue="government" className="w-full">
-          <TabsList className="grid w-full max-w-md mx-auto grid-cols-2 mb-6">
-            <TabsTrigger value="government" className="flex items-center gap-2">
-              <Building2 className="h-4 w-4" />
-              Government Colleges
-            </TabsTrigger>
-            <TabsTrigger value="all" className="flex items-center gap-2">
-              <GraduationCap className="h-4 w-4" />
-              All Colleges
-            </TabsTrigger>
-          </TabsList>
-
-          <TabsContent value="government" className="mt-6">
-            <div className="mb-4 p-4 bg-primary/10 border-l-4 border-primary rounded-md">
-              <h3 className="font-semibold text-lg mb-1">Government Colleges</h3>
-              <p className="text-sm text-muted-foreground">
-                Affordable, quality education from government-run institutions. These colleges offer subsidized fees and are recognized by the government.
-              </p>
-            </div>
-
-            {filteredGovernmentColleges.length > 0 ? (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {filteredGovernmentColleges.map((college, index) => (
-                  <motion.div
-                    key={college.id}
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.3, delay: index * 0.05 }}
-                  >
-                    <Card className="h-full flex flex-col shadow-md hover:shadow-lg transition-shadow duration-300 border-t-4 border-t-green-600">
-                      <CardHeader className="pb-2">
-                        <div className="flex items-start justify-between gap-2">
-                          <CardTitle className="font-headline text-lg leading-tight flex-1">{college.name}</CardTitle>
-                          <Badge variant="default" className="shrink-0 bg-green-600">Government</Badge>
-                        </div>
-                        <div className="flex items-center text-sm text-muted-foreground mt-1">
-                          <MapPin className="h-3.5 w-3.5 mr-1.5" />
-                          {college.district}
-                        </div>
-                      </CardHeader>
-                      <CardContent className="flex-grow space-y-4 py-2">
-                        <div>
-                          <div className="flex items-center text-xs font-semibold mb-2 text-primary uppercase tracking-wide">
-                            <Book className="h-3.5 w-3.5 mr-1.5" />
-                            Courses Offered
-                          </div>
-                          <div className="flex flex-wrap gap-1.5">
-                            {college.courses.slice(0, 4).map(course => (
-                              <Badge key={course} variant="secondary" className="text-xs font-normal">
-                                {course}
-                              </Badge>
-                            ))}
-                            {college.courses.length > 4 && (
-                              <Badge variant="outline" className="text-xs font-normal">
-                                +{college.courses.length - 4} more
-                              </Badge>
-                            )}
-                          </div>
-                        </div>
-
-                        <div className="pt-2 border-t border-border/50">
-                          <div className="text-xs font-semibold mb-1 text-primary uppercase tracking-wide">Fee Structure</div>
-                          <p className="text-sm text-foreground/80 font-medium">{college.fee}</p>
-                        </div>
-                      </CardContent>
-                      <CardFooter className="p-4 bg-green-50 dark:bg-green-950/20 mt-auto">
-                        <Button asChild className="w-full" variant="outline">
-                          <Link href={`/colleges/${college.id}`}>View Details</Link>
-                        </Button>
-                      </CardFooter>
-                    </Card>
-                  </motion.div>
-                ))}
-              </div>
-            ) : (
-              <div className="text-center py-16">
-                <p className="text-xl font-semibold">No government colleges found</p>
-                <p className="text-muted-foreground">Try adjusting your filters.</p>
-              </div>
-            )}
-          </TabsContent>
-
-          <TabsContent value="all" className="mt-6">
-            <div className="mb-4 p-4 bg-blue-50 dark:bg-blue-950/20 border-l-4 border-blue-600 rounded-md">
-              <h3 className="font-semibold text-lg mb-1">All Colleges</h3>
-              <p className="text-sm text-muted-foreground">
-                Browse through all available colleges including government, private, and deemed universities.
-              </p>
-            </div>
-
-            {filteredAllColleges.length > 0 ? (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {filteredAllColleges.map((college, index) => (
-                  <motion.div
-                    key={college.id}
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.3, delay: index * 0.05 }}
-                  >
-                    <Card className={`h-full flex flex-col shadow-md hover:shadow-lg transition-shadow duration-300 border-t-4 ${college.type === 'Government' ? 'border-t-green-600' : 'border-t-primary'
-                      }`}>
-                      <CardHeader className="pb-2">
-                        <div className="flex items-start justify-between gap-2">
-                          <CardTitle className="font-headline text-lg leading-tight flex-1">{college.name}</CardTitle>
-                          <Badge
-                            variant={college.type === 'Government' ? 'default' : 'secondary'}
-                            className={`shrink-0 ${college.type === 'Government' ? 'bg-green-600' : ''}`}
-                          >
-                            {college.type}
-                          </Badge>
-                        </div>
-                        <div className="flex items-center text-sm text-muted-foreground mt-1">
-                          <MapPin className="h-3.5 w-3.5 mr-1.5" />
-                          {college.district}
-                        </div>
-                      </CardHeader>
-                      <CardContent className="flex-grow space-y-4 py-2">
-                        <div>
-                          <div className="flex items-center text-xs font-semibold mb-2 text-primary uppercase tracking-wide">
-                            <Book className="h-3.5 w-3.5 mr-1.5" />
-                            Courses Offered
-                          </div>
-                          <div className="flex flex-wrap gap-1.5">
-                            {college.courses.slice(0, 4).map(course => (
-                              <Badge key={course} variant="secondary" className="text-xs font-normal">
-                                {course}
-                              </Badge>
-                            ))}
-                            {college.courses.length > 4 && (
-                              <Badge variant="outline" className="text-xs font-normal">
-                                +{college.courses.length - 4} more
-                              </Badge>
-                            )}
-                          </div>
-                        </div>
-
-                        <div className="pt-2 border-t border-border/50">
-                          <div className="text-xs font-semibold mb-1 text-primary uppercase tracking-wide">Fee Structure</div>
-                          <p className="text-sm text-foreground/80 font-medium">{college.fee}</p>
-                        </div>
-                      </CardContent>
-                      <CardFooter className={`p-4 mt-auto ${college.type === 'Government' ? 'bg-green-50 dark:bg-green-950/20' : 'bg-secondary/10'
-                        }`}>
-                        <Button asChild className="w-full" variant="outline">
-                          <Link href={`/colleges/${college.id}`}>View Details</Link>
-                        </Button>
-                      </CardFooter>
-                    </Card>
-                  </motion.div>
-                ))}
-              </div>
-            ) : (
-              <div className="text-center py-16">
-                <p className="text-xl font-semibold">No colleges found</p>
-                <p className="text-muted-foreground">Try adjusting your filters or check your profile settings.</p>
-              </div>
-            )}
-          </TabsContent>
-        </Tabs>
-      )}
+      </div>
     </div>
   );
 }

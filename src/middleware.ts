@@ -10,7 +10,7 @@ export default createMiddleware({
     localePrefix
 });
 
-console.log("Middleware loaded!");
+
 
 export const config = {
     // Match all pathnames except for

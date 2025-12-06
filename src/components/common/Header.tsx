@@ -35,32 +35,37 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { LanguageSwitcher } from '@/components/LanguageSwitcher';
 
 
-const studentNavLinks = [
-  { href: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
-  { href: '/quiz', label: 'Aptitude Quiz', icon: Lightbulb },
-  { href: '/one-stop-advisor', label: 'One-Stop Advisor', icon: Sparkles },
-  { href: '/career-paths', label: 'Career Paths', icon: Compass },
-  { href: '/colleges', label: 'Colleges', icon: GraduationCap },
-  { href: '/timeline', label: 'Timeline', icon: Calendar },
-  { href: '/resources', label: 'Resources', icon: Library },
-];
-
-const parentNavLinks = [
-  { href: '/parent-zone', label: 'Dashboard', icon: LayoutDashboard },
-  { href: '/career-paths', label: 'Career Paths', icon: Compass },
-  { href: '/colleges', label: 'Colleges', icon: GraduationCap },
-  { href: '/resources', label: 'Resources', icon: Library },
-];
+import { useTranslations } from 'next-intl';
 
 export function Header() {
   const pathname = usePathname();
   const { user, userProfile, logout } = useAuth();
   const router = useRouter();
+  const t = useTranslations('Navigation');
+  const tCommon = useTranslations('Common');
 
   const handleLogout = async () => {
     await logout();
     router.push('/');
   };
+
+  const studentNavLinks = [
+    { href: '/dashboard', label: t('dashboard'), icon: LayoutDashboard },
+    { href: '/quiz', label: t('aptitudeQuiz'), icon: Lightbulb },
+    { href: '/one-stop-advisor', label: t('oneStopAdvisor'), icon: Sparkles },
+    { href: '/my-plan', label: t('myPlan'), icon: TrendingUp },
+    { href: '/career-paths', label: t('careerPaths'), icon: Compass },
+    { href: '/colleges', label: t('colleges'), icon: GraduationCap },
+    { href: '/timeline', label: t('timeline'), icon: Calendar },
+    { href: '/resources', label: t('resources'), icon: Library },
+  ];
+
+  const parentNavLinks = [
+    { href: '/parent-zone', label: t('dashboard'), icon: LayoutDashboard },
+    { href: '/career-paths', label: t('careerPaths'), icon: Compass },
+    { href: '/colleges', label: t('colleges'), icon: GraduationCap },
+    { href: '/resources', label: t('resources'), icon: Library },
+  ];
 
   const navLinks = userProfile?.userType === 'parent' ? parentNavLinks : studentNavLinks;
 
@@ -92,7 +97,7 @@ export function Header() {
         >
           <Logo className="h-8 w-8 text-primary" />
           <span className="hidden font-bold sm:inline-block font-headline">
-            EduPath Navigator
+            {tCommon('appName')}
           </span>
         </Link>
 
@@ -127,7 +132,7 @@ export function Header() {
                   <DropdownMenuItem asChild>
                     <Link href="/profile">
                       <UserIcon className="mr-2 h-4 w-4" />
-                      <span>My Profile</span>
+                      <span>{t('myProfile')}</span>
                     </Link>
                   </DropdownMenuItem>
                 )}
@@ -135,36 +140,36 @@ export function Header() {
                   <DropdownMenuItem asChild>
                     <Link href="/parent-zone">
                       <HeartHandshake className="mr-2 h-4 w-4" />
-                      <span>Parent Zone</span>
+                      <span>{t('parentZone')}</span>
                     </Link>
                   </DropdownMenuItem>
                 )}
                 <DropdownMenuSeparator />
                 <DropdownMenuItem onClick={handleLogout}>
                   <LogOut className="mr-2 h-4 w-4" />
-                  <span>Log out</span>
+                  <span>{t('logout')}</span>
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
 
           ) : isGuest ? (
             <div className="flex items-center gap-2">
-              <span className="text-sm text-muted-foreground">Guest Mode</span>
+              <span className="text-sm text-muted-foreground">{t('guestMode')}</span>
               <Button asChild>
                 <Link href="/login">
                   <LogIn className="mr-2 h-4 w-4" />
-                  Login / Sign Up
+                  {t('loginSignup')}
                 </Link>
               </Button>
             </div>
           ) : (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button>Login / Sign Up</Button>
+                <Button variant="default" className="font-semibold">{t('loginSignup')}</Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent>
-                <DropdownMenuItem asChild><Link href="/login">Student Login</Link></DropdownMenuItem>
-                <DropdownMenuItem asChild><Link href="/parent-zone/login">Parent Login</Link></DropdownMenuItem>
+                <DropdownMenuItem asChild><Link href="/login">{t('studentLogin')}</Link></DropdownMenuItem>
+                <DropdownMenuItem asChild><Link href="/parent-zone/login">{t('parentLogin')}</Link></DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
           )}
@@ -182,7 +187,7 @@ export function Header() {
                   <div className="p-4">
                     <Link href={mainDashboardLink} className="flex items-center gap-2 font-bold text-lg mb-4">
                       <Logo className="h-8 w-8 text-primary" />
-                      <span className="font-headline">EduPath Navigator</span>
+                      <span className="font-headline">{tCommon('appName')}</span>
                     </Link>
                     <nav className="flex flex-col gap-2">{renderNavLinks(true)}</nav>
                   </div>

@@ -81,11 +81,27 @@ export const class10FlowNodes: Node[] = [
         type: 'degreeNode',
         position: { x: 0, y: 400 },
         data: {
-            label: 'Engineering Entrance',
-            subtitle: 'JEE / BITSAT / CET',
+            label: 'Engineering (B.Tech)',
+            subtitle: 'via JEE / CET',
             demand: 'Very High',
-            icon: '📝',
-            skills: ['Physics', 'Chemistry', 'Mathematics', 'Logical Reasoning']
+            icon: '⚙️',
+            skills: ['Physics', 'Chemistry', 'Mathematics', 'Logical Reasoning'],
+            futureRole: 'Software Developer, Data Scientist, Systems Architect, CTO.',
+            higherEducation: 'M.Tech, MS in AI/ML (Abroad), MBA for tech management.',
+            roiAnalysis: 'High ROI. A B.Tech degree provides a strong foundation and deeper understanding (~40 Year Career) compared to 6-month bootcamps. While bootcamps offer quick entry, a degree unlocks higher management and R&D roles with significantly higher salary ceilings (Rs.50LPA+).',
+            salaryInsights: {
+                entry: 'Rs.6 - 12 LPA',
+                mid: 'Rs.15 - 30 LPA',
+                senior: 'Rs.40 LPA - Rs.1 Cr+',
+                growth: 'Exponential (Fastest growing sector)'
+            },
+            learningPath: [
+                { step: 'Class 11 & 12', detail: 'Choose Science Stream (PCM)' },
+                { step: 'Entrance Exam', detail: 'Crack JEE Mains / Advanced / BITSAT' },
+                { step: 'Undergraduate', detail: 'B.Tech in Computer Science / ECE / IT' },
+                { step: 'Skill Building', detail: 'DSA, Web Dev, Internships' },
+                { step: 'Placement', detail: 'Software Engineer / Developer' }
+            ]
         },
     },
     {
@@ -93,11 +109,27 @@ export const class10FlowNodes: Node[] = [
         type: 'degreeNode',
         position: { x: 200, y: 400 },
         data: {
-            label: 'Medical Entrance',
-            subtitle: 'NEET',
+            label: 'MBBS / Medicine',
+            subtitle: 'via NEET',
             demand: 'Very High',
             icon: '⚕️',
-            skills: ['Biology', 'Chemistry', 'Physics', 'Memory & Recall']
+            skills: ['Biology', 'Chemistry', 'Physics', 'Memory & Recall'],
+            futureRole: 'Doctor, Surgeon, Medical Researcher, Hospital Administrator.',
+            higherEducation: 'MD/MS (Essential for high growth), Super Specialization (DM/MCh).',
+            roiAnalysis: 'Long-term Investment. The journey is long (5.5 yrs + 3 yrs MD). Entry-level pay is modest compared to the effort, BUT job security is 100% and respect is unmatched. Financial returns skyrocket after specialization (MD/MS), making it a high-reward career in the long run.',
+            salaryInsights: {
+                entry: 'Rs.6 - 9 LPA (Intern/Junior)',
+                mid: 'Rs.18 - 35 LPA (Specialist)',
+                senior: 'Rs.50 LPA - Rs.2 Cr+ (Senior Consultant)',
+                growth: 'Late Bloomer (Peeks after age 30)'
+            },
+            learningPath: [
+                { step: 'Class 11 & 12', detail: 'Choose Science Stream (PCB)' },
+                { step: 'Entrance Exam', detail: 'Crack NEET-UG with High Rank' },
+                { step: 'Undergraduate', detail: 'MBBS (5.5 Years + Internship)' },
+                { step: 'Postgraduate', detail: 'NEET-PG for MD/MS Specialization' },
+                { step: 'Super Specialization', detail: 'DM/MCh (Cardiology, Neuro, etc.)' }
+            ]
         },
     },
 
@@ -107,11 +139,27 @@ export const class10FlowNodes: Node[] = [
         type: 'degreeNode',
         position: { x: 350, y: 400 },
         data: {
-            label: 'CA Foundation',
-            subtitle: 'Entry to CA',
+            label: 'Chartered Accountancy (CA)',
+            subtitle: 'via CA Foundation',
             demand: 'High',
             icon: '📊',
-            skills: ['Accounting', 'Business Law', 'Quantitative Aptitude', 'Economics']
+            skills: ['Accounting', 'Business Law', 'Quantitative Aptitude', 'Economics'],
+            futureRole: 'Statutory Auditor, Tax Consultant, CFO, Partner at Audit Firm.',
+            higherEducation: 'CFA (for Investment Banking), CPA (USA), MBA (for Leadership).',
+            roiAnalysis: 'Excellent ROI. The cost of become a CA is very low (~Rs.3-4 Lakhs) compared to the starting salary (Rs.8-12 LPA). However, the "cost" is time and effort—it is extremely rigorous with a low pass rate. For those who persist, it guarantees a premium career.',
+            salaryInsights: {
+                entry: 'Rs.8 - 12 LPA',
+                mid: 'Rs.20 - 35 LPA',
+                senior: 'Rs.50 LPA - Rs.1 Cr+',
+                growth: 'High (Professional Expert)'
+            },
+            learningPath: [
+                { step: 'Class 11 & 12', detail: 'Commerce with Maths (Recommended)' },
+                { step: 'Foundation', detail: 'Clear CA Foundation Exam' },
+                { step: 'Intermediate', detail: 'Clear CA Intermediate (Groups 1 & 2)' },
+                { step: 'Articleship', detail: '3 Years Mandatory Training' },
+                { step: 'Final', detail: 'Crack CA Final Exam -> Become a CA' }
+            ]
         },
     },
 
@@ -121,11 +169,27 @@ export const class10FlowNodes: Node[] = [
         type: 'degreeNode',
         position: { x: 600, y: 400 },
         data: {
-            label: 'CLAT / AILET',
-            subtitle: 'Law Entrance',
+            label: 'Law (BA LLB)',
+            subtitle: 'via CLAT / AILET',
             demand: 'High',
             icon: '⚖️',
-            skills: ['Legal Aptitude', 'Logical Reasoning', 'English', 'General Knowledge']
+            skills: ['Legal Aptitude', 'Logical Reasoning', 'English', 'General Knowledge'],
+            futureRole: 'Civil Servant (IAS/IPS), Content Strategist, Policy Analyst, Journalist, Lawyer.',
+            higherEducation: 'MA, LLB (Law), MBA (Marketing/HR), PhD.',
+            roiAnalysis: 'Skill-Dependent ROI. A BA degree is intellectual capital. For Civil Services aspirants, it is the best strategic choice. In the corporate world, its ROI depends on YOUR skills—Top content creators, designers, and policy experts earn highly, while generalists may struggle initially.',
+            salaryInsights: {
+                entry: 'Rs.3 - 5 LPA (Corporate) / Govt Grade Pay',
+                mid: 'Rs.10 - 20 LPA',
+                senior: 'Variable (High in Law/Media/Govt)',
+                growth: 'Variable (Skill/exam based)'
+            },
+            learningPath: [
+                { step: 'Class 11 & 12', detail: 'Any Stream (Humanities Preferred)' },
+                { step: 'Entrance Exam', detail: 'Crack CLAT / LSAT / AILET' },
+                { step: 'Law School', detail: '5-Year Integrated BA LLB / BBA LLB' },
+                { step: 'Internships', detail: 'District Courts, Firms, NGOs' },
+                { step: 'Career', detail: 'Litigator, Corporate Lawyer, or Judge' }
+            ]
         },
     },
 ];
@@ -167,7 +231,14 @@ export const scienceFlowNodes: Node[] = [
             icon: '⚙️',
             color: '#3b82f6',
             description: 'The application of science and math to solve real-world problems. Requires JEE/CET.',
-            skills: ['Advanced Math', 'Physics', 'Problem Solving', 'Coding Basics']
+            skills: ['Advanced Math', 'Physics', 'Problem Solving', 'Coding Basics'],
+            learningPath: [
+                { step: 'Class 12', detail: 'Pass Class 12 Science (PCM)' },
+                { step: 'Entrance Exam', detail: 'JEE Mains / CET / BITSAT' },
+                { step: 'Admissions', detail: 'Counseling & College Selection' },
+                { step: 'B.Tech Degree', detail: '4 Years of Engineering Education' },
+                { step: 'Placement', detail: 'Campus Placement or Higher Studies' }
+            ]
         },
     },
     // CS/IT
@@ -189,7 +260,16 @@ export const scienceFlowNodes: Node[] = [
                 { step: 'Undergraduate', detail: 'B.Tech in Computer Science & Engineering' },
                 { step: 'Internships', detail: 'Software Engineering Internships' },
                 { step: 'Job', detail: 'Software Engineer / Developer' }
-            ]
+            ],
+            futureRole: 'Software Developer, Data Scientist, Systems Architect, CTO.',
+            higherEducation: 'M.Tech, MS in AI/ML (Abroad), MBA for tech management.',
+            roiAnalysis: 'High ROI. A B.Tech degree provides a strong foundation and deeper understanding (~40 Year Career) compared to 6-month bootcamps. While bootcamps offer quick entry, a degree unlocks higher management and R&D roles with significantly higher salary ceilings (Rs.50LPA+).',
+            salaryInsights: {
+                entry: 'Rs.6 - 12 LPA',
+                mid: 'Rs.15 - 30 LPA',
+                senior: 'Rs.40 LPA - Rs.1 Cr+',
+                growth: 'Exponential (Fastest growing sector)'
+            }
         },
     },
     {
@@ -205,6 +285,15 @@ export const scienceFlowNodes: Node[] = [
             icon: '🤖',
             description: 'Build and deploy intelligent systems that learn from data. One of the highest paying and fastest growing fields.',
             skills: ['Python', 'TensorFlow/PyTorch', 'Linear Algebra', 'Statistics', 'Deep Learning'],
+            futureRole: 'Junior AI Engineer -> ML Engineer -> Senior AI Scientist -> Chief AI Officer (CAIO)',
+            higherEducation: 'Core Skills: LLMs, RAG, Transformers, MLOps (Kubeflow/MLflow).',
+            roiAnalysis: 'Reality Check: High Burnout Risk. The field moves insanely fast. You need to read research papers weekly just to stay relevant. High rewards, but requires "Obsessive Learning".',
+            salaryInsights: {
+                entry: 'Rs.12 - 18 LPA (Base + Joining Bonus)',
+                mid: 'Rs.25 - 45 LPA + ESOPs',
+                senior: 'Rs.80 LPA - Rs.1.5 Cr (Tech Lead)',
+                growth: 'Explosive (Talent War is Real)'
+            },
             learningPath: [
                 { step: 'Undergraduate', detail: 'B.Tech in CS / AI & Data Science' },
                 { step: 'Skills', detail: 'Python, Math, ML Algorithms' },
@@ -226,7 +315,23 @@ export const scienceFlowNodes: Node[] = [
             salary: 'Rs. 8-25 LPA',
             icon: '👨‍💻',
             description: 'Design, code, and maintain software applications. The backbone of the tech industry.',
-            skills: ['Full Stack Development', 'System Design', 'Cloud Computing (AWS/Azure)', 'Version Control (Git)']
+            skills: ['Full Stack Development', 'System Design', 'Cloud Computing (AWS/Azure)', 'Version Control (Git)'],
+            futureRole: 'SDE I -> SDE II -> SDE III (Senior) -> Staff Engineer -> Principal Engineer',
+            higherEducation: 'Core Skills: React/Next.js, Node, Go/Java, Docker, Kubernetes.',
+            roiAnalysis: 'Reality Check: Highly Competitive. "Coding is easy, System Design is hard." Thousands of bootcamps churn out juniors. To survive, you must master scalable architecture and cloud logic.',
+            salaryInsights: {
+                entry: 'Rs.8 - 15 LPA (Product Companies)',
+                mid: 'Rs.20 - 40 LPA + Stocks',
+                senior: 'Rs.60 LPA - Rs.1.2 Cr+',
+                growth: 'Consistently High for Experts'
+            },
+            learningPath: [
+                { step: 'Undergraduate', detail: 'B.Tech CS / IT' },
+                { step: 'Foundations', detail: 'DSA, OOPS, DBMS' },
+                { step: 'Development', detail: 'MERN Stack / Java Spring' },
+                { step: 'Internship', detail: 'Industry Experience' },
+                { step: 'Placement', detail: 'SDE Role' }
+            ]
         },
     },
     // Core Engineering
@@ -241,7 +346,23 @@ export const scienceFlowNodes: Node[] = [
             icon: '🔧',
             description: 'Core engineering disciplines focusing on physical systems, infrastructure, and machinery.',
             companies: 'L&T, Tata Motors, Mahindra, Maruti Suzuki',
-            skills: ['Thermodynamics', 'Fluid Mechanics', 'CAD/CAM', 'Material Science']
+            skills: ['Thermodynamics', 'Fluid Mechanics', 'CAD/CAM', 'Material Science'],
+            futureRole: 'Design Engineer, Production Manager, R&D Specialist, Plant Head.',
+            higherEducation: 'M.Tech in Robotics/EVs, MS in Automotive Eng, MBA in Operations.',
+            roiAnalysis: 'Moderate to High. This core engineering field usually requires a formal degree (cannot be self-taught via bootcamps). It offers high stability and job security in PSUs and top MNCs. The sector is seeing a revival with EVs and Automation.',
+            salaryInsights: {
+                entry: 'Rs.4 - 8 LPA',
+                mid: 'Rs.12 - 20 LPA',
+                senior: 'Rs.30 LPA+',
+                growth: 'Steady & Stable'
+            },
+            learningPath: [
+                { step: 'Class 12', detail: 'Science (PCM)' },
+                { step: 'Entrance Exam', detail: 'JEE Mains / GATE (for PSU)' },
+                { step: 'Undergraduate', detail: 'B.Tech Mechanical / Civil' },
+                { step: 'Internships', detail: 'Industrial Training (Core Companies)' },
+                { step: 'Job', detail: 'Graduate Engineer Trainee (GET)' }
+            ]
         },
     },
     {
@@ -256,7 +377,23 @@ export const scienceFlowNodes: Node[] = [
             salary: 'Rs. 6-18 LPA',
             icon: '🦾',
             description: 'Design and build robots and automated systems. Combines mechanical, electrical, and software engineering.',
-            skills: ['Mechatronics', 'Control Systems', 'Embedded Systems', 'ROS (Robot Operating System)']
+            skills: ['Mechatronics', 'Control Systems', 'Embedded Systems', 'ROS (Robot Operating System)'],
+            futureRole: 'Robotics Engineer -> Senior Controls Eng -> Automation Lead -> CTO (Hardware)',
+            higherEducation: 'Core Skills: C++, Python, Path Planning (SLAM), Computer Vision.',
+            roiAnalysis: 'Reality Check: Hardware is Hard. Iteration cycles are slower than software. You need patience. However, the rise of humanoids and warehouse automation makes this a specialized "Moat" career.',
+            salaryInsights: {
+                entry: 'Rs.6 - 12 LPA (Startups/R&D)',
+                mid: 'Rs.18 - 30 LPA',
+                senior: 'Rs.50 LPA+ (Specialized R&D)',
+                growth: 'High (Automation Era)'
+            },
+            learningPath: [
+                { step: 'Undergraduate', detail: 'B.Tech Mechatronics / Mechanical' },
+                { step: 'Skills', detail: 'Arduino, Python, ROS, PLC' },
+                { step: 'Projects', detail: 'Build Line Follower / Arm Robots' },
+                { step: 'Master\'s', detail: 'M.Tech / MS in Robotics' },
+                { step: 'Job', detail: 'Robotics Engineer' }
+            ]
         },
     },
     // Electronics
@@ -271,7 +408,23 @@ export const scienceFlowNodes: Node[] = [
             icon: '🔌',
             description: 'Design electronic circuits, devices, and systems. Critical for telecommunications and hardware industries.',
             companies: 'Intel, Qualcomm, Samsung, ISRO',
-            skills: ['Circuit Design', 'Signal Processing', 'Microprocessors', 'Analog/Digital Electronics']
+            skills: ['Circuit Design', 'Signal Processing', 'Microprocessors', 'Analog/Digital Electronics'],
+            futureRole: 'VLSI Engineer, Embedded Systems Architect, Telecom Engineer, Hardware Designer.',
+            higherEducation: 'M.Tech in VLSI/Embedded Systems, MS in Electrical Eng (US/Germany), MBA.',
+            roiAnalysis: 'High ROI for Specialization. A B.Tech in ECE is tough but rewarding. It opens doors to both IT (Software) and Core (Hardware) jobs. Specializing in VLSI or Embedded Systems can lead to starting salaries of Rs.15-20 LPA, rivaling top CS roles.',
+            salaryInsights: {
+                entry: 'Rs.5 - 10 LPA',
+                mid: 'Rs.15 - 30 LPA',
+                senior: 'Rs.50 LPA+ (Principal Engineer)',
+                growth: 'High (Driven by Chip Demand)'
+            },
+            learningPath: [
+                { step: 'Class 12', detail: 'Pass Class 12 Science (PCM)' },
+                { step: 'Entrance Exam', detail: 'JEE Mains / ECE Specific' },
+                { step: 'Undergraduate', detail: 'B.Tech Electronics (ECE)' },
+                { step: 'Specialization', detail: 'VLSI / Embedded Systems / Comms' },
+                { step: 'Job', detail: 'Electronics Engineer' }
+            ]
         },
     },
     {
@@ -286,7 +439,23 @@ export const scienceFlowNodes: Node[] = [
             salary: 'Rs. 10-30 LPA',
             icon: '💾',
             description: 'Design complex integrated circuits (chips) that power modern electronics. Highly specialized and lucrative.',
-            skills: ['Verilog/VHDL', 'FPGA', 'CMOS Design', 'Semiconductor Physics']
+            skills: ['Verilog/VHDL', 'FPGA', 'CMOS Design', 'Semiconductor Physics'],
+            futureRole: 'Design Engineer -> Senior Verification Eng -> Staff Architect -> Fellow',
+            higherEducation: 'Core Skills: RTL Design, UVM, STA (Static Timing Analysis), 3nm Process Nodes.',
+            roiAnalysis: 'Reality Check: Steep Learning Curve. One tiny bug costs millions of dollars (re-spin). The precision required is insane. But once you break in, you are shielded from generic "AI replacement" fears.',
+            salaryInsights: {
+                entry: 'Rs.12 - 20 LPA (Base + Bonus)',
+                mid: 'Rs.30 - 50 LPA + RSU (Stocks)',
+                senior: 'Rs.80 LPA - Rs.2 Cr (Architect Level)',
+                growth: 'Very High (India is the new Semi Hub)'
+            },
+            learningPath: [
+                { step: 'Undergraduate', detail: 'B.Tech ECE / EEE' },
+                { step: 'Master\'s', detail: 'M.Tech VLSI Design (Highly Recommended)' },
+                { step: 'Skills', detail: 'Verilog, SystemVerilog, UVM' },
+                { step: 'Internships', detail: 'Intel / Qualcomm Internships' },
+                { step: 'Job', detail: 'Digital Design Engineer / Verification Engineer' }
+            ]
         },
     },
 
@@ -313,7 +482,16 @@ export const scienceFlowNodes: Node[] = [
             salary: 'Rs. 8-12 LPA (Start)',
             demand: 'Evergreen',
             icon: '🩺',
-            skills: ['Human Physiology', 'Pathology', 'Pharmacology', 'Clinical Medicine']
+            skills: ['Human Physiology', 'Pathology', 'Pharmacology', 'Clinical Medicine'],
+            futureRole: 'Doctor, Surgeon, Medical Researcher, Hospital Administrator.',
+            higherEducation: 'MD/MS (Essential for high growth), Super Specialization (DM/MCh).',
+            roiAnalysis: 'Long-term Investment. The journey is long (5.5 yrs + 3 yrs MD). Entry-level pay is modest compared to the effort, BUT job security is 100% and respect is unmatched. Financial returns skyrocket after specialization (MD/MS), making it a high-reward career in the long run.',
+            salaryInsights: {
+                entry: 'Rs.6 - 9 LPA (Intern/Junior)',
+                mid: 'Rs.18 - 35 LPA (Specialist)',
+                senior: 'Rs.50 LPA - Rs.2 Cr+ (Senior Consultant)',
+                growth: 'Late Bloomer (Peeks after age 30)'
+            }
         },
     },
     {
@@ -321,49 +499,50 @@ export const scienceFlowNodes: Node[] = [
         type: 'careerNode',
         position: { x: 750, y: 550 },
         data: {
-            label: 'Specialist Doctor',
-            companies: 'Apollo, AIIMS, Fortis',
-            growth: 'Stable',
-            salary: 'Rs. 20-50 LPA',
+            label: 'Medical Specialist',
+            companies: 'Apollo, Fortis, AIIMS, Max Healthcare',
+            growth: 'Stable & High',
+            demand: 'Very High',
+            salary: 'Rs. 18-50 LPA',
             icon: '👨‍⚕️',
-            skills: ['Specialized Surgery', 'Advanced Diagnostics', 'Patient Management', 'Medical Ethics']
+            description: 'Specialized doctor (Cardiologist, Neurologist, etc.) diagnosing and treating complex conditions.',
+            skills: ['Clinical Diagnosis', 'Surgery', 'Patient Empathy', 'Continuous Learning'],
+            futureRole: 'Junior Resident -> Senior Resident -> Consultant -> Senior Consultant -> HOD',
+            higherEducation: 'Core Skills: Robotic Surgery, Telemedicine, Precision Medicine.',
+            roiAnalysis: 'Reality Check: The Longest Grind. You start earning real money only after 30. Your peers in Tech will buy houses while you are studying for NEET-PG. But at 45, you will be untouchable.',
+            salaryInsights: {
+                entry: 'Rs.9 - 15 LPA (Govt Resident)',
+                mid: 'Rs.24 - 40 LPA (Consultant)',
+                senior: 'Rs.60 LPA - Rs.3 Cr+ (Top Surgeon)',
+                growth: 'Slow Start, Massive End Game'
+            },
+            learningPath: [
+                { step: 'MBBS', detail: '5.5 Years (Incl Internship)' },
+                { step: 'NEET PG', detail: 'Crack Entrance for MD/MS' },
+                { step: 'Residency', detail: '3 Years Junior Residency' },
+                { step: 'Super Specialization', detail: 'DM/MCh (3 Years)' },
+                { step: 'Practice', detail: 'Join Hospital or Private Practice' }
+            ]
         },
     },
     {
-        id: 'allied-med',
-        type: 'degreeNode',
-        position: { x: 950, y: 350 },
-        data: {
-            label: 'BDS / BAMS / BHMS',
-            salary: 'Rs. 4-10 LPA',
-            demand: 'Moderate',
-            icon: '🦷',
-            skills: ['Dental Surgery', 'Ayurveda', 'Homeopathy', 'Patient Counseling']
-        },
-    },
-    {
-        id: 'pharma',
-        type: 'degreeNode',
-        position: { x: 1150, y: 350 },
-        data: {
-            label: 'B.Pharma / Biotech',
-            salary: 'Rs. 3-8 LPA',
-            demand: 'Growing',
-            icon: '💊',
-            skills: ['Organic Chemistry', 'Drug Formulation', 'Biochemistry', 'Lab Techniques']
-        },
-    },
-    {
-        id: 'research-career',
+        id: 'media-career',
         type: 'careerNode',
-        position: { x: 1150, y: 550 },
+        position: { x: 900, y: 550 },
         data: {
-            label: 'Clinical Researcher',
-            companies: 'Pfizer, Biocon',
+            label: 'Digital Media Manager',
+            companies: 'Media Houses, Agencies',
             growth: 'High',
-            salary: 'Rs. 6-15 LPA',
-            icon: '🧪',
-            skills: ['Clinical Trials', 'Data Analysis', 'Regulatory Affairs', 'Scientific Writing']
+            salary: 'Rs. 5-15 LPA',
+            icon: '📣',
+            skills: ['SEO/SEM', 'Social Media Strategy', 'Analytics', 'Content Marketing'],
+            learningPath: [
+                { step: 'Skills', detail: 'Learn Digital Marketing Tools' },
+                { step: 'Certifications', detail: 'Google / Meta Certifications' },
+                { step: 'Portfolio', detail: 'Build Personal Brand / Pages' },
+                { step: 'Freelancing', detail: 'Work on Live Projects' },
+                { step: 'Job', detail: 'Digital Marketing Executive' }
+            ]
         },
     },
 ];
@@ -391,8 +570,6 @@ export const scienceFlowEdges: Edge[] = [
     { id: 'e-pharma-res', source: 'pharma', target: 'research-career' },
 ];
 
-// ==================== COMMERCE FLOW (Detailed) ====================
-
 export const commerceFlowNodes: Node[] = [
     {
         id: 'start',
@@ -404,7 +581,6 @@ export const commerceFlowNodes: Node[] = [
             icon: '💼'
         },
     },
-
     // Professional Courses
     {
         id: 'professional',
@@ -437,7 +613,16 @@ export const commerceFlowNodes: Node[] = [
                 { step: 'Intermediate', detail: 'CA Intermediate (Group 1 & 2)' },
                 { step: 'Articleship', detail: '3 Years Practical Training' },
                 { step: 'Final', detail: 'CA Final Exam' }
-            ]
+            ],
+            futureRole: 'Statutory Auditor, Tax Consultant, CFO, Partner at Audit Firm.',
+            higherEducation: 'CFA (for Investment Banking), CPA (USA), MBA (for Leadership).',
+            roiAnalysis: 'Excellent ROI. The cost of become a CA is very low (~Rs.3-4 Lakhs) compared to the starting salary (Rs.8-12 LPA). However, the "cost" is time and effort—it is extremely rigorous with a low pass rate. For those who persist, it guarantees a premium career.',
+            salaryInsights: {
+                entry: 'Rs.8 - 12 LPA',
+                mid: 'Rs.20 - 35 LPA',
+                senior: 'Rs.50 LPA - Rs.1 Cr+',
+                growth: 'High (Professional Expert)'
+            }
         },
     },
     {
@@ -451,7 +636,23 @@ export const commerceFlowNodes: Node[] = [
             icon: '📈',
             description: 'Global certifications for investment and finance professionals. Recognized worldwide.',
             companies: 'JP Morgan, Goldman Sachs, Morgan Stanley, BlackRock',
-            skills: ['Investment Analysis', 'Portfolio Management', 'Financial Modeling', 'Ethics']
+            skills: ['Investment Analysis', 'Portfolio Management', 'Financial Modeling', 'Ethics'],
+            futureRole: 'Portfolio Manager, Investment Banker, Risk Analyst, Equity Research Associate.',
+            higherEducation: 'MBA (Finance) from Top B-Schools, FRM (Financial Risk Manager).',
+            roiAnalysis: 'Exceptional ROI. CFA is cost-effective (~Rs.2-3 Lakhs) compared to an MBA but commands global respect. It allows you to work anywhere in the world. The "sweat equity" is high as exams are grueling, but it fast-tracks you to high-finance roles.',
+            salaryInsights: {
+                entry: 'Rs.6 - 10 LPA',
+                mid: 'Rs.20 - 40 LPA (Charterholder)',
+                senior: 'Rs.80 LPA+ (Portfolio Manager)',
+                growth: 'Very High (Global Mobility)'
+            },
+            learningPath: [
+                { step: 'Undergraduate', detail: 'B.Com / BAF / BMS' },
+                { step: 'Level 1', detail: 'Clear CFA Level 1 Exam' },
+                { step: 'Experience', detail: 'Work Experience Required' },
+                { step: 'Level 2 & 3', detail: 'Clear Advanced Levels' },
+                { step: 'Charter', detail: 'Become CFA Charterholder' }
+            ]
         },
     },
     {
@@ -466,10 +667,25 @@ export const commerceFlowNodes: Node[] = [
             salary: 'Rs. 15-50 LPA',
             icon: '💰',
             description: 'Raise capital for companies and advise on mergers and acquisitions. High pressure, high reward.',
-            skills: ['Valuation', 'M&A Strategy', 'Capital Markets', 'Client Relations']
+            skills: ['Valuation', 'M&A Strategy', 'Capital Markets', 'Client Relations'],
+            futureRole: 'Analyst -> Associate -> VP -> Director -> Managing Director (MD)',
+            higherEducation: 'Core Skills: LBO Modeling, Pitch Decks, Sector Expertise.',
+            roiAnalysis: 'Reality Check: Golden Handcuffs. You will earn huge money but sleep 4 hours a day. "100-hour work weeks" are standard. Only enter if you love the deal-making adrenaline or want to exit to PE/VC.',
+            salaryInsights: {
+                entry: 'Rs.15 - 25 LPA (Base) + 50-100% Bonus',
+                mid: 'Rs.50 - 80 LPA + Bonus',
+                senior: 'Rs.2 Cr - Rs.10 Cr+ (MD Level)',
+                growth: 'Performance Based (Eat what you kill)'
+            },
+            learningPath: [
+                { step: 'Undergraduate', detail: 'Top College (SRCC, Stephen\'s)' },
+                { step: 'MBA', detail: 'IIM A/B/C or Global Top B-School' },
+                { step: 'Skills', detail: 'Financial Modeling, Valuation' },
+                { step: 'Internship', detail: 'Summer Analyst at IB' },
+                { step: 'Job', detail: 'Investment Banking Analyst' }
+            ]
         },
     },
-
     // Degree Courses
     {
         id: 'degree',
@@ -496,6 +712,15 @@ export const commerceFlowNodes: Node[] = [
             description: 'Master of Business Administration. Accelerates career growth into management and leadership roles.',
             companies: 'McKinsey, BCG, Amazon, Google, HUL',
             skills: ['Leadership', 'Strategic Thinking', 'Operations Management', 'Networking'],
+            futureRole: 'Management Consultant, Product Manager, Marketing Head, VP of Operations.',
+            higherEducation: 'Executive MBA (later in career), PhD (for academia).',
+            roiAnalysis: 'Variable ROI. Tier-1 MBA (IIM A/B/C, ISB) offers 3-5x immediate salary jump (~Rs.25-30 LPA start). Tier-2/3 MBAs have lower ROI and slower recovery of fees. The real value lies in the network and brand stamp on your CV.',
+            salaryInsights: {
+                entry: 'Rs.12 - 25 LPA (Tier 1)',
+                mid: 'Rs.30 - 60 LPA',
+                senior: 'Rs.1 Cr+ (C-Suite)',
+                growth: 'Fast Track to Leadership'
+            },
             learningPath: [
                 { step: 'Undergraduate', detail: 'Any Degree (B.Tech/BBA/B.Com)' },
                 { step: 'Experience', detail: '2-3 Years Work Experience (Preferred)' },
@@ -518,6 +743,15 @@ export const commerceFlowNodes: Node[] = [
             icon: '📦',
             description: 'The "CEO" of a product. Bridges the gap between tech, business, and user experience.',
             skills: ['Product Lifecycle', 'User Research', 'Agile Methodology', 'Data-Driven Decision Making'],
+            futureRole: 'APM -> Product Manager -> Senior PM -> Group PM -> CPO',
+            higherEducation: 'Core Skills: SQL, A/B Testing, System Architecture, Figma.',
+            roiAnalysis: 'Reality Check: High Responsibility, No Authority. You have to convince engineers and designers to build things without being their boss. Requires high EQ and "Thick Skin".',
+            salaryInsights: {
+                entry: 'Rs.12 - 20 LPA (MBA/Tech Background)',
+                mid: 'Rs.30 - 55 LPA + Stocks',
+                senior: 'Rs.80 LPA - Rs.2.5 Cr (VP/CPO)',
+                growth: 'High (Central role in Tech)'
+            },
             learningPath: [
                 { step: 'Undergraduate', detail: 'B.Tech / BBA' },
                 { step: 'Skills', detail: 'UX Basics, Data Analytics, Tech Understanding' },
@@ -537,7 +771,23 @@ export const commerceFlowNodes: Node[] = [
             growth: 'Steady',
             salary: 'Rs. 10-30 LPA',
             icon: '📢',
-            skills: ['Brand Strategy', 'Digital Marketing', 'Consumer Behavior', 'Campaign Management']
+            skills: ['Brand Strategy', 'Digital Marketing', 'Consumer Behavior', 'Campaign Management'],
+            futureRole: 'Marketing Executive -> Brand Manager -> CMO -> CEO',
+            higherEducation: 'Core Skills: Performance Marketing (Ads), Analytics (GA4), AI Content Tools.',
+            roiAnalysis: 'Reality Check: Creative but Analytical. "Half the money I spend on advertising is wasted; the trouble is I don\'t know which half." Modern marketing is math, not just catchy slogans.',
+            salaryInsights: {
+                entry: 'Rs.6 - 12 LPA',
+                mid: 'Rs.20 - 40 LPA',
+                senior: 'Rs.60 LPA - Rs.2 Cr+ (CMO)',
+                growth: 'Steady'
+            },
+            learningPath: [
+                { step: 'Undergraduate', detail: 'BBA / BMS' },
+                { step: 'Skills', detail: 'Digital Marketing, SEO, Copywriting' },
+                { step: 'Internships', detail: 'Marketing Agency Internships' },
+                { step: 'MBA', detail: 'MBA in Marketing (For Senior Roles)' },
+                { step: 'Job', detail: 'Marketing Manager' }
+            ]
         },
     },
 ];
@@ -556,8 +806,6 @@ export const commerceFlowEdges: Edge[] = [
     { id: 'e-mba-mkt', source: 'mba', target: 'marketing-career' },
 ];
 
-// ==================== ARTS FLOW (Detailed) ====================
-
 export const artsFlowNodes: Node[] = [
     {
         id: 'start',
@@ -569,7 +817,6 @@ export const artsFlowNodes: Node[] = [
             icon: '🎨'
         },
     },
-
     // Law & Policy
     {
         id: 'law',
@@ -595,7 +842,23 @@ export const artsFlowNodes: Node[] = [
             icon: '🏛️',
             description: 'Premier law schools in India offering integrated law degrees. Gateway to top corporate law firms.',
             companies: 'Cyril Amarchand Mangaldas, Khaitan & Co, AZB & Partners',
-            skills: ['Constitutional Law', 'Corporate Law', 'Litigation', 'Arbitration']
+            skills: ['Constitutional Law', 'Corporate Law', 'Litigation', 'Arbitration'],
+            futureRole: 'Corporate Lawyer, Legal Advisor, Litigator, Judge, Legal Tech Expert.',
+            higherEducation: 'LLM (Master of Laws) - Specialization in Corporate/IPR, PhD.',
+            roiAnalysis: 'High ROI for NLUs. Graduating from a top 5 NLU virtually guarantees a Day Zero placement of Rs.12-16 LPA. The fees (~Rs.10-15L) can be recovered in 1-2 years. For non-NLUs, the path is harder and relies more on individual networking and internships.',
+            salaryInsights: {
+                entry: 'Rs.10 - 16 LPA (Top Firms)',
+                mid: 'Rs.25 - 50 LPA',
+                senior: 'Rs.1 Cr+ (Partner)',
+                growth: 'High (Merit-based Partnership)'
+            },
+            learningPath: [
+                { step: 'Class 12', detail: 'Pass with > 45% marks' },
+                { step: 'Exam', detail: 'Rank in Top 1000 in CLAT' },
+                { step: 'Admission', detail: 'Join an NLU' },
+                { step: 'Moot Courts', detail: 'Participate in Moot Court Competitions' },
+                { step: 'Placement', detail: 'Day Zero Recruitment' }
+            ]
         },
     },
     {
@@ -610,7 +873,23 @@ export const artsFlowNodes: Node[] = [
             salary: 'Rs. 12-35 LPA',
             icon: '💼',
             description: 'Handle legal matters for corporations, including mergers, contracts, and compliance.',
-            skills: ['Contract Drafting', 'Mergers & Acquisitions', 'Due Diligence', 'Negotiation']
+            skills: ['Contract Drafting', 'Mergers & Acquisitions', 'Due Diligence', 'Negotiation'],
+            futureRole: 'Associate -> Senior Associate -> Principal Associate -> Partner -> Managing Partner',
+            higherEducation: 'Core Skills: Negotiation, Cross-border Deals, Regulatory Compliance.',
+            roiAnalysis: 'Reality Check: High Stress. Corporate Law is demanding. Deadlines are strict. But you interact with the top 1% of the business world. Partnership track is a marathon.',
+            salaryInsights: {
+                entry: 'Rs.12 - 18 LPA (Tier-1 Firm)',
+                mid: 'Rs.40 - 70 LPA',
+                senior: 'Rs.2 Cr - Rs.10 Cr+ (Equity Partner)',
+                growth: 'Lock-step (Predictable jumps)'
+            },
+            learningPath: [
+                { step: 'Degree', detail: 'BA LLB from Top NLU' },
+                { step: 'Internships', detail: 'Intern at Tier-1 Law Firms' },
+                { step: 'Grades', detail: 'Maintain High GPA' },
+                { step: 'PPO', detail: 'Secure Pre-Placement Offer' },
+                { step: 'Job', detail: 'Associate at Law Firm' }
+            ]
         },
     },
     {
@@ -622,7 +901,23 @@ export const artsFlowNodes: Node[] = [
             salary: 'Govt Scales',
             demand: 'Competitive',
             icon: '🇮🇳',
-            skills: ['General Studies', 'History', 'Geography', 'Current Affairs']
+            skills: ['General Studies', 'History', 'Geography', 'Current Affairs'],
+            futureRole: 'Civil Servant (IAS/IPS), Content Strategist, Policy Analyst, Journalist, Lawyer.',
+            higherEducation: 'MA, LLB (Law), MBA (Marketing/HR), PhD.',
+            roiAnalysis: 'Skill-Dependent ROI. A BA degree is intellectual capital. For Civil Services aspirants, it is the best strategic choice. In the corporate world, its ROI depends on YOUR skills—Top content creators, designers, and policy experts earn highly, while generalists may struggle initially.',
+            salaryInsights: {
+                entry: 'Rs.3 - 5 LPA (Corporate) / Govt Grade Pay',
+                mid: 'Rs.10 - 20 LPA',
+                senior: 'Variable (High in Law/Media/Govt)',
+                growth: 'Variable (Skill/exam based)'
+            },
+            learningPath: [
+                { step: 'Class 12', detail: 'Arts / Geography / History' },
+                { step: 'Graduation', detail: 'BA (Any Stream)' },
+                { step: 'Preparation', detail: 'Coaching + Self Study (1 Year)' },
+                { step: 'UPSC CSE', detail: 'Crack Prelims, Mains & Interview' },
+                { step: 'Service', detail: 'Join IAS / IPS / IFS' }
+            ]
         },
     },
     {
@@ -638,6 +933,15 @@ export const artsFlowNodes: Node[] = [
             icon: '🎖️',
             description: 'The steel frame of India. Responsible for administration, law and order, and policy implementation.',
             skills: ['Administration', 'Policy Implementation', 'Crisis Management', 'Leadership'],
+            futureRole: 'SDM -> DM (Collector) -> Joint Secretary -> Secretary -> Cabinet Secretary',
+            higherEducation: 'Core Skills: Diplomacy, Public Speaking, decision making under pressure.',
+            roiAnalysis: 'Reality Check: Power > Money. You will never be on the Forbes list, but a single signature of yours can change a million lives. The "Perks" (Housing, Car, Staff) cushion the lower cash salary.',
+            salaryInsights: {
+                entry: 'Rs.56,100 PM (Base) + Allowances (~Rs.1L in hand)',
+                mid: 'Rs.1.2 Lakh PM + Perks',
+                senior: 'Rs.2.25 Lakh PM (Cabinet Sec) + Lifetime Security',
+                growth: 'Fixed Scale (Time Bound)'
+            },
             learningPath: [
                 { step: 'Undergraduate', detail: 'Any Degree (BA/B.Sc/B.Tech)' },
                 { step: 'Preparation', detail: '1-2 Years UPSC Prep (GS, Optional)' },
@@ -647,7 +951,6 @@ export const artsFlowNodes: Node[] = [
             ]
         },
     },
-
     // Creative & Media
     {
         id: 'creative',
@@ -671,7 +974,23 @@ export const artsFlowNodes: Node[] = [
             salary: 'Rs. 5-12 LPA',
             demand: 'Growing',
             icon: '👗',
-            skills: ['Fashion Design', 'Textile Science', 'Sketching', 'Trend Analysis']
+            skills: ['Fashion Design', 'Textile Science', 'Sketching', 'Trend Analysis'],
+            futureRole: 'Fashion Designer, UX Designer, Creative Director, Interaction Designer.',
+            higherEducation: 'M.Des (Master of Design) - Specialized (e.g., Interaction Design), MBA in Luxury Mgmt.',
+            roiAnalysis: 'Portfolio-Driven ROI. A degree from NID/NIFT opens doors, but your portfolio is your currency. UX/UI Designers currently enjoy the highest ROI in the design world with tech-level salaries. Traditional fashion roles start lower but have high entrepreneurial potential.',
+            salaryInsights: {
+                entry: 'Rs.6 - 12 LPA (UX/Product)',
+                mid: 'Rs.15 - 30 LPA',
+                senior: 'Rs.50 LPA+ (Design Head)',
+                growth: 'High (Tech-driven Design)'
+            },
+            learningPath: [
+                { step: 'Class 12', detail: 'Any Stream' },
+                { step: 'Exam', detail: 'NIFT / NID Entrance Exam' },
+                { step: 'Studio Test', detail: 'Situation Test / Studio Test' },
+                { step: 'Degree', detail: 'B.Des (4 Years)' },
+                { step: 'Showcase', detail: 'Graduation Project / Portfolio' }
+            ]
         },
     },
     {
@@ -686,7 +1005,23 @@ export const artsFlowNodes: Node[] = [
             salary: 'Rs. 6-20 LPA',
             icon: '📱',
             description: 'Design intuitive and beautiful digital experiences for apps and websites.',
-            skills: ['User Research', 'Wireframing', 'Prototyping (Figma)', 'Interaction Design']
+            skills: ['User Research', 'Wireframing', 'Prototyping (Figma)', 'Interaction Design'],
+            futureRole: 'Junior Designer -> Product Designer -> Senior Designer -> Design Director -> VP of Design',
+            higherEducation: 'Core Skills: Design Systems, Accessibility, Motion Design, AR/VR Design.',
+            roiAnalysis: 'Reality Check: Subjective Field. Everyone has an opinion on your design. You must learn to separate "You" from "Your Work". High demand as every company is now a software company.',
+            salaryInsights: {
+                entry: 'Rs.6 - 14 LPA (Product Startups)',
+                mid: 'Rs.20 - 40 LPA',
+                senior: 'Rs.60 LPA - Rs.1.5 Cr+',
+                growth: 'Very High (Design-led era)'
+            },
+            learningPath: [
+                { step: 'Undergraduate', detail: 'B.Des / B.Tech' },
+                { step: 'Skills', detail: 'Figma, Adobe XD, Design Systems' },
+                { step: 'Portfolio', detail: 'Create Case Studies (Behance/Dribbble)' },
+                { step: 'Freelance', detail: 'Real-world Projects' },
+                { step: 'Job', detail: 'Product Designer / UX Designer' }
+            ]
         },
     },
     {
@@ -698,7 +1033,23 @@ export const artsFlowNodes: Node[] = [
             salary: 'Rs. 4-8 LPA',
             demand: 'Moderate',
             icon: '🎥',
-            skills: ['Reporting', 'Editing', 'Broadcasting', 'New Media']
+            skills: ['Reporting', 'Editing', 'Broadcasting', 'New Media'],
+            futureRole: 'Journalist, News Anchor, PR Specialist, Digital Content Strategist.',
+            higherEducation: 'MA in Mass Communication, PG Diploma in Journalism (IIMC).',
+            roiAnalysis: 'Moderate Start, High Reach. Journalism is passion-driven. Entry salaries are often low (~Rs.3-5 LPA), but fame and influence can be immense. Corporate Communications and PR offer higher and more stable financial ROI compared to traditional news reporting.',
+            salaryInsights: {
+                entry: 'Rs.3 - 6 LPA',
+                mid: 'Rs.10 - 18 LPA',
+                senior: 'Rs.30 LPA+ (Editor/Anchor)',
+                growth: 'Moderate (High for Top Talents)'
+            },
+            learningPath: [
+                { step: 'Class 12', detail: 'Any Stream' },
+                { step: 'Entrance', detail: 'IIMC / ACJ / Jamia Entrance' },
+                { step: 'Degree', detail: 'BA Journalism / BJMC' },
+                { step: 'Internship', detail: 'News Channel / Newspaper' },
+                { step: 'Job', detail: 'Reporter / Editor' }
+            ]
         },
     },
     {
@@ -711,7 +1062,14 @@ export const artsFlowNodes: Node[] = [
             growth: 'High',
             salary: 'Rs. 5-15 LPA',
             icon: '📣',
-            skills: ['SEO/SEM', 'Social Media Strategy', 'Analytics', 'Content Marketing']
+            skills: ['SEO/SEM', 'Social Media Strategy', 'Analytics', 'Content Marketing'],
+            learningPath: [
+                { step: 'Skills', detail: 'Learn Digital Marketing Tools' },
+                { step: 'Certifications', detail: 'Google / Meta Certifications' },
+                { step: 'Portfolio', detail: 'Build Personal Brand / Pages' },
+                { step: 'Freelancing', detail: 'Work on Live Projects' },
+                { step: 'Job', detail: 'Digital Marketing Executive' }
+            ]
         },
     },
 ];

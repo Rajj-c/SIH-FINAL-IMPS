@@ -19,6 +19,10 @@ const profileSchema = z.object({
     userType: z.enum(['student', 'parent'], { required_error: 'Please select a role.' }),
     classLevel: z.enum(['10', '12']).optional(),
     gender: z.enum(['Male', 'Female', 'Prefer not to say']).optional(),
+    academicMarks: z.string().optional(), // e.g. "85%"
+    academicStream: z.enum(['Science (PCM)', 'Science (PCB)', 'Commerce', 'Arts', 'Vocational']).optional(),
+    hobbies: z.string().optional(), // Comma separated
+    ambition: z.string().optional(),
 }).refine((data) => {
     if (data.userType === 'student') {
         return !!data.classLevel && !!data.gender;
@@ -26,7 +30,7 @@ const profileSchema = z.object({
     return true;
 }, {
     message: "Class level and gender are required for students",
-    path: ["classLevel"], // Error will be attached to classLevel, but applies to gender too conceptually
+    path: ["classLevel"],
 });
 
 export function CompleteProfileForm() {
@@ -34,15 +38,26 @@ export function CompleteProfileForm() {
     const { toast } = useToast();
     const { updateUserProfile, user } = useAuth();
 
+    const [defaultUserType] = useState(() => {
+        if (typeof window !== 'undefined') {
+            return sessionStorage.getItem('signup_user_type') as 'student' | 'parent' || 'student';
+        }
+        return 'student';
+    });
+
     const form = useForm<z.infer<typeof profileSchema>>({
         resolver: zodResolver(profileSchema),
         defaultValues: {
             name: user?.displayName || '',
-            userType: 'student',
+            userType: defaultUserType,
+            academicMarks: '',
+            hobbies: '',
+            ambition: '',
         },
     });
 
     const userType = form.watch('userType');
+    const classLevel = form.watch('classLevel');
 
     async function onSubmit(values: z.infer<typeof profileSchema>) {
         setIsLoading(true);
@@ -52,6 +67,10 @@ export function CompleteProfileForm() {
                 userType: values.userType,
                 classLevel: values.classLevel as '10' | '12' | undefined,
                 gender: values.gender as 'Male' | 'Female' | 'Prefer not to say' | undefined,
+                academicMarks: values.academicMarks,
+                academicStream: values.academicStream,
+                hobbies: values.hobbies ? values.hobbies.split(',').map(h => h.trim()) : undefined,
+                ambition: values.ambition,
             });
             toast({
                 title: 'Profile Updated',
@@ -135,23 +154,89 @@ export function CompleteProfileForm() {
 
                         {userType === 'student' && (
                             <>
+                                <div className="grid grid-cols-2 gap-4">
+                                    <FormField
+                                        control={form.control}
+                                        name="classLevel"
+                                        render={({ field }) => (
+                                            <FormItem>
+                                                <FormLabel>Class Level</FormLabel>
+                                                <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                                    <FormControl>
+                                                        <SelectTrigger>
+                                                            <SelectValue placeholder="Select class" />
+                                                        </SelectTrigger>
+                                                    </FormControl>
+                                                    <SelectContent>
+                                                        <SelectItem value="10">Class 10</SelectItem>
+                                                        <SelectItem value="12">Class 12</SelectItem>
+                                                    </SelectContent>
+                                                </Select>
+                                                <FormMessage />
+                                            </FormItem>
+                                        )}
+                                    />
+
+                                    <FormField
+                                        control={form.control}
+                                        name="gender"
+                                        render={({ field }) => (
+                                            <FormItem>
+                                                <FormLabel>Gender</FormLabel>
+                                                <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                                    <FormControl>
+                                                        <SelectTrigger>
+                                                            <SelectValue placeholder="Select gender" />
+                                                        </SelectTrigger>
+                                                    </FormControl>
+                                                    <SelectContent>
+                                                        <SelectItem value="Male">Male</SelectItem>
+                                                        <SelectItem value="Female">Female</SelectItem>
+                                                        <SelectItem value="Prefer not to say">Prefer not to say</SelectItem>
+                                                    </SelectContent>
+                                                </Select>
+                                                <FormMessage />
+                                            </FormItem>
+                                        )}
+                                    />
+                                </div>
+
+                                {classLevel === '12' && (
+                                    <FormField
+                                        control={form.control}
+                                        name="academicStream"
+                                        render={({ field }) => (
+                                            <FormItem>
+                                                <FormLabel>Current Stream</FormLabel>
+                                                <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                                    <FormControl>
+                                                        <SelectTrigger>
+                                                            <SelectValue placeholder="Select stream" />
+                                                        </SelectTrigger>
+                                                    </FormControl>
+                                                    <SelectContent>
+                                                        <SelectItem value="Science (PCM)">Science (PCM)</SelectItem>
+                                                        <SelectItem value="Science (PCB)">Science (PCB)</SelectItem>
+                                                        <SelectItem value="Commerce">Commerce</SelectItem>
+                                                        <SelectItem value="Arts">Arts</SelectItem>
+                                                        <SelectItem value="Vocational">Vocational</SelectItem>
+                                                    </SelectContent>
+                                                </Select>
+                                                <FormMessage />
+                                            </FormItem>
+                                        )}
+                                    />
+                                )}
+
                                 <FormField
                                     control={form.control}
-                                    name="classLevel"
+                                    name="academicMarks"
                                     render={({ field }) => (
                                         <FormItem>
-                                            <FormLabel>Class Level</FormLabel>
-                                            <Select onValueChange={field.onChange} defaultValue={field.value}>
-                                                <FormControl>
-                                                    <SelectTrigger>
-                                                        <SelectValue placeholder="Select your class" />
-                                                    </SelectTrigger>
-                                                </FormControl>
-                                                <SelectContent>
-                                                    <SelectItem value="10">Class 10</SelectItem>
-                                                    <SelectItem value="12">Class 12</SelectItem>
-                                                </SelectContent>
-                                            </Select>
+                                            <FormLabel>Previous Class Marks (%)</FormLabel>
+                                            <FormControl>
+                                                <Input placeholder="e.g. 85" {...field} />
+                                            </FormControl>
                                             <FormMessage />
                                         </FormItem>
                                     )}
@@ -159,22 +244,27 @@ export function CompleteProfileForm() {
 
                                 <FormField
                                     control={form.control}
-                                    name="gender"
+                                    name="ambition"
                                     render={({ field }) => (
                                         <FormItem>
-                                            <FormLabel>Gender</FormLabel>
-                                            <Select onValueChange={field.onChange} defaultValue={field.value}>
-                                                <FormControl>
-                                                    <SelectTrigger>
-                                                        <SelectValue placeholder="Select gender" />
-                                                    </SelectTrigger>
-                                                </FormControl>
-                                                <SelectContent>
-                                                    <SelectItem value="Male">Male</SelectItem>
-                                                    <SelectItem value="Female">Female</SelectItem>
-                                                    <SelectItem value="Prefer not to say">Prefer not to say</SelectItem>
-                                                </SelectContent>
-                                            </Select>
+                                            <FormLabel>Dream Career / Ambition</FormLabel>
+                                            <FormControl>
+                                                <Input placeholder="e.g. Software Engineer, Doctor" {...field} />
+                                            </FormControl>
+                                            <FormMessage />
+                                        </FormItem>
+                                    )}
+                                />
+
+                                <FormField
+                                    control={form.control}
+                                    name="hobbies"
+                                    render={({ field }) => (
+                                        <FormItem>
+                                            <FormLabel>Hobbies & Interests</FormLabel>
+                                            <FormControl>
+                                                <Input placeholder="e.g. Coding, Cricket, Reading (comma separated)" {...field} />
+                                            </FormControl>
                                             <FormMessage />
                                         </FormItem>
                                     )}

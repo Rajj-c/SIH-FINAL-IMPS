@@ -128,10 +128,45 @@ export interface TimelineEvent {
   link?: string;
 }
 
+export interface QuizResult {
+  personalityType: {
+    type: string;
+    description: string;
+    traits: string[];
+  };
+  topCareerPaths: Array<{
+    name: string;
+    matchScore: number;
+    category: string;
+    pros: string[];
+    cons: string[];
+    estimatedSalary: string;
+    growthPotential: 'High' | 'Medium' | 'Moderate';
+    timeToCareer: string;
+    topColleges: string[];
+  }>;
+  emergingFields: Array<{
+    name: string;
+    relevance: string;
+    futureScope: string;
+  }>;
+  learningRoadmap: {
+    immediateSteps: string[];
+    shortTermGoals: string[];
+    longTermVision: string;
+  };
+  analysis: {
+    strengths: string[];
+    areasForGrowth: string[];
+    aptitudeAnalysis: string;
+  };
+}
+
 export interface SignUpData {
   email: string;
   password?: string;
   name: string;
+  mobile?: string;
   classLevel?: '10' | '12'; // Optional for parents
   gender?: 'Male' | 'Female' | 'Prefer not to say'; // Optional for parents
   userType: 'student' | 'parent';
@@ -139,7 +174,9 @@ export interface SignUpData {
 
 export interface UserProfile extends SignUpData {
   uid: string;
+  mobile?: string;
   quizAnswers?: Record<string, string>; // For students
+  quizResult?: QuizResult; // Persisted AI analysis result
   parentQuizAnswers?: Record<string, string>; // For parents
   bookmarkedResources?: number[];
 
@@ -163,6 +200,12 @@ export interface UserProfile extends SignUpData {
   comparisonsMade?: string[]; // Comparison IDs
   collegesViewed?: string[]; // College IDs
   calculatorsUsed?: string[]; // Calculator types used
+
+  // Phase 3: Academic Profile Enhancements
+  academicMarks?: string; // Percentage/CGPA
+  academicStream?: string; // For 12th: PCM, PCB, Commerce, Arts
+  hobbies?: string[];
+  ambition?: string;
 }
 
 export interface Resource {

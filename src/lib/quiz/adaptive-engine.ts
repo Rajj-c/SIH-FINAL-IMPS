@@ -37,8 +37,8 @@ export function selectNextQuestion(
     state: QuizState,
     questionBank: QuestionBank
 ): EnhancedQuizQuestion | null {
-    const MAX_QUESTIONS = 12;
-    const BASELINE_COUNT = 3;
+    const MAX_QUESTIONS = 15; // Increased to accommodate more baseline
+    const BASELINE_COUNT = questionBank.baseline.length;
 
     // Finish if we've asked enough questions
     if (state.questionCount >= MAX_QUESTIONS) {
@@ -135,11 +135,41 @@ export function updateQuizState(
 }
 
 /**
+ * Revert quiz state (Undo last answer)
+ */
+export function revertQuizState(
+    state: QuizState,
+    allQuestions: EnhancedQuizQuestion[]
+): { newState: QuizState; lastAnswer: QuizResponse | null } {
+    if (state.answeredQuestions.length === 0) {
+        return { newState: state, lastAnswer: null };
+    }
+
+    const newAnswers = [...state.answeredQuestions];
+    const lastAnswer = newAnswers.pop()!;
+
+    const newAskedIds = new Set(state.askedQuestionIds);
+    newAskedIds.delete(lastAnswer.questionId);
+
+    // Recalculate scores
+    const newScores = calculateRIASECScores(newAnswers, allQuestions);
+
+    const newState = {
+        answeredQuestions: newAnswers,
+        currentScores: newScores,
+        askedQuestionIds: newAskedIds,
+        questionCount: Math.max(0, state.questionCount - 1),
+    };
+
+    return { newState, lastAnswer };
+}
+
+/**
  * Check if quiz is complete (enough confidence in recommendation)
  */
 export function isQuizComplete(state: QuizState): boolean {
     const MIN_QUESTIONS = 8;
-    const MAX_QUESTIONS = 12;
+    const MAX_QUESTIONS = 15;
 
     // Must answer at least MIN_QUESTIONS
     if (state.questionCount < MIN_QUESTIONS) {
@@ -173,6 +203,57 @@ export function getQuizProgress(state: QuizState): number {
     const TARGET_QUESTIONS = 10; // Target midpoint
     return Math.min((state.questionCount / TARGET_QUESTIONS) * 100, 100);
 }
+
+/**
+ * Resume quiz state from saved answers
+ */
+export function resumeQuizState(
+    savedAnswers: Record<string, any>,
+    allQuestions: EnhancedQuizQuestion[]
+): QuizState {
+    const answeredQuestions: QuizResponse[] = [];
+    const askedQuestionIds = new Set<string>();
+
+    Object.entries(savedAnswers).forEach(([questionId, answer]) => {
+        let parsedAnswer = answer;
+        // Parse JSON strings if needed (for arrays/objects stored as strings)
+        if (typeof answer === 'string') {
+            try {
+                // check if it looks like JSON array or object
+                if (answer.startsWith('[') || answer.startsWith('{')) {
+                    parsedAnswer = JSON.parse(answer);
+                } else if (!isNaN(Number(answer))) {
+                    // Keep as string or number? Original logic used String() for simple values.
+                    // But types say: string | number | ...
+                    // If it was stored as string "5", we keep it as string "5" ?
+                    // The quiz state expects strict types potentially?
+                    // In QuizForm: setCurrentAnswer(Number(val)) for slider.
+                    // So we should try to cast to number if it looks like one?
+                    // Let's be careful. The question type defines what it expects.
+                    // But here we don't look up question type easily for every answer.
+                    // Let's assume JSON.parse handles "5" -> 5 correctly if it's a valid JSON number.
+                    // But "5" is valid JSON.
+                    parsedAnswer = JSON.parse(answer);
+                }
+            } catch (e) {
+                // Keep as original string
+            }
+        }
+
+        answeredQuestions.push({ questionId, answer: parsedAnswer });
+        askedQuestionIds.add(questionId);
+    });
+
+    const currentScores = calculateRIASECScores(answeredQuestions, allQuestions);
+
+    return {
+        answeredQuestions,
+        currentScores,
+        askedQuestionIds,
+        questionCount: answeredQuestions.length,
+    };
+}
+
 
 // Helper functions
 

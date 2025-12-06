@@ -3,7 +3,7 @@
 import { motion } from 'framer-motion';
 import { X, CheckCircle2, ArrowDown, GraduationCap, BookOpen, Trophy, Briefcase } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 
 interface LearningStep {
     step: string;
@@ -35,9 +35,9 @@ export function LearningRoadmapModal({ isOpen, onClose, careerName, steps }: Lea
                         <span className="text-primary">🚀</span>
                         Your Path to {careerName}
                     </DialogTitle>
-                    <p className="text-muted-foreground">
+                    <DialogDescription>
                         Follow this step-by-step roadmap to achieve your dream career.
-                    </p>
+                    </DialogDescription>
                 </DialogHeader>
 
                 <div className="mt-6 relative pl-4 md:pl-8">

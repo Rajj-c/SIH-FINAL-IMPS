@@ -18,7 +18,18 @@ export interface Course {
     careers: string[];
     skills: string[];
     description: string;
+
     icon: string;
+    // New detailed insights
+    futureRole?: string;
+    higherEducation?: string;
+    roiAnalysis?: string;
+    salaryInsights?: {
+        entry: string;
+        mid: string;
+        senior: string;
+        growth: string;
+    };
 }
 
 // ==================== SCIENCE STREAM COURSES ====================
@@ -39,11 +50,20 @@ export const scienceCourses: Course[] = [
         topSalary: 'Rs. 25-50 LPA',
         demand: 'Very High',
         difficulty: 4,
-        topColleges: ['IIT Delhi', 'IIT Bombay', 'NIT Trichy', 'IIIT Hyderabad', 'DTU'],
+        topColleges: ['IIT Bombay', 'IIT Delhi', 'IIT Madras', 'IIT Kharagpur', 'NIT Trichy'],
         careers: ['Software Engineer', 'Data Scientist', 'AI/ML Engineer', 'Full Stack Developer', 'Cloud Architect'],
         skills: ['Programming', 'Problem Solving', 'Algorithms', 'Data Structures', 'System Design'],
         description: 'Focus on software development, algorithms, AI, and cutting-edge technology.',
         icon: '💻',
+        futureRole: 'Software Developer, Data Scientist, Systems Architect, CTO.',
+        higherEducation: 'M.Tech, MS in AI/ML (Abroad), MBA for tech management.',
+        roiAnalysis: 'High ROI. A B.Tech degree provides a strong foundation and deeper understanding (~40 Year Career) compared to 6-month bootcamps. While bootcamps offer quick entry, a degree unlocks higher management and R&D roles with significantly higher salary ceilings (Rs.50LPA+).',
+        salaryInsights: {
+            entry: 'Rs.6 - 12 LPA',
+            mid: 'Rs.15 - 30 LPA',
+            senior: 'Rs.40 LPA - Rs.1 Cr+',
+            growth: 'Exponential (Fastest growing sector)'
+        }
     },
     {
         id: 'btech-mechanical',
@@ -59,11 +79,20 @@ export const scienceCourses: Course[] = [
         topSalary: 'Rs. 12-20 LPA',
         demand: 'High',
         difficulty: 4,
-        topColleges: ['IIT Madras', 'IIT Kharagpur', 'NIT Surathkal', 'BITS Pilani'],
+        topColleges: ['IIT Madras', 'IIT Kharagpur', 'IIT Roorkee', 'NIT Surathkal', 'NIT Trichy'],
         careers: ['Mechanical Engineer', 'Automobile Engineer', 'Manufacturing Engineer', 'Production Manager'],
         skills: ['CAD/CAM', 'Thermodynamics', 'Manufacturing', 'Design', 'Automation'],
         description: 'Core engineering with focus on machines, manufacturing, and automobile industry.',
         icon: '⚙️',
+        futureRole: 'Design Engineer, Production Manager, R&D Specialist, Plant Head.',
+        higherEducation: 'M.Tech in Robotics/EVs, MS in Automotive Eng, MBA in Operations.',
+        roiAnalysis: 'Moderate to High. This core engineering field usually requires a formal degree (cannot be self-taught via bootcamps). It offers high stability and job security in PSUs and top MNCs. The sector is seeing a revival with EVs and Automation.',
+        salaryInsights: {
+            entry: 'Rs.4 - 8 LPA',
+            mid: 'Rs.12 - 20 LPA',
+            senior: 'Rs.30 LPA+',
+            growth: 'Steady & Stable'
+        }
     },
     {
         id: 'btech-civil',
@@ -79,7 +108,7 @@ export const scienceCourses: Course[] = [
         topSalary: 'Rs. 10-15 LPA',
         demand: 'High',
         difficulty: 3,
-        topColleges: ['IIT Roorkee', 'NIT Warangal', 'VNIT Nagpur'],
+        topColleges: ['IIT Roorkee', 'NIT Warangal', 'VNIT Nagpur', 'IIT Madras'],
         careers: ['Civil Engineer', 'Structural Engineer', 'Urban Planner', 'Construction Manager'],
         skills: ['Structural Design', 'AutoCAD', 'Project Management', 'Surveying'],
         description: 'Design and construction of infrastructure, buildings, roads, and bridges.',
@@ -101,11 +130,20 @@ export const scienceCourses: Course[] = [
         topSalary: 'Rs. 30-100 LPA',
         demand: 'Very High',
         difficulty: 5,
-        topColleges: ['AIIMS Delhi', 'JIPMER', 'GMC Chandigarh', 'CMC Vellore', 'KGMU Lucknow'],
+        topColleges: ['AIIMS Delhi', 'JIPMER', 'GMC Chandigarh'],
         careers: ['Doctor (General Physician)', 'Surgeon', 'Medical Officer', 'Healthcare Consultant'],
         skills: ['Medical Knowledge', 'Patient Care', 'Diagnosis', 'Emergency Response', 'Research'],
         description: 'Comprehensive medical training to become a licensed medical practitioner.',
         icon: '🩺',
+        futureRole: 'Doctor, Surgeon, Medical Researcher, Hospital Administrator.',
+        higherEducation: 'MD/MS (Essential for high growth), Super Specialization (DM/MCh).',
+        roiAnalysis: 'Long-term Investment. The journey is long (5.5 yrs + 3 yrs MD). Entry-level pay is modest compared to the effort, BUT job security is 100% and respect is unmatched. Financial returns skyrocket after specialization (MD/MS), making it a high-reward career in the long run.',
+        salaryInsights: {
+            entry: 'Rs.6 - 9 LPA (Intern/Junior)',
+            mid: 'Rs.18 - 35 LPA (Specialist)',
+            senior: 'Rs.50 LPA - Rs.2 Cr+ (Senior Consultant)',
+            growth: 'Late Bloomer (Peeks after age 30)'
+        }
     },
     {
         id: 'bds',
@@ -121,7 +159,7 @@ export const scienceCourses: Course[] = [
         topSalary: 'Rs. 15-30 LPA',
         demand: 'High',
         difficulty: 4,
-        topColleges: ['Maulana Azad Dental College', 'GDC Mumbai', 'KGMC Lucknow'],
+        topColleges: ['Maulana Azad Dental College', 'GDC Mumbai'],
         careers: ['Dentist', 'Orthodontist', 'Dental Surgeon', 'Oral Pathologist'],
         skills: ['Dental Procedures', 'Patient Care', 'Diagnosis', 'Surgery'],
         description: 'Study of dental science and oral health care.',
@@ -143,7 +181,7 @@ export const scienceCourses: Course[] = [
         topSalary: 'Rs. 8-12 LPA',
         demand: 'Medium',
         difficulty: 3,
-        topColleges: ['St. Stephen\'s College', 'Hindu College', 'Loyola College'],
+        topColleges: ['St. Stephen\'s College', 'Jamia Millia Islamia'],
         careers: ['Research Scientist', 'Professor', 'Data Analyst', 'ISRO Scientist'],
         skills: ['Research', 'Mathematics', 'Analytical Thinking', 'Lab Work'],
         description: 'Foundation in physics for research and higher studies (M.Sc, PhD).',
@@ -168,11 +206,20 @@ export const commerceCourses: Course[] = [
         topSalary: 'Rs. 25-50 LPA',
         demand: 'Very High',
         difficulty: 5,
-        topColleges: ['ICAI Authorized Coaching Centers'],
+        topColleges: ['The Institute of Chartered Accountants of India (ICAI)'],
         careers: ['Chartered Accountant', 'Tax Consultant', 'Auditor', 'CFO', 'Financial Advisor'],
         skills: ['Accounting', 'Taxation', 'Audit', 'Financial Analysis', 'Business Law'],
         description: 'Premier accounting and finance qualification in India.',
         icon: '📊',
+        futureRole: 'Statutory Auditor, Tax Consultant, CFO, Partner at Audit Firm.',
+        higherEducation: 'CFA (for Investment Banking), CPA (USA), MBA (for Leadership).',
+        roiAnalysis: 'Excellent ROI. The cost of become a CA is very low (~Rs.3-4 Lakhs) compared to the starting salary (Rs.8-12 LPA). However, the "cost" is time and effort—it is extremely rigorous with a low pass rate. For those who persist, it guarantees a premium career.',
+        salaryInsights: {
+            entry: 'Rs.8 - 12 LPA',
+            mid: 'Rs.20 - 35 LPA',
+            senior: 'Rs.50 LPA - Rs.1 Cr+',
+            growth: 'High (Professional Expert)'
+        }
     },
     {
         id: 'bcom',
@@ -188,7 +235,7 @@ export const commerceCourses: Course[] = [
         topSalary: 'Rs. 10-15 LPA',
         demand: 'High',
         difficulty: 2,
-        topColleges: ['SRCC Delhi', 'St. Xavier\'s Mumbai', 'Loyola Chennai'],
+        topColleges: ['SRCC Delhi', 'Lady Shri Ram College'],
         careers: ['Accountant', 'Financial Analyst', 'Business Consultant', 'Investment Banker (after MBA)'],
         skills: ['Accounting', 'Finance', 'Business Studies', 'Economics'],
         description: 'Foundation in commerce, accounting, and business management.',
@@ -208,7 +255,7 @@ export const commerceCourses: Course[] = [
         topSalary: 'Rs. 12-20 LPA',
         demand: 'High',
         difficulty: 3,
-        topColleges: ['Shaheed Sukhdev College', 'Christ University', 'NMIMS'],
+        topColleges: ['Shaheed Sukhdev College', 'IIM Indore (IPM)', 'IIM Rohtak (IPM)'],
         careers: ['Business Manager', 'Marketing Executive', 'HR Manager', 'Entrepreneur'],
         skills: ['Management', 'Leadership', 'Marketing', 'Communication', 'Strategy'],
         description: 'Management education with focus on business operations and strategy.',
@@ -233,7 +280,7 @@ export const artsCourses: Course[] = [
         topSalary: 'Rs. 30-100 LPA',
         demand: 'Very High',
         difficulty: 4,
-        topColleges: ['NLU Delhi', 'NLSIU Bangalore', 'NALSAR Hyderabad'],
+        topColleges: ['NLSIU Bangalore', 'NLU Delhi', 'NALSAR Hyderabad'],
         careers: ['Lawyer', 'Judge', 'Legal Advisor', 'Corporate Lawyer', 'Civil Services'],
         skills: ['Legal Research', 'Argumentation', 'Critical Thinking', 'Communication'],
         description: 'Integrated law degree for becoming a legal professional.',
@@ -253,11 +300,20 @@ export const artsCourses: Course[] = [
         topSalary: 'Rs. 8-15 LPA',
         demand: 'Medium',
         difficulty: 2,
-        topColleges: ['St. Stephen\'s College', 'Lady Shri Ram', 'Presidency Kolkata'],
+        topColleges: ['St. Stephen\'s College', 'Lady Shri Ram College', 'Jamia Millia Islamia'],
         careers: ['Civil Services (UPSC)', 'Journalist', 'Teacher', 'Content Writer', 'Psychologist'],
         skills: ['Critical Thinking', 'Research', 'Writing', 'Communication', 'Analysis'],
         description: 'Liberal arts education in subjects like History, Political Science, Psychology.',
         icon: '📚',
+        futureRole: 'Civil Servant (IAS/IPS), Content Strategist, Policy Analyst, Journalist, Lawyer.',
+        higherEducation: 'MA, LLB (Law), MBA (Marketing/HR), PhD.',
+        roiAnalysis: 'Skill-Dependent ROI. A BA degree is intellectual capital. For Civil Services aspirants, it is the best strategic choice. In the corporate world, its ROI depends on YOUR skills—Top content creators, designers, and policy experts earn highly, while generalists may struggle initially.',
+        salaryInsights: {
+            entry: 'Rs.3 - 5 LPA (Corporate) / Govt Grade Pay',
+            mid: 'Rs.10 - 20 LPA',
+            senior: 'Variable (High in Law/Media/Govt)',
+            growth: 'Variable (Skill/exam based)'
+        }
     },
     {
         id: 'journalism',
@@ -273,7 +329,7 @@ export const artsCourses: Course[] = [
         topSalary: 'Rs. 15-30 LPA',
         demand: 'Good',
         difficulty: 3,
-        topColleges: ['Jamia Millia Islamia', 'IIMC Delhi', 'Symbiosis Pune'],
+        topColleges: ['IIMC New Delhi', 'Jamia Millia Islamia', 'Lady Shri Ram College'],
         careers: ['Journalist', 'News Anchor', 'Content Creator', 'PR Specialist', 'Digital Marketer'],
         skills: ['Writing', 'Communication', 'Video Editing', 'Research', 'Interviewing'],
         description: 'Training in journalism, media production, and mass communication.',

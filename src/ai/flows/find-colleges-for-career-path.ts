@@ -62,7 +62,7 @@ const findCollegesPrompt = ai.definePrompt({
   name: 'findCollegesForCareerPathPrompt',
   input: { schema: FindCollegesForCareerPathInputSchema },
   output: { schema: FindCollegesForCareerPathOutputSchema },
-  prompt: `You are an expert career counselor in India. Your task is to help a student find relevant government and private colleges based on their chosen career path.
+  prompt: `You are an expert career counselor in India. Your task is to help a student find relevant **Government Colleges ONLY** based on their chosen career path. Do NOT recommend private colleges.
 
 You will be given:
 1. The name of a career path (e.g., "B.Tech Computer Science", "MBBS", "Diploma in Fashion Design").

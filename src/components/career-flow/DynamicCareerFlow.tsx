@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useEffect, useState, useMemo } from 'react';
 import {
     ReactFlow,
     useNodesState,
@@ -11,42 +11,49 @@ import {
     Node,
     Controls,
     Background,
+    Panel,
     useReactFlow,
     ReactFlowProvider,
-    Panel,
+    MarkerType,
+    Position,
 } from '@xyflow/react';
 import '@xyflow/react/dist/style.css';
 import dagre from 'dagre';
-import { careerMap, getInitialNodes, CareerNodeData } from '@/lib/dynamic-career-data';
+import { CareerNode, StartNode, StreamNode, DegreeNode } from './CustomNodes';
 import { Button } from '@/components/ui/button';
-import { SmartInsightsPanel } from './SmartInsightsPanel';
-import { motion } from 'framer-motion';
-import { getCustomCareerPath } from '@/app/actions/career-ai';
 import { Input } from '@/components/ui/input';
-import { Loader2, Sparkles, ZoomIn, ZoomOut, RotateCcw, Search } from 'lucide-react';
-
-import { StartNode, StreamNode, DegreeNode, CareerNode, OpportunityNode } from './CustomNodes';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Maximize, Search, Sparkles, RefreshCw, ChevronRight, Zap } from 'lucide-react';
+import { careerFlows } from '@/lib/career-flow-data';
+import { SmartInsightsPanel } from './SmartInsightsPanel';
+import { getCustomCareerPath } from '@/app/actions/career-ai';
+import { useToast } from '@/hooks/use-toast';
 
-const nodeTypes = {
-    root: StartNode,
-    stream: StreamNode,
-    degree: DegreeNode,
-    industry: DegreeNode,
-    opportunity: OpportunityNode,
-    role: CareerNode,
-    outcome: CareerNode,
-    default: StartNode
+// --- mappings ---
+// Map Class 10 node IDs to Class 12/Stream node IDs to bridge the flows
+const BRIDGE_NODES: Record<string, string> = {
+    'engineering-entrance': 'engineering',
+    'medical-entrance': 'medical',
+    'ca-foundation': 'professional', // approximate mapping
+    'law-entrance': 'law',
 };
 
-const nodeWidth = 280; // Increased for custom nodes
-const nodeHeight = 120; // Increased for custom nodes
+const nodeTypes = {
+    custom: CareerNode,
+    careerNode: CareerNode,
+    startNode: StartNode,
+    streamNode: StreamNode,
+    degreeNode: DegreeNode,
+};
 
-const getLayoutedElements = (nodes: Node[], edges: Edge[]) => {
+// Layout configurations
+const nodeWidth = 280;
+const nodeHeight = 160;
+
+const getLayoutedElements = (nodes: Node[], edges: Edge[], direction = 'LR') => {
     const dagreGraph = new dagre.graphlib.Graph();
     dagreGraph.setDefaultEdgeLabel(() => ({}));
-
-    dagreGraph.setGraph({ rankdir: 'LR' });
+    dagreGraph.setGraph({ rankdir: direction });
 
     nodes.forEach((node) => {
         dagreGraph.setNode(node.id, { width: nodeWidth, height: nodeHeight });
@@ -58,12 +65,12 @@ const getLayoutedElements = (nodes: Node[], edges: Edge[]) => {
 
     dagre.layout(dagreGraph);
 
-    const layoutedNodes = nodes.map((node) => {
+    const newNodes = nodes.map((node) => {
         const nodeWithPosition = dagreGraph.node(node.id);
         return {
             ...node,
-            targetPosition: 'left' as const,
-            sourcePosition: 'right' as const,
+            targetPosition: Position.Left,
+            sourcePosition: Position.Right,
             position: {
                 x: nodeWithPosition.x - nodeWidth / 2,
                 y: nodeWithPosition.y - nodeHeight / 2,
@@ -71,257 +78,315 @@ const getLayoutedElements = (nodes: Node[], edges: Edge[]) => {
         };
     });
 
-    return { nodes: layoutedNodes, edges };
+    return { nodes: newNodes, edges };
 };
 
-function DynamicFlow() {
-    const [nodes, setNodes, onNodesChange] = useNodesState(getInitialNodes('root-10'));
-    const [edges, setEdges, onEdgesChange] = useEdgesState<Edge>([]);
-    const [selectedNodeData, setSelectedNodeData] = useState<any>(null);
-    const [customQuery, setCustomQuery] = useState('');
+function CareerFlowContent({ courseName, stream }: { courseName: string, stream: string }) {
+    // --- State ---
+    const [activeTab, setActiveTab] = useState<'class10' | 'class12'>('class12');
+    const [searchQuery, setSearchQuery] = useState('');
     const [isGenerating, setIsGenerating] = useState(false);
-    const [selectedTab, setSelectedTab] = useState<'root-10' | 'root-12'>('root-10');
-    const { fitView, zoomIn, zoomOut } = useReactFlow();
+    const [selectedNodeData, setSelectedNodeData] = useState<any>(null);
+    const { toast } = useToast();
 
-    const handleTabChange = (value: string) => {
-        const newRootId = value as 'root-10' | 'root-12';
-        setSelectedTab(newRootId);
-        setNodes(getInitialNodes(newRootId));
-        setEdges([]);
+    // Core Graph State
+    const [nodes, setNodes, onNodesChange] = useNodesState<Node>([]);
+    const [edges, setEdges, onEdgesChange] = useEdgesState<Edge>([]);
+    const [expandedNodes, setExpandedNodes] = useState<Set<string>>(new Set());
+
+    const { fitView } = useReactFlow();
+
+    // --- Helpers ---
+
+    // Load initial state based on Tab
+    const loadInitialState = useCallback((type: 'class10' | 'class12') => {
+        let initialNodes: Node[] = [];
+        let initialEdges: Edge[] = [];
+
+        if (type === 'class10') {
+            // Load Class 10 Root + Stream Options (Level 1 expansion)
+            const root = careerFlows.class10.nodes.find(n => n.id === 'start');
+            if (root) {
+                initialNodes = [root];
+                // Auto-expand root for better UX
+                const rootEdges = careerFlows.class10.edges.filter(e => e.source === 'start');
+                const childIds = rootEdges.map(e => e.target);
+                const children = careerFlows.class10.nodes.filter(n => childIds.includes(n.id));
+
+                initialNodes = [...initialNodes, ...children];
+                initialEdges = [...rootEdges];
+                setExpandedNodes(new Set(['start']));
+            }
+        } else {
+            // Class 12 - Load Stream Roots
+            // We create a virtual "Class 12" root for better UX
+            const virtualRoot: Node = {
+                id: 'class12-root',
+                type: 'startNode',
+                position: { x: 0, y: 0 },
+                data: { label: 'After Class 12', subtitle: 'Select Stream', icon: '🎓' }
+            };
+
+            // Stream Starters - Reuse nodes from Class 10 flow to ensure ID connectivity
+            const sciStart = careerFlows.class10.nodes.find(n => n.id === 'science-stream');
+            const commStart = careerFlows.class10.nodes.find(n => n.id === 'commerce-stream');
+            const artsStart = careerFlows.class10.nodes.find(n => n.id === 'arts-stream');
+
+            initialNodes = [virtualRoot];
+            if (sciStart) initialNodes.push({ ...sciStart, position: { x: 0, y: 0 } });
+            if (commStart) initialNodes.push({ ...commStart, position: { x: 0, y: 0 } });
+            if (artsStart) initialNodes.push({ ...artsStart, position: { x: 0, y: 0 } });
+
+            // Virtual Edges - Connect Root to Streams
+            initialEdges = [
+                { id: 'e-root-sci', source: 'class12-root', target: 'science-stream', animated: true, style: { stroke: '#3b82f6' } },
+                { id: 'e-root-comm', source: 'class12-root', target: 'commerce-stream', animated: true, style: { stroke: '#f59e0b' } },
+                { id: 'e-root-arts', source: 'class12-root', target: 'arts-stream', animated: true, style: { stroke: '#8b5cf6' } },
+            ];
+
+
+
+            setExpandedNodes(new Set(['class12-root']));
+        }
+
+        const layouted = getLayoutedElements(initialNodes, initialEdges);
+        setNodes(layouted.nodes);
+        setEdges(layouted.edges);
         setTimeout(() => fitView({ duration: 800 }), 100);
-    };
+    }, [fitView, setNodes, setEdges]);
 
-    const onConnect = useCallback(
-        (params: Connection) => setEdges((eds) => addEdge(params, eds)),
-        [setEdges],
-    );
 
-    const onNodeClick = useCallback(
-        (event: React.MouseEvent, node: Node) => {
-            // 1. Show Insights Panel
-            setSelectedNodeData(node.data);
+    // Effect to handle Tab Change
+    useEffect(() => {
+        loadInitialState(activeTab);
+    }, [activeTab, loadInitialState]);
 
-            // 2. Expand Children (Progressive Disclosure)
-            const nodeId = node.id;
-            const nodeData = careerMap[nodeId];
 
-            if (!nodeData || !nodeData.children) return;
+    // Handle Node Click (Expansion + Details)
+    const onNodeClick = useCallback((event: React.MouseEvent, node: Node) => {
+        // 1. Show Details
+        setSelectedNodeData(node.data);
 
-            // Check if children are already present
-            const childrenIds = nodeData.children;
-            const firstChildId = childrenIds[0];
-            const isExpanded = nodes.some((n) => n.id === firstChildId);
+        // 2. Expand Logic
+        if (expandedNodes.has(node.id)) return; // Already expanded
 
-            if (isExpanded) return; // Already expanded
+        // Determine which flow/ID to look up
+        // Check for Bridge Mapping first
+        const lookupId = BRIDGE_NODES[node.id] || node.id;
 
-            // Create new nodes and edges
-            const newNodes: Node[] = childrenIds.map((childId) => {
-                const childData = careerMap[childId];
-                return {
-                    id: childId,
-                    type: childData.type, // Use the correct type for custom node rendering
-                    data: {
-                        subtitle: childData.subtitle || childData.description, // Fallback for nodes without subtitle
-                        growth: childData.demand, // Map demand to growth for CareerNode
-                        ...childData
-                    },
-                    position: { x: 0, y: 0 }, // Position will be fixed by dagre
-                };
+        let newEdges: Edge[] = [];
+        let newNodes: Node[] = [];
+
+        // Helper to search in a flow
+        const findChildren = (flow: any, sourceId: string) => {
+            const relevantEdges = flow.edges.filter((e: Edge) => e.source === sourceId);
+            const targetIds = relevantEdges.map((e: Edge) => e.target);
+            const relevantNodes = flow.nodes.filter((n: Node) => targetIds.includes(n.id));
+            return { edges: relevantEdges, nodes: relevantNodes };
+        };
+
+        // Search in ALL flows for children (robustness)
+        Object.values(careerFlows).forEach(flow => {
+            const result = findChildren(flow, lookupId);
+            // If we used a bridge ID, we need to rewrite the source of the new edges to match the CLICKED node ID
+            if (lookupId !== node.id && result.edges.length > 0) {
+                const remappedEdges = result.edges.map((e: Edge) => ({
+                    ...e,
+                    id: `e-${node.id}-${e.target}`, // New unique ID
+                    source: node.id // Connect to the actual clicked node
+                }));
+                newEdges = [...newEdges, ...remappedEdges];
+            } else {
+                newEdges = [...newEdges, ...result.edges];
+            }
+            newNodes = [...newNodes, ...result.nodes];
+        });
+
+        // Valid children found?
+        if (newNodes.length > 0) {
+            // Deduplicate nodes (just in case)
+            const uniqueNewNodes = newNodes.filter(n => !nodes.some(existing => existing.id === n.id));
+
+            // Add to graph
+            const updatedNodes = [...nodes, ...uniqueNewNodes];
+            const updatedEdges = [...edges, ...newEdges];
+
+            // Re-layout
+            const layouted = getLayoutedElements(updatedNodes, updatedEdges);
+            setNodes(layouted.nodes);
+            setEdges(layouted.edges);
+            setExpandedNodes(prev => new Set(prev).add(node.id));
+
+            // Fit view to potentially seeing new nodes
+            setTimeout(() => fitView({ duration: 800, minZoom: 0.5 }), 200);
+        } else {
+            // No children found - maybe a leaf node
+            toast({
+                title: "Reached the end!",
+                description: "This is a final node. Check details in the panel.",
             });
+        }
 
-            const newEdges: Edge[] = childrenIds.map((childId) => ({
-                id: `${nodeId}-${childId}`,
-                source: nodeId,
-                target: childId,
-                animated: true,
-                style: { stroke: '#94a3b8' },
-            }));
+    }, [nodes, edges, expandedNodes, setNodes, setEdges, fitView]);
 
-            const { nodes: layoutedNodes, edges: layoutedEdges } = getLayoutedElements(
-                [...nodes, ...newNodes],
-                [...edges, ...newEdges]
-            );
+    // Handle AI Search
+    const handleAISearch = async () => {
+        if (!searchQuery.trim()) return;
 
-            setNodes(layoutedNodes as Node[]);
-            setEdges(layoutedEdges);
-
-            // Smoothly fit view to include new nodes
-            setTimeout(() => {
-                fitView({ duration: 800, padding: 0.2 });
-            }, 100);
-        },
-        [nodes, edges, setNodes, setEdges, fitView]
-    );
-
-    const handleReset = () => {
-        setNodes(getInitialNodes(selectedTab));
-        setEdges([]);
-        setSelectedNodeData(null);
-        setTimeout(() => fitView({ duration: 800 }), 100);
-    };
-
-    const handleCustomGenerate = async () => {
-        if (!customQuery.trim()) return;
         setIsGenerating(true);
         try {
-            const result = await getCustomCareerPath(customQuery, 'Class 12 Student');
+            const context = activeTab === 'class10' ? "Class 10 Student" : "Class 12 Student";
+            const result = await getCustomCareerPath(searchQuery, context);
 
-            if (result && result.nodes && result.nodes.length > 0) {
-                // Create a chain of nodes
-                const aiNodes: Node[] = result.nodes.map((node: any, index: number) => ({
-                    id: node.id,
-                    data: { ...node, label: node.label },
+            if (result && result.nodes) {
+                // Transform AI result to React Flow format
+                const aiNodes: Node[] = result.nodes.map((n: any, idx: number) => ({
+                    id: n.id,
+                    type: n.type === 'role' || n.type === 'outcome' ? 'careerNode' : 'degreeNode',
                     position: { x: 0, y: 0 },
-                    className: '', // Custom node handles styling
-                    type: node.type || 'degree', // Default to degree if type missing from AI
+                    data: {
+                        label: n.label,
+                        subtitle: n.type,
+                        description: n.description,
+                        icon: n.icon || '✨',
+                        salary: n.salary,
+                        demand: n.demand
+                    }
                 }));
 
-                // Connect them sequentially
                 const aiEdges: Edge[] = [];
                 for (let i = 0; i < aiNodes.length - 1; i++) {
                     aiEdges.push({
-                        id: `ai-${i}-${i + 1}`,
+                        id: `e-${i}-${i + 1}`,
                         source: aiNodes[i].id,
                         target: aiNodes[i + 1].id,
                         animated: true,
-                        style: { stroke: '#a855f7' },
+                        style: { stroke: '#10b981', strokeWidth: 2 },
+                        markerEnd: { type: MarkerType.ArrowClosed }
                     });
                 }
 
-                // If a node was selected, connect the first AI node to it
-                if (selectedNodeData && selectedNodeData.id) {
-                    aiEdges.unshift({
-                        id: `connect-${selectedNodeData.id}-${aiNodes[0].id}`,
-                        source: selectedNodeData.id,
-                        target: aiNodes[0].id,
-                        animated: true,
-                        style: { stroke: '#a855f7', strokeDasharray: '5,5' },
-                    });
-                }
+                // Layout
+                const layouted = getLayoutedElements(aiNodes, aiEdges, 'LR');
+                setNodes(layouted.nodes);
+                setEdges(layouted.edges);
+                setExpandedNodes(new Set()); // Reset mapping state
 
-                // Add to graph
-                const { nodes: layoutedNodes, edges: layoutedEdges } = getLayoutedElements(
-                    [...nodes, ...aiNodes],
-                    [...edges, ...aiEdges]
-                );
-
-                setNodes(layoutedNodes as Node[]);
-                setEdges(layoutedEdges);
-                setCustomQuery('');
-
-                setTimeout(() => fitView({ duration: 800, padding: 0.2 }), 100);
+                toast({
+                    title: "Path Generated",
+                    description: `Showing career path for ${searchQuery}`,
+                });
+                setTimeout(() => fitView({ duration: 800 }), 100);
             }
         } catch (error) {
-            console.error("Failed to generate path", error);
+            toast({
+                title: "Generation Failed",
+                description: "Could not generate path. Please try again.",
+                variant: "destructive"
+            });
+            console.error(error);
         } finally {
             setIsGenerating(false);
         }
     };
 
     return (
-        <div className="h-[80vh] w-full bg-slate-50 dark:bg-slate-950 rounded-2xl border relative overflow-hidden">
-            <ReactFlow
-                nodes={nodes}
-                edges={edges}
-                onNodesChange={onNodesChange}
-                onEdgesChange={onEdgesChange}
-                onConnect={onConnect}
-                onNodeClick={onNodeClick}
-                nodeTypes={nodeTypes}
-                fitView
-                className="bg-slate-50 dark:bg-slate-950"
-            >
-                <Background color="#94a3b8" gap={20} size={1} className="opacity-20" />
-                <Controls showInteractive={false} />
+        <div className="flex flex-col gap-4 w-full h-full">
+            {/* Controls Bar */}
+            <div className="flex flex-col md:flex-row items-center justify-between gap-4 bg-white dark:bg-slate-900 border rounded-xl p-3 shadow-sm">
 
-                {/* Tab Selector - Responsive Width */}
-                <Panel position="top-center" className="bg-white/90 dark:bg-slate-900/90 backdrop-blur-md p-1.5 rounded-xl border shadow-lg mx-auto mt-4 w-[95vw] max-w-[350px]">
-                    <Tabs value={selectedTab} onValueChange={handleTabChange} className="w-full">
-                        <TabsList className="grid grid-cols-2 h-auto gap-1 bg-transparent w-full">
-                            <TabsTrigger value="root-10" className="text-[10px] md:text-xs font-bold px-1 py-2">🎓 After Class 10</TabsTrigger>
-                            <TabsTrigger value="root-12" className="text-[10px] md:text-xs font-bold px-1 py-2">🏫 After Class 12</TabsTrigger>
-                        </TabsList>
-                    </Tabs>
-                </Panel>
+                {/* Toggles */}
+                <div className="bg-slate-100 dark:bg-slate-800 p-1 rounded-lg flex items-center">
+                    <button
+                        onClick={() => setActiveTab('class10')}
+                        className={`px-4 py-1.5 text-sm font-medium rounded-md transition-all ${activeTab === 'class10' ? 'bg-white dark:bg-slate-700 shadow-sm text-primary' : 'text-slate-500 hover:text-slate-700'}`}
+                    >
+                        🎓 After Class 10
+                    </button>
+                    <button
+                        onClick={() => setActiveTab('class12')}
+                        className={`px-4 py-1.5 text-sm font-medium rounded-md transition-all ${activeTab === 'class12' ? 'bg-white dark:bg-slate-700 shadow-sm text-primary' : 'text-slate-500 hover:text-slate-700'}`}
+                    >
+                        🏛️ After Class 12
+                    </button>
+                </div>
 
-                <Panel position="top-right" className="flex gap-2 mt-16 md:mt-0">
-                    <Button variant="outline" size="icon" onClick={handleReset} title="Reset Flow" className="h-8 w-8 md:h-10 md:w-10">
-                        <RotateCcw className="h-3 w-3 md:h-4 md:w-4" />
-                    </Button>
-                </Panel>
-
-                {/* Desktop Search Panel (Top Left) */}
-                <Panel position="top-left" className="hidden md:block bg-white/90 dark:bg-slate-900/90 backdrop-blur p-4 rounded-xl border shadow-sm w-80">
-                    <h3 className="font-bold text-primary flex items-center gap-2 mb-2">
-                        <Sparkles className="h-4 w-4" />
-                        Dynamic Explorer
-                    </h3>
-                    <p className="text-xs text-muted-foreground mb-4">
-                        Click nodes to expand. Or type a dream career below to generate a custom path!
-                    </p>
-
-                    <div className="flex gap-2">
+                {/* AI Search */}
+                <div className="flex items-center gap-2 w-full md:w-auto">
+                    <div className="relative w-full md:w-[300px]">
+                        <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
                         <Input
-                            placeholder="e.g. Space Biologist"
-                            value={customQuery}
-                            onChange={(e) => setCustomQuery(e.target.value)}
-                            onKeyDown={(e) => e.key === 'Enter' && handleCustomGenerate()}
-                            className="h-8 text-xs"
+                            placeholder="e.g. Space Biologist, AI Ethicist"
+                            className="pl-9 bg-slate-50 dark:bg-slate-800 border-none"
+                            value={searchQuery}
+                            onChange={(e) => setSearchQuery(e.target.value)}
+                            onKeyDown={(e) => e.key === 'Enter' && handleAISearch()}
                         />
-                        <Button
-                            size="sm"
-                            className="h-8 w-8 p-0"
-                            onClick={handleCustomGenerate}
-                            disabled={isGenerating}
-                        >
-                            {isGenerating ? <Loader2 className="h-3 w-3 animate-spin" /> : <Search className="h-3 w-3" />}
-                        </Button>
                     </div>
-                </Panel>
+                    <Button
+                        size="icon"
+                        onClick={handleAISearch}
+                        disabled={isGenerating}
+                        className="bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white shadow-lg"
+                    >
+                        {isGenerating ? <RefreshCw className="h-4 w-4 animate-spin" /> : <Sparkles className="h-4 w-4" />}
+                    </Button>
+                </div>
+            </div>
 
-                {/* Mobile Search Panel (Bottom Center) */}
-                <Panel position="bottom-center" className="md:hidden bg-white/95 dark:bg-slate-900/95 backdrop-blur p-3 rounded-t-xl border-t border-x shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.1)] w-full mb-0 pb-6">
-                    <div className="flex flex-col gap-2 w-full">
-                        <div className="flex items-center justify-between">
-                            <h3 className="font-bold text-primary flex items-center gap-2 text-sm">
-                                <Sparkles className="h-3 w-3" />
-                                AI Career Path
-                            </h3>
-                        </div>
-                        <div className="flex gap-2 w-full">
-                            <Input
-                                placeholder="Type dream career..."
-                                value={customQuery}
-                                onChange={(e) => setCustomQuery(e.target.value)}
-                                onKeyDown={(e) => e.key === 'Enter' && handleCustomGenerate()}
-                                className="h-9 text-sm flex-1"
-                            />
-                            <Button
-                                size="sm"
-                                className="h-9 w-9 p-0 shrink-0"
-                                onClick={handleCustomGenerate}
-                                disabled={isGenerating}
-                            >
-                                {isGenerating ? <Loader2 className="h-4 w-4 animate-spin" /> : <Search className="h-4 w-4" />}
-                            </Button>
-                        </div>
-                    </div>
-                </Panel>
-            </ReactFlow>
+            {/* Main Canvas */}
+            <div className="h-[600px] w-full border rounded-xl bg-slate-50 dark:bg-slate-950 overflow-hidden relative group shadow-inner">
 
-            {/* Smart Insights Panel */}
-            <SmartInsightsPanel
-                nodeData={selectedNodeData}
-                onClose={() => setSelectedNodeData(null)}
-            />
+                {/* Dynamic Indicator */}
+                <div className="absolute top-4 left-4 z-10 bg-white/90 dark:bg-black/90 backdrop-blur border px-3 py-1.5 rounded-full flex items-center gap-2 shadow-sm text-xs font-medium text-emerald-600">
+                    <Zap className="h-3 w-3 fill-emerald-600" />
+                    Dynamic Explorer Active
+                </div>
+
+                <div className="absolute top-4 right-4 z-10 flex gap-2">
+                    <Button size="icon" variant="secondary" onClick={() => fitView({ duration: 800 })} className="h-8 w-8">
+                        <Maximize className="h-4 w-4" />
+                    </Button>
+                </div>
+
+                <ReactFlow
+                    nodes={nodes}
+                    edges={edges}
+                    onNodesChange={onNodesChange}
+                    onEdgesChange={onEdgesChange}
+                    onNodeClick={onNodeClick}
+                    nodeTypes={nodeTypes as any}
+                    fitView
+                    attributionPosition="bottom-right"
+                    className="bg-slate-50 dark:bg-slate-950"
+                >
+                    <Background gap={20} size={1} color="#94a3b8" className="opacity-20" />
+                </ReactFlow>
+
+                {/* Info Panel Integration */}
+                <SmartInsightsPanel
+                    nodeData={selectedNodeData}
+                    onClose={() => setSelectedNodeData(null)}
+                />
+            </div>
+
+            {/* Legend / Tip */}
+            <div className="flex items-center justify-center gap-2 text-xs text-muted-foreground">
+                <div className="flex items-center gap-1">
+                    <span className="w-2 h-2 rounded-full bg-blue-500"></span> Click nodes to expand
+                </div>
+                <div className="flex items-center gap-1">
+                    <span className="w-2 h-2 rounded-full bg-emerald-500"></span> Type dream career for custom path
+                </div>
+            </div>
         </div>
     );
 }
 
-export function DynamicCareerFlowUpdated() {
+export function DynamicCareerFlow(props: { courseName: string, stream: string }) {
     return (
         <ReactFlowProvider>
-            <DynamicFlow />
+            <CareerFlowContent {...props} />
         </ReactFlowProvider>
     );
 }

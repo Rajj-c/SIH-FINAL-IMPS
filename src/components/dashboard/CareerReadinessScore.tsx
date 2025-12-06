@@ -17,34 +17,31 @@ interface CareerReadinessScoreProps {
     };
 }
 
+import { useTranslations } from 'next-intl';
+
 export function CareerReadinessScore({ score, breakdown }: CareerReadinessScoreProps) {
+    const t = useTranslations('Dashboard.readiness');
     const [displayScore, setDisplayScore] = useState(0);
     const controls = useAnimationControls();
 
-    // Count-up animation for score
     useEffect(() => {
-        let startTime: number;
-        const duration = 2000; // 2 seconds
-        const startScore = 0;
-        const endScore = score;
+        // Animate score from 0 to target
+        const duration = 1500; // ms
+        const frames = 60;
+        const increment = score / (duration / (1000 / frames));
 
-        const animate = (currentTime: number) => {
-            if (!startTime) startTime = currentTime;
-            const elapsed = currentTime - startTime;
-            const progress = Math.min(elapsed / duration, 1);
-
-            // Easing function (easeOutCubic)
-            const easeProgress = 1 - Math.pow(1 - progress, 3);
-            const currentScore = Math.floor(startScore + (endScore - startScore) * easeProgress);
-
-            setDisplayScore(currentScore);
-
-            if (progress < 1) {
-                requestAnimationFrame(animate);
+        let current = 0;
+        const timer = setInterval(() => {
+            current += increment;
+            if (current >= score) {
+                setDisplayScore(score);
+                clearInterval(timer);
+            } else {
+                setDisplayScore(Math.floor(current));
             }
-        };
+        }, 1000 / frames);
 
-        requestAnimationFrame(animate);
+        return () => clearInterval(timer);
     }, [score]);
 
     // Pulse animation for high scores
@@ -66,18 +63,18 @@ export function CareerReadinessScore({ score, breakdown }: CareerReadinessScoreP
     ];
 
     const getScoreLabel = (score: number) => {
-        if (score >= 80) return { text: 'Path Master! 🏆', color: 'text-green-600', description: 'You\'re crushing it!' };
-        if (score >= 60) return { text: 'Rising Explorer 🚀', color: 'text-yellow-600', description: 'Great progress!' };
-        if (score >= 40) return { text: 'Career Seeker 🔍', color: 'text-orange-600', description: 'Keep going!' };
-        return { text: 'Just Starting 🌱', color: 'text-red-600', description: 'Every journey begins somewhere!' };
+        if (score >= 80) return { text: t('scoreLabel.master'), color: 'text-green-600', description: t('scoreLabel.masterDesc') };
+        if (score >= 60) return { text: t('scoreLabel.explorer'), color: 'text-yellow-600', description: t('scoreLabel.explorerDesc') };
+        if (score >= 40) return { text: t('scoreLabel.seeker'), color: 'text-orange-600', description: t('scoreLabel.seekerDesc') };
+        return { text: t('scoreLabel.starter'), color: 'text-red-600', description: t('scoreLabel.starterDesc') };
     };
 
     const scoreLabel = getScoreLabel(score);
 
     const suggestions = [];
-    if (!breakdown.quizCompleted) suggestions.push({ text: 'Complete the aptitude quiz', link: '/quiz', points: '+30 points' });
-    if (breakdown.savedItemsCount < 3) suggestions.push({ text: 'Save colleges and career paths', link: '/colleges', points: '+20 points' });
-    if (!breakdown.profileComplete) suggestions.push({ text: 'Complete your profile', link: '/profile', points: '+20 points' });
+    if (!breakdown.quizCompleted) suggestions.push({ text: t('suggestions.quiz'), link: '/quiz', points: '+30 points' });
+    if (breakdown.savedItemsCount < 3) suggestions.push({ text: t('suggestions.save'), link: '/colleges', points: '+20 points' });
+    if (!breakdown.profileComplete) suggestions.push({ text: t('suggestions.profile'), link: '/profile', points: '+20 points' });
 
     const completionPercentage = [
         breakdown.quizCompleted,
@@ -102,12 +99,12 @@ export function CareerReadinessScore({ score, breakdown }: CareerReadinessScoreP
                         >
                             <Award className="h-5 w-5 text-primary" />
                         </motion.div>
-                        Career Readiness Level
+                        {t('title')}
                     </CardTitle>
                     <TrendingUp className="h-5 w-5 text-muted-foreground" />
                 </div>
                 <p className="text-sm text-muted-foreground mt-1">
-                    {completionPercentage}/3 milestones completed
+                    {t('milestones', { count: completionPercentage })}
                 </p>
             </CardHeader>
             <CardContent className="pt-6">
@@ -188,7 +185,7 @@ export function CareerReadinessScore({ score, breakdown }: CareerReadinessScoreP
                                 animate={{ opacity: 1 }}
                                 transition={{ delay: 0.8 }}
                             >
-                                <p className="text-sm font-semibold">Level up:</p>
+                                <p className="text-sm font-semibold">{t('levelUp')}</p>
                                 <ul className="space-y-1.5">
                                     {suggestions.map((suggestion, idx) => (
                                         <motion.li
@@ -220,7 +217,7 @@ export function CareerReadinessScore({ score, breakdown }: CareerReadinessScoreP
                             >
                                 <p className="text-sm text-green-800 dark:text-green-200 font-medium flex items-center gap-2">
                                     <span className="text-lg">🎉</span>
-                                    <span>Outstanding! You're fully prepared to explore your career options!</span>
+                                    <span>{t('outstanding')}</span>
                                 </p>
                             </motion.div>
                         )}

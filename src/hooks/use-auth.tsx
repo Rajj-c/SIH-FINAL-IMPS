@@ -44,6 +44,7 @@ interface AuthContextType {
   quizAnswers: Record<string, string> | null;
   parentQuizAnswers: Record<string, string> | null;
   updateQuizAnswers: (answers: Record<string, string>) => Promise<void>;
+  saveQuizResult: (result: any) => Promise<void>;
   updateParentQuizAnswers: (answers: Record<string, string>) => Promise<void>;
   resetQuizAnswers: () => Promise<void>;
   updateUserProfile: (data: Partial<Omit<UserProfile, 'uid' | 'email'>>) => Promise<void>;
@@ -69,6 +70,7 @@ const AuthContext = createContext<AuthContextType>({
   quizAnswers: null,
   parentQuizAnswers: null,
   updateQuizAnswers: async () => { },
+  saveQuizResult: async () => { },
   updateParentQuizAnswers: async () => { },
   resetQuizAnswers: async () => { },
   updateUserProfile: async () => { },
@@ -164,6 +166,26 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     }
   }, [user, userProfile]);
 
+  const saveQuizResult = useCallback(async (result: any) => {
+    if (user && userProfile?.userType === 'student') {
+      try {
+        await fbUpdateUserProfile(user.uid, { quizResult: result });
+        setUserProfile(prev => prev ? { ...prev, quizResult: result } : null);
+      } catch (error) {
+        console.error("Failed to save quiz result:", error);
+      }
+    } else if (userProfile?.userType === 'student') { // Guest student
+      setUserProfile(prev => prev ? { ...prev, quizResult: result } : null);
+      // Also update session storage for guest persistence
+      const currentGuest = sessionStorage.getItem('guestProfile');
+      if (currentGuest) {
+        const parsed = JSON.parse(currentGuest);
+        parsed.quizResult = result;
+        sessionStorage.setItem('guestProfile', JSON.stringify(parsed));
+      }
+    }
+  }, [user, userProfile]);
+
   const updateParentQuizAnswers = useCallback(async (answers: Record<string, string>) => {
     if (user && userProfile?.userType === 'parent') {
       try {
@@ -183,16 +205,27 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     if (user && userProfile?.userType === 'student') {
       try {
         // Use deleteField() to properly remove the field from Firestore
-        await fbUpdateUserProfile(user.uid, { quizAnswers: deleteField() as any });
+        await fbUpdateUserProfile(user.uid, {
+          quizAnswers: deleteField() as any,
+          quizResult: deleteField() as any
+        });
         setQuizAnswers(null);
-        setUserProfile(prev => prev ? { ...prev, quizAnswers: undefined } : null);
+        setUserProfile(prev => prev ? { ...prev, quizAnswers: undefined, quizResult: undefined } : null);
       } catch (error) {
         console.error("Failed to reset quiz answers:", error);
         throw error;
       }
     } else if (userProfile?.userType === 'student') { // Guest student
       setQuizAnswers(null);
-      setUserProfile(prev => prev ? { ...prev, quizAnswers: undefined } : null);
+      setUserProfile(prev => prev ? { ...prev, quizAnswers: undefined, quizResult: undefined } : null);
+      // Clear from session storage
+      const currentGuest = sessionStorage.getItem('guestProfile');
+      if (currentGuest) {
+        const parsed = JSON.parse(currentGuest);
+        delete parsed.quizAnswers;
+        delete parsed.quizResult;
+        sessionStorage.setItem('guestProfile', JSON.stringify(parsed));
+      }
     }
   }, [user, userProfile]);
 
@@ -264,21 +297,33 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   };
 
   const handleLogout = async () => {
-    if (user) {
-      await logOut();
+    try {
+      if (user) {
+        await logOut();
+      }
+    } catch (error) {
+      console.error("Logout error:", error);
+    } finally {
+      clearState();
+      router.push('/');
+      router.refresh(); // Force refresh to ensure UI updates
     }
-    clearState();
-    router.push('/');
   }
 
   useEffect(() => {
     const guestProfileRaw = sessionStorage.getItem('guestProfile');
     if (guestProfileRaw) {
-      setUserProfile(JSON.parse(guestProfileRaw));
+      const parsedProfile = JSON.parse(guestProfileRaw);
+      setUserProfile(parsedProfile);
+      if (parsedProfile.quizAnswers) {
+        setQuizAnswers(parsedProfile.quizAnswers);
+      }
+      if (parsedProfile.parentQuizAnswers) {
+        setParentQuizAnswers(parsedProfile.parentQuizAnswers);
+      }
     }
 
     const unsubscribe = onAuthStateChangeWrapper(async (authUser) => {
-      console.log('Auth state changed:', authUser?.email || authUser?.phoneNumber);
       if (authUser) { // Removed emailVerified check for Phone/Google auth compatibility
         // For email/password, we might still want to check emailVerified, but for Phone it's always verified.
         // Google is also usually verified.
@@ -295,9 +340,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
         sessionStorage.removeItem('guestProfile');
         setUser(authUser);
-        console.log('Fetching user profile...');
         const profile = await getUserProfile(authUser.uid);
-        console.log('User profile fetched:', profile);
         setUserProfile(profile);
         if (profile?.userType === 'student') {
           setQuizAnswers(profile?.quizAnswers || null);
@@ -307,12 +350,10 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
         // Load saved items from Firestore
         try {
-          console.log('Fetching saved items...');
           const [colleges, paths] = await Promise.all([
             getSavedColleges(authUser.uid),
             getSavedCareerPaths(authUser.uid),
           ]);
-          console.log('Saved items fetched');
           setSavedColleges(colleges);
           setSavedCareerPaths(paths);
         } catch (error) {
@@ -323,7 +364,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
           clearState();
         }
       }
-      console.log('Setting loading to false');
       setLoading(false);
     });
 
@@ -397,6 +437,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     quizAnswers,
     parentQuizAnswers,
     updateQuizAnswers,
+    saveQuizResult,
     updateParentQuizAnswers,
     resetQuizAnswers,
     updateUserProfile,

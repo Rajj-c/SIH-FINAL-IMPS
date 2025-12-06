@@ -3,7 +3,11 @@ import { questionBankFor10th, questionBankFor12th } from './quiz/question-bank';
 import type { College, QuizData, TimelineEvent, ParentQuizQuestion } from './types';
 
 // Reexport colleges from new-colleges
-export const colleges: College[] = additionalColleges;
+// Reexport colleges from new-colleges - FILTERED for Government Only
+export const colleges: College[] = additionalColleges.filter(college =>
+    college.type.toLowerCase().includes('government') ||
+    college.type.toLowerCase().includes('public')
+);
 
 // Quiz data for students
 // QuestionBank objects have baseline and deepdive properties

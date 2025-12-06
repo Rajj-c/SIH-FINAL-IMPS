@@ -14,6 +14,11 @@ import { z } from 'genkit';
 const StreamSuggestionInputSchema = z.object({
   quizAnswers: z.string().describe("A JSON string containing the user's answers categorized by aptitude, preference, stream, and motivation."),
   classLevel: z.enum(['10', '12']).describe("The student's class level."),
+  fixedRecommendations: z.array(z.object({
+    courseName: z.string(),
+    stream: z.string(),
+    personalityType: z.string(),
+  })).optional().describe("Deterministic recommendations (Top 3) from the rule-based engine. If provided, the AI MUST align its top recommendations with these."),
 });
 export type StreamSuggestionInput = z.infer<typeof StreamSuggestionInputSchema>;
 
@@ -76,6 +81,20 @@ You will receive quiz answers from a student who has completed either class 10 o
 - **Stream Interests**: Engineering, medical, business, creative, or vocational inclinations
 
 **Student's Class Level:** {{{classLevel}}}
+
+{{#if fixedRecommendations}}
+**CONSTRAINT - MANDATORY TOP 3 RECOMMENDATIONS:**
+The rule-based engine has already determined the best fit. You MUST align your analysis with these specific courses in this exact order:
+
+{{#each fixedRecommendations}}
+Recommendation #{{@index}}:
+- **Career Path:** {{this.courseName}}
+- **Stream:** {{this.stream}}
+- **Personality Code:** {{this.personalityType}}
+{{/each}}
+
+Your task is to generate the *details* (Pros, Cons, Roadmap, Market Insights) for THESE specific recommendations as your Top 3. Do NOT suggest different paths for the top 3 slots.
+{{/if}}
 
 **Quiz Answers:**
 {{{quizAnswers}}}
@@ -154,6 +173,8 @@ Synthesize everything into actionable advice. Be encouraging but realistic.
 **IMPORTANT GUIDELINES:**
 - Be specific to the Indian education and job market
 - Use actual college names (IITs, NITs, AIIMS, etc.)
+- **CRITICAL CONSTRAINT**: You must **ONLY** recommend **Government/Public** colleges/universities (e.g., IITs, NITs, IIMs, AIIMS, Central Universities like DU, BHU, JNU).
+- **DO NOT** recommend private universities (e.g., NO Christ University, NO Symbiosis, NO Manipal, NO Amity, NO VIT, NO private colleges).
 - Provide realistic salary ranges based on 2024-2025 data
 - Consider affordability and accessibility
 - Be culturally sensitive and practical

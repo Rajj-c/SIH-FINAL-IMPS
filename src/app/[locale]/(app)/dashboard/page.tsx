@@ -6,7 +6,7 @@ import { RecommendedStream } from '@/components/dashboard/RecommendedStream';
 import { TopCareerPaths } from '@/components/dashboard/TopCareerPaths';
 import { NearbyColleges } from '@/components/dashboard/NearbyColleges';
 import { OneStopAdvisorHero } from '@/components/dashboard/OneStopAdvisorHero';
-import { JourneyTimeline } from '@/components/dashboard/JourneyTimeline';
+import { JourneyMap } from '@/components/dashboard/JourneyMap';
 import { QuickActionsGrid } from '@/components/dashboard/QuickActionsGrid';
 import { useAuth } from '@/hooks/use-auth';
 import { getCareerRecommendation } from '@/lib/career-recommendations';
@@ -30,9 +30,12 @@ import { useRouter } from 'next/navigation';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { AlertCircle } from 'lucide-react';
 
+import { useTranslations } from 'next-intl';
+
 export default function DashboardPage() {
   const { userProfile, savedColleges, savedCareerPaths, quizAnswers, loading } = useAuth();
   const router = useRouter();
+  const t = useTranslations('Dashboard');
 
   // SECURITY: Validate user type - only students can access this page
   useEffect(() => {
@@ -98,9 +101,10 @@ export default function DashboardPage() {
       : undefined;
 
     // Get career recommendation
-    const rec = getCareerRecommendation(quizAnswers, userProfile, riasecScores);
-    if (!rec) return null;
+    const recs = getCareerRecommendation(quizAnswers, userProfile, riasecScores);
+    if (!recs || recs.length === 0) return null;
 
+    const rec = recs[0];
     const course = getCourseById(rec.courseId);
     if (!course) return null;
 
@@ -147,29 +151,29 @@ export default function DashboardPage() {
       <div className="container mx-auto px-4 py-8 max-w-2xl">
         <Alert variant="destructive">
           <AlertCircle className="h-4 w-4" />
-          <AlertTitle>Access Denied</AlertTitle>
+          <AlertTitle>{t('accessDenied')}</AlertTitle>
           <AlertDescription>
-            This is the Student Dashboard. Parents should use the Parent Zone. Redirecting...
+            {t('accessDeniedDesc')}
           </AlertDescription>
         </Alert>
       </div>
     );
   }
 
-  const quizTaken = !!quizAnswers && Object.keys(quizAnswers).length > 0;
+  const quizTaken = !!quizAnswers && Object.values(quizAnswers).filter(a => a && String(a).trim() !== '').length >= 8;
 
   return (
     <div className="space-y-8">
       {/* Hero Section */}
       <div className="mb-8">
         <h1 className="text-4xl font-bold font-headline bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent">
-          Welcome back, {userProfile?.name || 'Student'}!
+          {t('welcome', { name: userProfile?.name || 'Student' })}
         </h1>
         <p className="text-muted-foreground mt-2 text-lg flex items-center gap-2">
-          <span>Your personalized career guidance dashboard</span>
+          <span>{t('subtitle')}</span>
           {quizTaken && (
             <span className="text-sm bg-primary/10 text-primary px-2 py-1 rounded-full font-medium">
-              🔥 Active learner
+              🔥 {t('activeLearner')}
             </span>
           )}
         </p>
@@ -182,11 +186,7 @@ export default function DashboardPage() {
         lastAccessed={quizTaken ? '2 hours ago' : undefined}
       />
 
-      {/* Journey Timeline */}
-      <JourneyTimeline
-        currentStage={quizTaken ? 'advisor' : 'quiz'}
-        hasCompletedQuiz={quizTaken}
-      />
+
 
       {/* Career Readiness Score */}
       <CareerReadinessScore
@@ -201,14 +201,22 @@ export default function DashboardPage() {
       {/* Personalized Insights */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {recommendedPaths.length > 0 && <TopCareerPaths paths={recommendedPaths} />}
-        {relevantColleges.length > 0 && (
-          <NearbyColleges colleges={relevantColleges} userState={userProfile.state} />
-        )}
+        {/* NearbyColleges removed as per Phase 2 plan */}
       </div>
 
       {/* Quick Actions with Featured One-Stop Advisor */}
       <QuickActionsGrid
         savedItemsCount={savedColleges.length + savedCareerPaths.length}
+        hasCompletedQuiz={quizTaken}
+      />
+
+      {/* Journey Map */}
+      <JourneyMap
+        currentStage={
+          quizTaken
+            ? (savedColleges.length > 0 || savedCareerPaths.length > 0 ? 'decision' : 'advisor')
+            : 'quiz'
+        }
         hasCompletedQuiz={quizTaken}
       />
     </div>

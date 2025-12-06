@@ -17,18 +17,22 @@ interface OneStopAdvisorHeroProps {
     lastAccessed?: string;
 }
 
+import { useTranslations } from 'next-intl';
+
 export function OneStopAdvisorHero({ hasCompletedQuiz, topRecommendation, lastAccessed }: OneStopAdvisorHeroProps) {
+    const t = useTranslations('Dashboard.oneStopHero');
+
     if (hasCompletedQuiz && topRecommendation) {
         return (
             <Card className="relative overflow-hidden border-2 border-primary/20 shadow-2xl">
-                {/* Gradient Background */}
-                <div className="absolute inset-0 bg-gradient-to-br from-primary/10 via-primary/5 to-transparent" />
+                {/* Subtle Background */}
+                <div className="absolute inset-0 bg-primary/5" />
 
                 {/* Featured Badge */}
                 <div className="absolute top-4 right-4 z-10">
                     <Badge className="bg-gradient-to-r from-primary to-primary/80 text-white px-3 py-1">
                         <Sparkles className="h-3 w-3 mr-1" />
-                        RECOMMENDED FOR YOU
+                        {t('badge')}
                     </Badge>
                 </div>
 
@@ -47,11 +51,11 @@ export function OneStopAdvisorHero({ hasCompletedQuiz, topRecommendation, lastAc
                             <Sparkles className="h-6 w-6 text-primary" />
                         </motion.div>
                         <CardTitle className="text-2xl md:text-3xl font-headline">
-                            Your Personalized One-Stop Career Advisor
+                            {t('title')}
                         </CardTitle>
                     </div>
                     <CardDescription className="text-base mt-2">
-                        Based on your quiz results, we've prepared your complete career guidance package!
+                        {t('desc')}
                     </CardDescription>
                 </CardHeader>
 
@@ -60,13 +64,13 @@ export function OneStopAdvisorHero({ hasCompletedQuiz, topRecommendation, lastAc
                     <div className="bg-gradient-to-r from-primary/5 to-primary/10 rounded-lg p-6 border border-primary/20">
                         <div className="flex items-start justify-between mb-3">
                             <div>
-                                <p className="text-sm text-muted-foreground mb-1">YOUR TOP RECOMMENDATION</p>
+                                <p className="text-sm text-muted-foreground mb-1">{t('topRec')}</p>
                                 <h3 className="text-2xl font-bold">{topRecommendation.name}</h3>
                                 <p className="text-sm text-muted-foreground mt-1">{topRecommendation.stream} Stream</p>
                             </div>
                             <div className="text-right">
                                 <div className="text-3xl font-bold text-primary">{topRecommendation.matchScore}%</div>
-                                <p className="text-xs text-muted-foreground">Match</p>
+                                <p className="text-xs text-muted-foreground">{t('match')}</p>
                             </div>
                         </div>
 
@@ -83,15 +87,15 @@ export function OneStopAdvisorHero({ hasCompletedQuiz, topRecommendation, lastAc
 
                     {/* Features Grid */}
                     <div>
-                        <p className="text-sm font-semibold mb-3">What You'll Get:</p>
+                        <p className="text-sm font-semibold mb-3">{t('whatYouGet')}</p>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                             {[
-                                { icon: Target, text: 'Personalized stream/course recommendations' },
-                                { icon: BarChart3, text: 'Top 3 career paths matched to your personality' },
-                                { icon: CheckCircle2, text: 'Side-by-side career comparison tools' },
-                                { icon: BookOpen, text: 'Complete degree encyclopedia' },
-                                { icon: MessageCircle, text: 'AI-powered guidance chatbot' },
-                                { icon: Building2, text: 'College recommendations with match scores' },
+                                { icon: Target, text: t('features.stream') },
+                                { icon: BarChart3, text: t('features.paths') },
+                                { icon: CheckCircle2, text: t('features.compare') },
+                                { icon: BookOpen, text: t('features.encyclopedia') },
+                                { icon: MessageCircle, text: t('features.chatbot') },
+                                { icon: Building2, text: t('features.colleges') },
                             ].map((feature, idx) => (
                                 <motion.div
                                     key={idx}
@@ -114,13 +118,13 @@ export function OneStopAdvisorHero({ hasCompletedQuiz, topRecommendation, lastAc
                         <Button asChild size="lg" className="w-full sm:w-auto group relative overflow-hidden">
                             <Link href="/one-stop-advisor" className="flex items-center gap-2">
                                 <Sparkles className="h-5 w-5" />
-                                Explore Your Career Path
+                                {t('exploreBtn')}
                                 <ArrowRight className="h-5 w-5 group-hover:translate-x-1 transition-transform" />
                             </Link>
                         </Button>
                         {lastAccessed && (
                             <p className="text-sm text-muted-foreground">
-                                💡 Last accessed: {lastAccessed}
+                                {t('lastAccessed', { time: lastAccessed })}
                             </p>
                         )}
                     </div>
@@ -132,8 +136,8 @@ export function OneStopAdvisorHero({ hasCompletedQuiz, topRecommendation, lastAc
     // Quiz Not Completed - Unlock Screen
     return (
         <Card className="relative overflow-hidden border-2 border-primary/20 shadow-2xl">
-            {/* Gradient Background */}
-            <div className="absolute inset-0 bg-gradient-to-br from-amber-500/10 via-primary/5 to-transparent" />
+            {/* Subtle Background */}
+            <div className="absolute inset-0 bg-amber-500/5" />
 
             {/* Lock Icon Background */}
             <div className="absolute top-1/2 right-10 -translate-y-1/2 opacity-5">
@@ -171,24 +175,24 @@ export function OneStopAdvisorHero({ hasCompletedQuiz, topRecommendation, lastAc
                     </div>
                 </div>
                 <CardTitle className="text-2xl md:text-3xl font-headline">
-                    Unlock Your One-Stop Career Advisor
+                    {t('lockedTitle')}
                 </CardTitle>
                 <CardDescription className="text-base mt-2">
-                    Get Your Complete Career Guidance Package!
+                    {t('lockedDesc')}
                 </CardDescription>
             </CardHeader>
 
             <CardContent className="relative space-y-6">
-                <p className="text-center font-medium">Take our 10-minute quiz to unlock:</p>
+                <p className="text-center font-medium">{t('takeQuiz')}</p>
 
                 {/* Feature Icons */}
                 <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
                     {[
-                        { icon: Target, label: 'Stream Recs', color: 'text-blue-500' },
-                        { icon: BarChart3, label: 'Career Compare', color: 'text-green-500' },
-                        { icon: MessageCircle, label: 'AI Guidance', color: 'text-purple-500' },
-                        { icon: BookOpen, label: 'Degree Guide', color: 'text-orange-500' },
-                        { icon: Building2, label: 'College Match', color: 'text-pink-500' },
+                        { icon: Target, label: t('lockedFeatures.stream'), color: 'text-blue-500' },
+                        { icon: BarChart3, label: t('lockedFeatures.compare'), color: 'text-green-500' },
+                        { icon: MessageCircle, label: t('lockedFeatures.ai'), color: 'text-purple-500' },
+                        { icon: BookOpen, label: t('lockedFeatures.degree'), color: 'text-orange-500' },
+                        { icon: Building2, label: t('lockedFeatures.college'), color: 'text-pink-500' },
                     ].map((feature, idx) => (
                         <motion.div
                             key={idx}
@@ -206,9 +210,9 @@ export function OneStopAdvisorHero({ hasCompletedQuiz, topRecommendation, lastAc
                 {/* Benefits */}
                 <div className="space-y-2">
                     {[
-                        '✨ Personalized to YOUR interests and strengths',
-                        '🎯 Powered by RIASEC personality assessment',
-                        '📈 Used by 10,000+ successful students',
+                        t('benefits.personalized'),
+                        t('benefits.riasec'),
+                        t('benefits.proven'),
                     ].map((benefit, idx) => (
                         <motion.p
                             key={idx}
@@ -227,7 +231,7 @@ export function OneStopAdvisorHero({ hasCompletedQuiz, topRecommendation, lastAc
                     <Button asChild size="lg" className="w-full sm:w-auto group relative overflow-hidden">
                         <Link href="/quiz" className="flex items-center gap-2">
                             <Sparkles className="h-5 w-5" />
-                            Start Quiz & Unlock (10 min)
+                            {t('startQuizBtn')}
                             <ArrowRight className="h-5 w-5 group-hover:translate-x-1 transition-transform" />
                             <motion.div
                                 className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent"
@@ -249,7 +253,7 @@ export function OneStopAdvisorHero({ hasCompletedQuiz, topRecommendation, lastAc
                         animate={{ opacity: 1 }}
                         transition={{ delay: 0.5 }}
                     >
-                        ⭐ Earn +30 points towards Career Readiness Score!
+                        {t('earnPoints')}
                     </motion.p>
                 </div>
             </CardContent>

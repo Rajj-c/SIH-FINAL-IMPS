@@ -12,8 +12,8 @@
  * - `getPersonalizedCollegeRecommendations`: A function that triggers the personalized college recommendations flow.
  */
 
-import {ai} from '@/ai/genkit';
-import {z} from 'genkit';
+import { ai } from '@/ai/genkit';
+import { z } from 'genkit';
 
 // Define the input schema
 const PersonalizedCollegeRecommendationsInputSchema = z.object({
@@ -59,11 +59,11 @@ export async function getPersonalizedCollegeRecommendations(
 
 const personalizedCollegeRecommendationsPrompt = ai.definePrompt({
   name: 'personalizedCollegeRecommendationsPrompt',
-  input: {schema: PersonalizedCollegeRecommendationsInputSchema},
-  output: {schema: PersonalizedCollegeRecommendationsOutputSchema},
+  input: { schema: PersonalizedCollegeRecommendationsInputSchema },
+  output: { schema: PersonalizedCollegeRecommendationsOutputSchema },
   prompt: `You are a personalized college recommendation system for students in India.
 
-  Based on the student's profile data, quiz results, and location, provide a list of 3 personalized government college recommendations.
+  Based on the student's profile data, quiz results, and location, provide a list of 3 personalized **Government College** recommendations. Do NOT recommend private colleges.
 
   Critically analyze the quiz results to understand the student's aptitude and interests. The recommendations must be strongly aligned with the quiz results. For example, if a student shows a strong aptitude for 'logic and experiments', recommend colleges known for their science and technology programs.
 
@@ -98,7 +98,7 @@ const personalizedCollegeRecommendationsFlow = ai.defineFlow(
     outputSchema: PersonalizedCollegeRecommendationsOutputSchema,
   },
   async input => {
-    const {output} = await personalizedCollegeRecommendationsPrompt(input);
+    const { output } = await personalizedCollegeRecommendationsPrompt(input);
     return output!;
   }
 );

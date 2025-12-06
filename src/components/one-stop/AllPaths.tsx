@@ -3,28 +3,48 @@
 import { CareerFlowChart } from '@/components/career-flow/CareerFlowChart';
 import { Card } from '@/components/ui/card';
 import { Info } from 'lucide-react';
+import { useState } from 'react';
+import { SmartInsightsPanel } from '@/components/career-flow/SmartInsightsPanel';
 
 interface AllPathsProps {
     streamFilter?: string;
+    userClass?: string;
+    userStream?: string;
+    recommendedCourseId?: string;
 }
 
-export function AllPaths({ streamFilter }: AllPathsProps) {
-    return (
-        <div className="space-y-4">
-            {streamFilter && (
-                <Card className="p-4 bg-blue-50 dark:bg-blue-950/30 border-blue-200">
-                    <div className="flex items-start gap-3">
-                        <Info className="h-5 w-5 text-blue-600 mt-0.5" />
-                        <div>
-                            <p className="text-sm text-blue-900 dark:text-blue-100">
-                                <strong>Filtered View:</strong> Showing career paths for {streamFilter.charAt(0).toUpperCase() + streamFilter.slice(1)} stream based on your quiz results.
-                            </p>
-                        </div>
-                    </div>
-                </Card>
-            )}
+export function AllPaths({ streamFilter, userClass, userStream, recommendedCourseId }: AllPathsProps) {
+    const defaultStream = streamFilter ?
+        (streamFilter.includes('science') ? 'science' :
+            streamFilter.includes('commerce') ? 'commerce' :
+                streamFilter.includes('art') ? 'arts' : undefined)
+        : undefined;
 
-            <CareerFlowChart />
+    const [selectedNode, setSelectedNode] = useState<any>(null);
+
+    const handleNodeClick = (nodeData: any) => {
+        setSelectedNode(nodeData);
+    };
+
+    return (
+        <div className="flex flex-col lg:flex-row gap-6 h-[700px]">
+            {/* Main Chart Area */}
+            <div className={`transition-all duration-300 ${selectedNode ? 'lg:w-[65%]' : 'w-full'}`}>
+                <CareerFlowChart
+                    onNodeClick={handleNodeClick}
+                    viewMode="all"
+                    suggestedStream={defaultStream}
+                    userClass={userClass}
+                    userStream={userStream}
+                    recommendedCourseId={recommendedCourseId}
+                />
+            </div>
+
+            {/* Side Panel for Insights */}
+            <SmartInsightsPanel
+                nodeData={selectedNode}
+                onClose={() => setSelectedNode(null)}
+            />
         </div>
     );
 }

@@ -30,6 +30,7 @@ export function LanguageSwitcher() {
                 <SelectItem value="te">తెలుగు</SelectItem>
                 <SelectItem value="kn">ಕನ್ನಡ</SelectItem>
                 <SelectItem value="ml">മലയാളം</SelectItem>
+                <SelectItem value="pa">ਪੰਜਾਬੀ</SelectItem>
             </SelectContent>
         </Select>
     );

@@ -15,10 +15,13 @@ import {
   initializeQuizState,
   selectNextQuestion,
   updateQuizState,
+  revertQuizState,
+  resumeQuizState,
   QuizState
 } from '@/lib/quiz/adaptive-engine';
 import type { EnhancedQuizQuestion } from '@/lib/quiz/riasec-scoring';
 import { ArrowUp, ArrowDown, Check } from 'lucide-react';
+import { LoadingAnimation } from '@/components/ui/LoadingAnimation';
 
 // Helper function to render icons
 function renderIcon(icon: string | undefined, size: 'sm' | 'md' | 'lg' = 'md') {
@@ -37,6 +40,7 @@ export function QuizForm() {
   const [quizState, setQuizState] = useState<QuizState | null>(null);
   const [currentQuestion, setCurrentQuestion] = useState<EnhancedQuizQuestion | null>(null);
   const [currentAnswer, setCurrentAnswer] = useState<string | number | string[] | Record<string, number> | undefined>(undefined);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const router = useRouter();
   const { userProfile, loading, updateQuizAnswers } = useAuth();
 
@@ -44,12 +48,34 @@ export function QuizForm() {
 
   useEffect(() => {
     if (userProfile && !quizState) {
-      const initialState = initializeQuizState();
+      let initialState: QuizState;
+      const hasSavedProgress = userProfile.quizAnswers && Object.keys(userProfile.quizAnswers).length > 0;
+
+      if (hasSavedProgress) {
+        const allQuestions = [
+          ...questionBank.baseline,
+          ...Object.values(questionBank.deepdive).flat(),
+          ...(questionBank.academic || []),
+          ...(questionBank.values || []),
+          ...(questionBank.skills || []),
+          ...(questionBank.learningStyle || []),
+        ];
+        initialState = resumeQuizState(userProfile.quizAnswers, allQuestions);
+      } else {
+        initialState = initializeQuizState();
+      }
+
       setQuizState(initialState);
-      const firstQuestion = selectNextQuestion(initialState, questionBank);
-      setCurrentQuestion(firstQuestion);
+      const nextQuestion = selectNextQuestion(initialState, questionBank);
+
+      if (nextQuestion) {
+        setCurrentQuestion(nextQuestion);
+      } else if (initialState.questionCount >= 15) {
+        // If loaded state is already complete, redirect to results
+        router.push(`/quiz/results?completed=true`);
+      }
     }
-  }, [userProfile, quizState, questionBank]);
+  }, [userProfile, quizState, questionBank, router]);
 
   if (loading || !userProfile) {
     return (
@@ -57,6 +83,10 @@ export function QuizForm() {
         <CardHeader><CardTitle>Loading...</CardTitle></CardHeader>
       </Card>
     );
+  }
+
+  if (isSubmitting) {
+    return <LoadingAnimation />;
   }
 
   if (!quizState || !currentQuestion) {
@@ -69,6 +99,32 @@ export function QuizForm() {
 
   const progress = ((quizState.questionCount + 1) / 15) * 100; // Target ~15 questions now
   const totalQuestions = 15;
+
+  const handleBack = () => {
+    if (!quizState || quizState.questionCount === 0) return;
+
+    const allQuestions = [
+      ...questionBank.baseline,
+      ...Object.values(questionBank.deepdive).flat(),
+      ...(questionBank.academic || []),
+      ...(questionBank.values || []),
+      ...(questionBank.skills || []),
+      ...(questionBank.learningStyle || []),
+    ];
+
+    const { newState, lastAnswer } = revertQuizState(quizState, allQuestions);
+
+    if (lastAnswer) {
+      setQuizState(newState);
+      // Find the question object for the last answer
+      const prevQuestion = allQuestions.find(q => q.id === lastAnswer.questionId);
+      if (prevQuestion) {
+        setCurrentQuestion(prevQuestion);
+        // In QuizState it's stored as raw value, so we can use it directly
+        setCurrentAnswer(lastAnswer.answer);
+      }
+    }
+  };
 
   const handleNext = async () => {
     if (currentAnswer === undefined) return;
@@ -93,6 +149,9 @@ export function QuizForm() {
     const nextQuestion = selectNextQuestion(newState, questionBank);
 
     if (!nextQuestion || newState.questionCount >= 20) {
+      setIsSubmitting(true);
+      // Artificial delay to show the animation
+      await new Promise(resolve => setTimeout(resolve, 4000)); // 4 seconds min
       await finishQuiz(newState);
     } else {
       setCurrentQuestion(nextQuestion);
@@ -111,7 +170,7 @@ export function QuizForm() {
     });
 
     await updateQuizAnswers(answersObject);
-    router.push(`/quiz/results`);
+    router.push(`/quiz/results?completed=true`);
   };
 
   const isAnswered = currentAnswer !== undefined &&
@@ -300,14 +359,20 @@ export function QuizForm() {
               </div>
             )}
 
+            {/* NAVIGATION BUTTONS */}
           </motion.div>
         </AnimatePresence>
       </CardContent>
       <CardFooter className="flex justify-between border-t pt-6">
-        <Button variant="ghost" disabled>
-          {/* Back button disabled for adaptive quiz */}
+        <Button
+          variant="ghost"
+          onClick={handleBack}
+          disabled={quizState.questionCount === 0 || isSubmitting}
+        >
+          <ArrowUp className="w-4 h-4 mr-2 rotate-[-90deg]" />
+          Previous
         </Button>
-        <Button onClick={handleNext} disabled={!isAnswered} size="lg" className="px-8">
+        <Button onClick={handleNext} disabled={!isAnswered || isSubmitting} size="lg" className="px-8">
           {quizState.questionCount >= 19 ? 'Finish Assessment' : 'Next Question'}
         </Button>
       </CardFooter>

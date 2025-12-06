@@ -50,7 +50,8 @@ export function NearbyColleges({ colleges, userState }: NearbyCollegesProps) {
                             <h4 className="font-semibold text-sm mb-1 truncate">{college.name}</h4>
                             <div className="flex items-center gap-1 text-xs text-muted-foreground mb-2">
                                 <MapPin className="h-3 w-3" />
-                                {college.district}, {college.state}
+                                {college.district !== 'Unknown' ? college.district : 'Nearby'}
+                                {college.state !== 'Unknown' ? `, ${college.state}` : ''}
                             </div>
                             <div className="flex flex-wrap gap-1">
                                 {college.courses.slice(0, 2).map((course) => (

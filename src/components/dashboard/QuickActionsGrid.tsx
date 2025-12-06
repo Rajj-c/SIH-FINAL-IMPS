@@ -36,81 +36,85 @@ interface QuickActionsGridProps {
     hasCompletedQuiz: boolean;
 }
 
+import { useTranslations } from 'next-intl';
+
 export function QuickActionsGrid({ savedItemsCount, hasCompletedQuiz }: QuickActionsGridProps) {
+    const t = useTranslations('Dashboard.quickActions');
+
     const actions: QuickActionItem[] = [
         // Featured: One-Stop Advisor
         {
             id: 'advisor',
-            title: 'One-Stop Career Advisor',
-            description: 'Your complete career guidance hub with personalized recommendations, comparisons, AI guidance & more!',
+            title: t('advisor.title'),
+            description: t('advisor.desc'),
             icon: Sparkles,
             link: '/one-stop-advisor',
             featured: true,
-            badge: hasCompletedQuiz ? 'UNLOCKED' : 'COMPLETE QUIZ TO UNLOCK',
+            badge: hasCompletedQuiz ? t('advisor.badgeUnlocked') : t('advisor.badgeLocked'),
             color: 'from-primary/20 to-primary/10',
         },
         // Regular actions
         {
             id: 'quiz',
-            title: 'Aptitude Quiz',
+            title: t('quiz.title'),
             description: hasCompletedQuiz
-                ? 'View your results or retake the quiz'
-                : 'Discover your recommended stream',
+                ? t('quiz.descCompleted')
+                : t('quiz.descStart'),
             icon: Lightbulb,
             link: '/quiz',
-            badge: hasCompletedQuiz ? 'COMPLETED' : 'START NOW',
+            badge: hasCompletedQuiz ? t('quiz.badgeCompleted') : t('quiz.badgeStart'),
             color: 'from-amber-500/20 to-amber-500/10',
         },
         {
             id: 'paths',
-            title: 'Career Paths',
-            description: 'Explore 50+ career opportunities available to you',
+            title: t('paths.title'),
+            description: t('paths.desc'),
             icon: Compass,
             link: '/career-paths',
         },
         {
             id: 'colleges',
-            title: 'College Directory',
-            description: '500+ Government colleges nationwide',
+            title: t('colleges.title'),
+            description: t('colleges.desc'),
             icon: GraduationCap,
             link: '/colleges',
         },
         {
             id: 'chat',
-            title: 'AI Career Advisor',
-            description: 'Get instant personalized guidance',
+            title: t('chat.title'),
+            description: t('chat.desc'),
             icon: MessageCircle,
             link: '/chat',
-            badge: 'NEW',
+            badge: t('chat.badge'),
             color: 'from-purple-500/20 to-purple-500/10',
         },
         {
             id: 'plan',
-            title: 'My Career Plan',
-            description: hasCompletedQuiz ? 'Finalize your career decision' : 'Complete quiz to unlock',
+            title: t('plan.title'),
+            description: hasCompletedQuiz ? t('plan.descReady') : t('plan.descLocked'),
             icon: CheckCircle2,
             link: '/my-plan',
-            badge: hasCompletedQuiz ? 'READY' : 'LOCKED',
+            badge: hasCompletedQuiz ? t('plan.badgeReady') : t('plan.badgeLocked'),
             color: 'from-green-500/20 to-green-500/10',
         },
         {
             id: 'timeline',
-            title: 'Timeline Tracker',
-            description: 'Important admission and scholarship deadlines',
+            title: t('timeline.title'),
+            description: t('timeline.desc'),
             icon: Calendar,
             link: '/timeline',
         },
         {
             id: 'resources',
-            title: 'Resources',
-            description: 'E-books, study materials & scholarship portals',
+            title: t('resources.title'),
+            description: t('resources.desc'),
             icon: Library,
             link: '/resources',
         },
         {
             id: 'saved',
-            title: 'Saved Items',
-            description: `${savedItemsCount} saved colleges and career paths`,
+            title: t('saved.title'),
+            description: t('saved.desc', { count: savedItemsCount }),
             icon: Bookmark,
             link: '/saved',
         },
@@ -118,7 +122,7 @@ export function QuickActionsGrid({ savedItemsCount, hasCompletedQuiz }: QuickAct
 
     return (
         <div className="space-y-4">
-            <h2 className="text-2xl font-bold font-headline">Quick Actions</h2>
+            <h2 className="text-2xl font-bold font-headline">{t('title')}</h2>
 
             <div className="grid grid-cols-1 gap-6">
                 {actions.map((action, idx) => {
@@ -198,14 +202,14 @@ export function QuickActionsGrid({ savedItemsCount, hasCompletedQuiz }: QuickAct
                                                     disabled={!hasCompletedQuiz}
                                                 >
                                                     <Link href={action.link} className="flex items-center gap-2">
-                                                        Explore Now
+                                                        {t('exploreNow')}
                                                         <ArrowRight className="h-5 w-5 group-hover:translate-x-1 transition-transform" />
                                                     </Link>
                                                 </Button>
 
                                                 {!hasCompletedQuiz && (
                                                     <p className="text-xs text-amber-600 mt-2">
-                                                        💡 Complete the quiz first to unlock this feature!
+                                                        {t('unlockTip')}
                                                     </p>
                                                 )}
                                             </div>

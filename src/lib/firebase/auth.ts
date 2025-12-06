@@ -17,7 +17,7 @@ import { auth, db } from './client';
 import type { SignUpData, UserProfile } from '../types';
 
 export async function signUp(data: SignUpData): Promise<void> {
-  const { email, password, name, classLevel, gender, userType } = data;
+  const { email, password, name, mobile, classLevel, gender, userType } = data;
 
   const userCredential = await createUserWithEmailAndPassword(auth, email, password!);
   const user = userCredential.user;
@@ -31,6 +31,10 @@ export async function signUp(data: SignUpData): Promise<void> {
     name,
     userType,
   };
+
+  if (mobile) {
+    profileData.mobile = mobile;
+  }
 
   if (userType === 'student') {
     profileData.classLevel = classLevel;

@@ -35,7 +35,8 @@ export function CollegeDetailsModal({ college, trigger }: CollegeDetailsModalPro
                                 <DialogTitle className="text-3xl font-bold font-headline">{college.name}</DialogTitle>
                                 <div className="flex items-center text-lg text-muted-foreground pt-1">
                                     <MapPin className="mr-2 h-5 w-5" />
-                                    {college.district}
+                                    {college.district !== 'Unknown' ? college.district : 'Location details available on map'}
+                                    {college.state !== 'Unknown' ? `, ${college.state}` : ''}
                                 </div>
                             </div>
                             <div className="flex flex-col items-end gap-2 shrink-0">

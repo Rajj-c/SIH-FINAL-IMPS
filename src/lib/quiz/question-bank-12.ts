@@ -725,4 +725,54 @@ export const questionBankFor12th: QuestionBank = {
             ],
         },
     ],
+
+    preferences: [
+        {
+            id: '12-pref-1',
+            type: 'multiple-choice',
+            category: 'baseline',
+            text: 'Ideally, where would you like to work?',
+            riasecWeights: {},
+            options: [
+                { text: 'In a modern office or corporate setting', riasecWeights: { E: 3, C: 3 } },
+                { text: 'Outdoors, in nature or on-site', riasecWeights: { R: 5 } },
+                { text: 'In a laboratory or research facility', riasecWeights: { I: 5 } },
+                { text: 'In a creative studio or workshop', riasecWeights: { A: 5 } },
+                { text: 'In a hospital or clinic', riasecWeights: { S: 3, I: 3 } },
+            ],
+        },
+        {
+            id: '12-pref-2',
+            type: 'slider',
+            category: 'baseline',
+            text: 'How many years are you willing to study before starting your first job?',
+            minLabel: 'As few as possible',
+            maxLabel: 'As long as needed (5+ years)',
+            primaryRIASEC: 'I',
+            riasecWeights: { I: 5 },
+        },
+        {
+            id: '12-pref-3',
+            type: 'scenario',
+            category: 'baseline',
+            text: 'Do you prefer working alone or in a large team?',
+            riasecWeights: {},
+            scenarios: [
+                {
+                    id: 'solo',
+                    icon: '👤',
+                    title: 'Solo / Small Team',
+                    description: 'I focus better when I work alone or with 1-2 others',
+                    riasecWeights: { I: 5, R: 3, A: 3 },
+                },
+                {
+                    id: 'team',
+                    icon: '👥',
+                    title: 'Large Team',
+                    description: 'I enjoy the energy and collaboration of a big group',
+                    riasecWeights: { E: 5, S: 5 },
+                },
+            ],
+        },
+    ],
 };

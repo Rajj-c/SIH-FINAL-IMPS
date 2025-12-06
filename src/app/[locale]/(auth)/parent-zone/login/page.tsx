@@ -15,6 +15,8 @@ import { signIn } from '@/lib/firebase/auth';
 import { Loader2, Mail, Lock, ArrowRight, Heart } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { getAuthErrorMessage } from '@/lib/auth-errors';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { PhoneLoginForm } from '@/components/auth/PhoneLoginForm';
 
 const formSchema = z.object({
   email: z.string().email({ message: 'Please enter a valid email.' }),
@@ -67,63 +69,76 @@ export default function ParentLoginPage() {
 
       <Card className="border-0 shadow-xl bg-white/50 backdrop-blur-sm dark:bg-gray-800/50">
         <CardContent className="pt-6">
-          <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-              <FormField
-                control={form.control}
-                name="email"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Email Address</FormLabel>
-                    <FormControl>
-                      <div className="relative">
-                        <Mail className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                        <Input className="pl-10" type="email" placeholder="parent@example.com" {...field} />
-                      </div>
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="password"
-                render={({ field }) => (
-                  <FormItem>
-                    <div className="flex items-center justify-between">
-                      <FormLabel>Password</FormLabel>
-                      <Link
-                        href="/parent-zone/forgot-password"
-                        className="text-sm font-medium text-emerald-600 hover:text-emerald-500 transition-colors"
-                      >
-                        Forgot password?
-                      </Link>
-                    </div>
-                    <FormControl>
-                      <div className="relative">
-                        <Lock className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                        <Input className="pl-10" type="password" placeholder="••••••••" {...field} />
-                      </div>
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <Button type="submit" className="w-full h-11 text-base bg-emerald-600 hover:bg-emerald-700" disabled={isLoading}>
-                {isLoading ? (
-                  <>
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    Signing in...
-                  </>
-                ) : (
-                  <>
-                    Sign In
-                    <ArrowRight className="ml-2 h-4 w-4" />
-                  </>
-                )}
-              </Button>
-            </form>
-          </Form>
+          <Tabs defaultValue="email" className="w-full">
+            <TabsList className="grid w-full grid-cols-2 mb-6">
+              <TabsTrigger value="email">Email</TabsTrigger>
+              <TabsTrigger value="phone">Phone</TabsTrigger>
+            </TabsList>
+
+            <TabsContent value="email">
+              <Form {...form}>
+                <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+                  <FormField
+                    control={form.control}
+                    name="email"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Email Address</FormLabel>
+                        <FormControl>
+                          <div className="relative">
+                            <Mail className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                            <Input className="pl-10" type="email" placeholder="parent@example.com" {...field} />
+                          </div>
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="password"
+                    render={({ field }) => (
+                      <FormItem>
+                        <div className="flex items-center justify-between">
+                          <FormLabel>Password</FormLabel>
+                          <Link
+                            href="/parent-zone/forgot-password"
+                            className="text-sm font-medium text-emerald-600 hover:text-emerald-500 transition-colors"
+                          >
+                            Forgot password?
+                          </Link>
+                        </div>
+                        <FormControl>
+                          <div className="relative">
+                            <Lock className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                            <Input className="pl-10" type="password" placeholder="••••••••" {...field} />
+                          </div>
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <Button type="submit" className="w-full h-11 text-base bg-emerald-600 hover:bg-emerald-700" disabled={isLoading}>
+                    {isLoading ? (
+                      <>
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                        Signing in...
+                      </>
+                    ) : (
+                      <>
+                        Sign In
+                        <ArrowRight className="ml-2 h-4 w-4" />
+                      </>
+                    )}
+                  </Button>
+                </form>
+              </Form>
+            </TabsContent>
+
+            <TabsContent value="phone">
+              <PhoneLoginForm isSignup={false} />
+            </TabsContent>
+          </Tabs>
         </CardContent>
         <CardFooter className="flex flex-col space-y-4 border-t bg-gray-50/50 dark:bg-gray-900/50 p-6">
           <div className="text-center text-sm text-muted-foreground">

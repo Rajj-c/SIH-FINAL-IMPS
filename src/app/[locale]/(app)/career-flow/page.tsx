@@ -1,6 +1,6 @@
 'use client';
 
-import { DynamicCareerFlowUpdated as DynamicCareerFlow } from '@/components/career-flow/DynamicCareerFlow';
+import { DynamicCareerFlow } from '@/components/career-flow/DynamicCareerFlow';
 import { ArrowLeft, TrendingUp } from 'lucide-react';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
@@ -36,7 +36,7 @@ export default function CareerFlowPage() {
             </div>
 
             {/* Main Flow Chart */}
-            <DynamicCareerFlow />
+            <DynamicCareerFlow courseName="General" stream="Science" />
 
             {/* Additional Info */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-6">

@@ -14,60 +14,103 @@ import { chatWithStudent } from '@/ai/flows/chat-with-student';
 
 interface ChatContextType {
     messages: ChatMessage[];
+    history: ChatSession[];
     isOpen: boolean;
     isLoading: boolean;
     sendMessage: (content: string) => Promise<void>;
     toggleChat: () => void;
-    clearChat: () => void;
+    clearChat: () => void; // Starts new chat (archives current)
+    deleteHistory: () => void;
+    loadSession: (session: ChatSession) => void;
 }
 
 const ChatCtx = createContext<ChatContextType>({
     messages: [],
+    history: [],
     isOpen: false,
     isLoading: false,
     sendMessage: async () => { },
     toggleChat: () => { },
     clearChat: () => { },
+    deleteHistory: () => { },
+    loadSession: () => { },
 });
 
 const STORAGE_KEY = 'careermitra_chat_session';
-const MAX_MESSAGES = 50; // Limit stored messages
+const HISTORY_KEY = 'careermitra_chat_history';
+const MAX_MESSAGES = 50;
 
 export const ChatProvider = ({ children }: { children: ReactNode }) => {
     const [messages, setMessages] = useState<ChatMessage[]>([]);
+    const [history, setHistory] = useState<ChatSession[]>([]);
     const [isOpen, setIsOpen] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
     const { userProfile, quizAnswers } = useAuth();
 
-    // Load chat history from localStorage on mount
+    // Load history and session on mount
     useEffect(() => {
-        const stored = localStorage.getItem(STORAGE_KEY);
-        if (stored) {
+        // Load active session
+        const storedSession = localStorage.getItem(STORAGE_KEY);
+        if (storedSession) {
             try {
-                const session: ChatSession = JSON.parse(stored);
-                // Only load if session is less than 24 hours old
-                const dayInMs = 24 * 60 * 60 * 1000;
-                if (Date.now() - session.lastUpdated < dayInMs) {
-                    setMessages(session.messages);
-                } else {
-                    localStorage.removeItem(STORAGE_KEY);
-                }
+                const session: ChatSession = JSON.parse(storedSession);
+                // We don't auto-load into 'messages' here because "Open = New Chat" rule 
+                // will handle archiving it if it exists when opened?
+                // Actually, if we refresh page, we might want to keep state?
+                // User said "whenever user opens chatbot".
+                // Let's load it into state, but toggleChat logic will handle the "New" part.
+                setMessages(session.messages);
             } catch (error) {
                 console.error('Failed to load chat session:', error);
-                localStorage.removeItem(STORAGE_KEY);
+            }
+        }
+
+        // Load history
+        const storedHistory = localStorage.getItem(HISTORY_KEY);
+        if (storedHistory) {
+            try {
+                setHistory(JSON.parse(storedHistory));
+            } catch (error) {
+                console.error('Failed to load chat history:', error);
             }
         }
     }, []);
 
-    // Save chat history to localStorage whenever messages change
+    // Persist messages to local storage
     useEffect(() => {
         if (messages.length > 0) {
             const session: ChatSession = {
-                messages: messages.slice(-MAX_MESSAGES), // Keep only last 50 messages
+                messages: messages.slice(-MAX_MESSAGES),
                 lastUpdated: Date.now(),
             };
             localStorage.setItem(STORAGE_KEY, JSON.stringify(session));
+        } else {
+            // If messages are empty (cleared), remove from active storage
+            localStorage.removeItem(STORAGE_KEY);
         }
+    }, [messages]);
+
+    // Persist history to local storage
+    useEffect(() => {
+        localStorage.setItem(HISTORY_KEY, JSON.stringify(history));
+    }, [history]);
+
+    // Archive current session to history
+    const archiveCurrentSession = useCallback(() => {
+        if (messages.length === 0) return;
+
+        // Don't archive if it's just a welcome message or empty
+        const hasUserMessages = messages.some(m => m.role === 'user');
+        if (!hasUserMessages) return;
+
+        const session: ChatSession = {
+            messages: messages,
+            lastUpdated: Date.now(),
+        };
+
+        setHistory(prev => [session, ...prev].slice(0, 20)); // Keep last 20 sessions
+        setMessages([]); // Clear active
+        localStorage.removeItem(STORAGE_KEY);
     }, [messages]);
 
     // Build user context for AI
@@ -101,12 +144,10 @@ export const ChatProvider = ({ children }: { children: ReactNode }) => {
                 timestamp: Date.now(),
             };
 
-            // Add user message immediately
             setMessages((prev) => [...prev, userMessage]);
             setIsLoading(true);
 
             try {
-                // Prepare messages for AI
                 const messageHistory = [...messages, userMessage].map((msg) => ({
                     role: msg.role,
                     content: msg.content,
@@ -115,13 +156,11 @@ export const ChatProvider = ({ children }: { children: ReactNode }) => {
 
                 const userContext = getUserContext();
 
-                // Call AI chat flow
                 const response = await chatWithStudent({
                     messages: messageHistory,
                     userContext,
                 });
 
-                // Add AI response
                 const assistantMessage: ChatMessage = {
                     id: `assistant-${Date.now()}`,
                     role: 'assistant',
@@ -132,8 +171,6 @@ export const ChatProvider = ({ children }: { children: ReactNode }) => {
                 setMessages((prev) => [...prev, assistantMessage]);
             } catch (error) {
                 console.error('Failed to get AI response:', error);
-
-                // Add error message
                 const errorMessage: ChatMessage = {
                     id: `error-${Date.now()}`,
                     role: 'assistant',
@@ -149,10 +186,27 @@ export const ChatProvider = ({ children }: { children: ReactNode }) => {
     );
 
     const toggleChat = useCallback(() => {
-        setIsOpen((prev) => !prev);
+        // "whenever user opens chatbot it has to show new chat"
+        // Logic: If opening (!isOpen -> true), archive current and start fresh.
+        if (!isOpen) {
+            // We are about to open it.
+            // Archive previous session if it exists and has content
+            if (messages.length > 0 && messages.some(m => m.role === 'user')) {
+                const session: ChatSession = {
+                    messages: messages,
+                    lastUpdated: Date.now(),
+                };
+                setHistory(prev => [session, ...prev].slice(0, 20));
+                setMessages([]); // Clear for new chat
+            }
+        }
 
-        // Add welcome message if this is first interaction
-        if (!isOpen && messages.length === 0) {
+        setIsOpen((prev) => !prev);
+    }, [isOpen, messages]);
+
+    // Effect to add welcome message if empty (happens after toggleChat clears it)
+    useEffect(() => {
+        if (isOpen && messages.length === 0) {
             const welcomeMessage: ChatMessage = {
                 id: 'welcome',
                 role: 'assistant',
@@ -164,17 +218,31 @@ export const ChatProvider = ({ children }: { children: ReactNode }) => {
     }, [isOpen, messages.length, userProfile?.name]);
 
     const clearChat = useCallback(() => {
-        setMessages([]);
-        localStorage.removeItem(STORAGE_KEY);
+        // This is explicitly "Start New Chat" button action
+        archiveCurrentSession();
+    }, [archiveCurrentSession]);
+
+    const deleteHistory = useCallback(() => {
+        setHistory([]);
+        localStorage.removeItem(HISTORY_KEY);
     }, []);
+
+    const loadSession = useCallback((session: ChatSession) => {
+        // Archive current before loading old one?
+        archiveCurrentSession();
+        setMessages(session.messages);
+    }, [archiveCurrentSession]);
 
     const contextValue = {
         messages,
+        history,
         isOpen,
         isLoading,
         sendMessage,
         toggleChat,
         clearChat,
+        deleteHistory,
+        loadSession,
     };
 
     return (

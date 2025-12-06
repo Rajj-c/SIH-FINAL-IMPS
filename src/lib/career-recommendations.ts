@@ -30,7 +30,7 @@ export function getCareerRecommendation(
     quizAnswers: QuizAnswers,
     userProfile: UserProfile,
     riasecScores?: RIASECScores
-): CareerRecommendation | null {
+): CareerRecommendation[] | null {
     if (!quizAnswers || Object.keys(quizAnswers).length === 0) {
         return null;
     }
@@ -50,41 +50,56 @@ export function getCareerRecommendation(
         return null;
     }
 
+    // Analyze profiles
+    const academicProfile = analyzeAcademicProfile(quizAnswers);
+    const preferenceProfile = analyzePreferences(quizAnswers);
+
     // Score each course - use RIASEC if available
     const scoredCourses = relevantCourses.map(course => ({
         course,
         score: riasecScores
-            ? calculateCourseScoreFromRIASEC(course, riasecScores)
+            ? calculateCourseScoreFromRIASEC(course, riasecScores, academicProfile, preferenceProfile)
             : calculateCourseScore(course, quizAnswers, stream),
     }));
 
     // Sort by score
-    scoredCourses.sort((a, b) => b.score - a.score);
+    scoredCourses.sort((a, b) => {
+        if (b.score !== a.score) {
+            return b.score - a.score;
+        }
+        // Deterministic tie-breaker
+        return a.course.id.localeCompare(b.course.id);
+    });
 
-    const topCourse = scoredCourses[0];
-    const alternativesIds = scoredCourses
-        .slice(1, 4)
-        .map(sc => sc.course.id);
+    // Get top 3 courses
+    const topCourses = scoredCourses.slice(0, 3);
 
-    // Generate reasons - use RIASEC if available
-    const reasons = riasecScores
-        ? generateReasonsFromRIASEC(topCourse.course, riasecScores, stream)
-        : generateReasons(topCourse.course, quizAnswers, stream);
+    return topCourses.map((courseData) => {
+        const reasons = riasecScores
+            ? generateReasonsFromRIASEC(courseData.course, riasecScores, stream, academicProfile, preferenceProfile)
+            : generateReasons(courseData.course, quizAnswers, stream);
 
-    // Determine confidence
-    const confidence = topCourse.score >= 80 ? 'high'
-        : topCourse.score >= 60 ? 'medium'
-            : 'low';
+        const confidence = courseData.score >= 80 ? 'high'
+            : courseData.score >= 60 ? 'medium'
+                : 'low';
 
-    return {
-        courseId: topCourse.course.id,
-        courseName: topCourse.course.fullName,
-        stream: topCourse.course.stream,
-        matchScore: Math.round(topCourse.score),
-        whyRecommended: reasons,
-        alternativeCourses: alternativesIds,
-        confidence,
-    };
+        // Get alternatives (excluding the other top courses)
+        const otherTopIds = topCourses.map(tc => tc.course.id);
+        const alternativesIds = scoredCourses
+            .filter(sc => !otherTopIds.includes(sc.course.id))
+            .slice(0, 3)
+            .map(sc => sc.course.id);
+
+        return {
+            courseId: courseData.course.id,
+            courseName: courseData.course.fullName,
+            stream: courseData.course.stream,
+            matchScore: Math.round(courseData.score),
+            whyRecommended: reasons,
+            alternativeCourses: alternativesIds,
+            confidence,
+        };
+    });
 }
 
 /**
@@ -111,12 +126,123 @@ function determineStreamFromRIASEC(riasecScores: RIASECScores): string {
     return 'science'; // Default
 }
 
+
+
 /**
- * Calculate course score based on RIASEC personality profile
+ * Academic Profile Interface
+ */
+interface AcademicProfile {
+    mathStrength: number; // 0-10
+    scienceStrength: number; // 0-10
+    biologyStrength: number; // 0-10
+    englishStrength: number; // 0-10
+    socialStrength: number; // 0-10
+    computerStrength: number; // 0-10
+}
+
+/**
+ * Analyze quiz answers to determine academic strengths
+ */
+function analyzeAcademicProfile(quizAnswers: QuizAnswers): AcademicProfile {
+    const profile: AcademicProfile = {
+        mathStrength: 5,
+        scienceStrength: 5,
+        biologyStrength: 5,
+        englishStrength: 5,
+        socialStrength: 5,
+        computerStrength: 5
+    };
+
+    // 10th Grade Logic
+    if (quizAnswers['10-acad-1']) {
+        const topSubjects = JSON.parse(quizAnswers['10-acad-1'] as string) as string[];
+        if (topSubjects.includes('Mathematics')) profile.mathStrength += 3;
+        if (topSubjects.includes('Science')) { profile.scienceStrength += 3; profile.biologyStrength += 3; }
+        if (topSubjects.includes('English / Languages')) profile.englishStrength += 3;
+        if (topSubjects.includes('Social Studies')) profile.socialStrength += 3;
+        if (topSubjects.includes('Computer Science')) profile.computerStrength += 3;
+    }
+    if (quizAnswers['10-acad-2']) {
+        // "Effort needed for Math" (1=Hard, 10=Easy)
+        profile.mathStrength = Number(quizAnswers['10-acad-2']);
+    }
+
+    // 12th Grade Logic
+    if (quizAnswers['12-skill-1']) {
+        const skills = JSON.parse(quizAnswers['12-skill-1'] as string) as Record<string, number>;
+        if (skills['Mathematics']) profile.mathStrength = skills['Mathematics'];
+        if (skills['Physics']) profile.scienceStrength = skills['Physics'];
+        if (skills['Chemistry']) profile.scienceStrength = (profile.scienceStrength + skills['Chemistry']) / 2;
+        if (skills['Biology']) profile.biologyStrength = skills['Biology'];
+        if (skills['Computer Science']) profile.computerStrength = skills['Computer Science'];
+        if (skills['English']) profile.englishStrength = skills['English'];
+    }
+
+    return profile;
+}
+
+/**
+ * Preference Profile Interface
+ */
+interface PreferenceProfile {
+    workEnvironment: 'office' | 'outdoor' | 'lab' | 'studio' | 'hospital' | 'any';
+    studyDuration: number; // 1-10 scale (1=short, 10=long)
+    teamPreference: 'solo' | 'team' | 'any';
+}
+
+/**
+ * Analyze quiz answers to determine preferences
+ */
+function analyzePreferences(quizAnswers: QuizAnswers): PreferenceProfile {
+    const profile: PreferenceProfile = {
+        workEnvironment: 'any',
+        studyDuration: 5,
+        teamPreference: 'any'
+    };
+
+    // 10th Grade Preferences
+    if (quizAnswers['10-pref-1']) {
+        const ans = quizAnswers['10-pref-1'] as string;
+        if (ans.includes('office')) profile.workEnvironment = 'office';
+        if (ans.includes('Outdoors')) profile.workEnvironment = 'outdoor';
+        if (ans.includes('laboratory')) profile.workEnvironment = 'lab';
+        if (ans.includes('creative')) profile.workEnvironment = 'studio';
+        if (ans.includes('hospital')) profile.workEnvironment = 'hospital';
+    }
+    if (quizAnswers['10-pref-2']) profile.studyDuration = Number(quizAnswers['10-pref-2']);
+    if (quizAnswers['10-pref-3']) {
+        const ans = quizAnswers['10-pref-3'] as string;
+        if (ans === 'solo') profile.teamPreference = 'solo';
+        if (ans === 'team') profile.teamPreference = 'team';
+    }
+
+    // 12th Grade Preferences
+    if (quizAnswers['12-pref-1']) {
+        const ans = quizAnswers['12-pref-1'] as string;
+        if (ans.includes('office')) profile.workEnvironment = 'office';
+        if (ans.includes('Outdoors')) profile.workEnvironment = 'outdoor';
+        if (ans.includes('laboratory')) profile.workEnvironment = 'lab';
+        if (ans.includes('creative')) profile.workEnvironment = 'studio';
+        if (ans.includes('hospital')) profile.workEnvironment = 'hospital';
+    }
+    if (quizAnswers['12-pref-2']) profile.studyDuration = Number(quizAnswers['12-pref-2']);
+    if (quizAnswers['12-pref-3']) {
+        const ans = quizAnswers['12-pref-3'] as string;
+        if (ans === 'solo') profile.teamPreference = 'solo';
+        if (ans === 'team') profile.teamPreference = 'team';
+    }
+
+    return profile;
+}
+
+/**
+ * Calculate course score based on RIASEC personality profile AND Academic Profile AND Preferences
  */
 function calculateCourseScoreFromRIASEC(
     course: Course,
-    riasecScores: RIASECScores
+    riasecScores: RIASECScores,
+    academicProfile?: AcademicProfile,
+    preferenceProfile?: PreferenceProfile
 ): number {
     let score = 50; // Base score
 
@@ -124,18 +250,56 @@ function calculateCourseScoreFromRIASEC(
     if (course.branch === 'engineering') {
         score += riasecScores.R * 0.3; // Realistic (hands-on)
         score += riasecScores.I * 0.4; // Investigative (problem-solving)
+
+        if (academicProfile) {
+            // Critical Penalty: Low Math/Science
+            if (academicProfile.mathStrength < 4) score -= 25;
+            if (academicProfile.scienceStrength < 4) score -= 20;
+            // Bonus
+            if (academicProfile.mathStrength > 7) score += 10;
+        }
+
+        if (preferenceProfile) {
+            if (preferenceProfile.workEnvironment === 'outdoor' && (course.id === 'civil-eng' || course.id === 'mining-eng')) score += 15;
+            if (preferenceProfile.workEnvironment === 'office' && course.id === 'cs-eng') score += 10;
+            if (preferenceProfile.studyDuration < 4) score -= 10; // Engineering is 4 years
+        }
     }
 
     // Medical courses
     if (course.branch === 'medical') {
         score += riasecScores.I * 0.4; // Investigative (science)
         score += riasecScores.S * 0.3; // Social (helping people)
+
+        if (academicProfile) {
+            // Critical Penalty: Low Biology/Science
+            if (academicProfile.biologyStrength < 4) score -= 30; // Very critical for medical
+            if (academicProfile.scienceStrength < 4) score -= 15;
+            // Bonus
+            if (academicProfile.biologyStrength > 7) score += 15;
+        }
+
+        if (preferenceProfile) {
+            if (preferenceProfile.workEnvironment === 'hospital') score += 20;
+            if (preferenceProfile.workEnvironment === 'lab' && course.id !== 'mbbs') score += 10; // Lab tech, pharmacy
+            if (preferenceProfile.studyDuration < 8 && course.id === 'mbbs') score -= 20; // MBBS is long
+            if (preferenceProfile.studyDuration < 3) score -= 30; // Medical is generally long
+        }
     }
 
     // Business/Commerce
     if (course.branch === 'business' || course.branch === 'finance') {
         score += riasecScores.E * 0.4; // Enterprising (leadership/business)
         score += riasecScores.C * 0.3; // Conventional (organized)
+
+        if (academicProfile) {
+            if (course.id === 'ca' && academicProfile.mathStrength < 5) score -= 15; // CA needs some math
+        }
+
+        if (preferenceProfile) {
+            if (preferenceProfile.workEnvironment === 'office') score += 10;
+            if (preferenceProfile.teamPreference === 'team') score += 5;
+        }
     }
 
     // Law
@@ -143,12 +307,31 @@ function calculateCourseScoreFromRIASEC(
         score += riasecScores.A * 0.3; // Artistic (communication/expression)
         score += riasecScores.E * 0.2; // Enterprising (persuasion)
         score += riasecScores.S * 0.2; // Social (justice/helping)
+
+        if (academicProfile) {
+            if (academicProfile.englishStrength > 7) score += 10;
+            if (academicProfile.socialStrength > 7) score += 5;
+        }
+
+        if (preferenceProfile) {
+            if (preferenceProfile.studyDuration > 6) score += 5; // Law is often 5 years
+        }
     }
 
     // Humanities
     if (course.branch === 'humanities') {
         score += riasecScores.A * 0.3; // Artistic (creative thinking)
         score += riasecScores.S * 0.3; // Social (understanding people)
+
+        if (academicProfile) {
+            if (academicProfile.socialStrength > 7) score += 10;
+            if (academicProfile.englishStrength > 7) score += 5;
+        }
+
+        if (preferenceProfile) {
+            if (preferenceProfile.workEnvironment === 'studio' && (course.id === 'design' || course.id === 'animation')) score += 15;
+            if (preferenceProfile.workEnvironment === 'outdoor' && (course.id === 'journalism' || course.id === 'archaeology')) score += 10;
+        }
     }
 
     // Vocational/Skilled
@@ -166,7 +349,9 @@ function calculateCourseScoreFromRIASEC(
 function generateReasonsFromRIASEC(
     course: Course,
     riasecScores: RIASECScores,
-    stream: string
+    stream: string,
+    academicProfile?: AcademicProfile,
+    preferenceProfile?: PreferenceProfile
 ): string[] {
     const reasons: string[] = [];
 
@@ -176,23 +361,34 @@ function generateReasonsFromRIASEC(
     const topTypes = sorted.slice(0, 3).map(([type]) => type);
 
     // Map RIASEC traits to reasons
-    if (topTypes.includes('I')) {
-        reasons.push('Strong analytical and problem-solving abilities');
+    if (topTypes.includes('I')) reasons.push('Strong analytical and problem-solving abilities');
+    if (topTypes.includes('R')) reasons.push('Practical, hands-on learning approach');
+    if (topTypes.includes('A')) reasons.push('Creative thinking and communication skills');
+    if (topTypes.includes('S')) reasons.push('People-oriented and collaborative nature');
+    if (topTypes.includes('E')) reasons.push('Leadership potential and business acumen');
+    if (topTypes.includes('C')) reasons.push('Organized and detail-oriented mindset');
+
+    // Add Academic Reasons
+    if (academicProfile) {
+        if (course.branch === 'engineering' && academicProfile.mathStrength > 7) reasons.push('Strong aptitude for Mathematics');
+        if (course.branch === 'medical' && academicProfile.biologyStrength > 7) reasons.push('Excellent grasp of Biology');
+        if (course.branch === 'law' && academicProfile.englishStrength > 7) reasons.push('Strong command over language');
     }
-    if (topTypes.includes('R')) {
-        reasons.push('Practical, hands-on learning approach');
-    }
-    if (topTypes.includes('A')) {
-        reasons.push('Creative thinking and communication skills');
-    }
-    if (topTypes.includes('S')) {
-        reasons.push('People-oriented and collaborative nature');
-    }
-    if (topTypes.includes('E')) {
-        reasons.push('Leadership potential and business acumen');
-    }
-    if (topTypes.includes('C')) {
-        reasons.push('Organized and detail-oriented mindset');
+
+    // Preference Reasons
+    if (preferenceProfile) {
+        if (preferenceProfile.workEnvironment === 'outdoor' && (course.id === 'civil-eng' || course.id === 'mining-eng')) {
+            reasons.push("Fits your preference for outdoor work");
+        }
+        if (preferenceProfile.workEnvironment === 'hospital' && course.branch === 'medical') {
+            reasons.push("Aligns with your goal to work in healthcare");
+        }
+        if (preferenceProfile.studyDuration > 7 && (course.id === 'mbbs' || course.id === 'law')) {
+            reasons.push("You are willing to commit to the required long-term study");
+        }
+        if (preferenceProfile.teamPreference === 'solo' && (course.id === 'research' || course.id === 'writer')) {
+            reasons.push("Suits your independent working style");
+        }
     }
 
     // Add course-specific reason
@@ -265,10 +461,15 @@ function determineStream(quizAnswers: QuizAnswers): string {
         }
     });
 
-    // Return stream with highest score
-    const maxStream = Object.entries(scores).reduce((max, [stream, score]) =>
-        score > max[1] ? [stream, score] : max
-        , ['science', 0]);
+    // Return stream with highest score, with deterministic tie-breaking
+    const maxStream = Object.entries(scores).reduce((max, [stream, score]) => {
+        if (score > max[1]) return [stream, score];
+        if (score === max[1]) {
+            // Tie-breaker: alphabetical
+            return stream.localeCompare(max[0]) < 0 ? [stream, score] : max;
+        }
+        return max;
+    }, ['science', 0]);
 
     return maxStream[0];
 }

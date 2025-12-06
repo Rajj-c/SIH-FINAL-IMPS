@@ -6,6 +6,8 @@ import { Button } from '@/components/ui/button';
 import { MessageCircle, BookOpen, ExternalLink } from 'lucide-react';
 import Link from 'next/link';
 
+import { useChat } from '@/hooks/use-chat';
+
 interface SmartGuidanceProps {
     recommendedCourse?: {
         name: string;
@@ -14,6 +16,18 @@ interface SmartGuidanceProps {
 }
 
 export function SmartGuidance({ recommendedCourse }: SmartGuidanceProps) {
+    const { sendMessage, toggleChat, isOpen } = useChat();
+
+    const handleQuestionClick = (question: string) => {
+        if (!isOpen) {
+            toggleChat();
+        }
+        // Small delay to allow chat window to open
+        setTimeout(() => {
+            sendMessage(question);
+        }, 300);
+    };
+
     const suggestedQuestions = recommendedCourse ? [
         `What's the difference between ${recommendedCourse.name} and other similar courses?`,
         `How do I prepare for entrance exams for ${recommendedCourse.name}?`,
@@ -60,8 +74,15 @@ export function SmartGuidance({ recommendedCourse }: SmartGuidanceProps) {
                 <CardContent>
                     <div className="space-y-3">
                         {suggestedQuestions.map((question, idx) => (
-                            <div key={idx} className="p-3 border rounded-lg hover:border-primary hover:bg-primary/5 transition-colors cursor-pointer">
-                                <p className="text-sm">{question}</p>
+                            <div
+                                key={idx}
+                                onClick={() => handleQuestionClick(question)}
+                                className="p-3 border rounded-lg hover:border-primary hover:bg-primary/5 transition-colors cursor-pointer active:scale-95"
+                            >
+                                <p className="text-sm flex items-center justify-between">
+                                    {question}
+                                    <MessageCircle className="h-4 w-4 text-primary opacity-0 group-hover:opacity-100 transition-opacity" />
+                                </p>
                             </div>
                         ))}
                     </div>

@@ -100,22 +100,14 @@ function ResultsDisplay({ result, onRetake, onEdit }: { result: ParentStreamSugg
             </div>
           </div>
 
-          {(result.estimatedCosts.governmentCollegeFee || result.estimatedCosts.privateCollegeFee) && (
+          {result.estimatedCosts.governmentCollegeFee && (
             <div className="space-y-2">
-              <h4 className="font-semibold text-sm">Fee Comparison</h4>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                {result.estimatedCosts.governmentCollegeFee && (
-                  <div className="p-3 border rounded">
-                    <Badge variant="secondary" className="mb-2">Government</Badge>
-                    <div className="font-medium">{result.estimatedCosts.governmentCollegeFee}</div>
-                  </div>
-                )}
-                {result.estimatedCosts.privateCollegeFee && (
-                  <div className="p-3 border rounded">
-                    <Badge variant="outline" className="mb-2">Private</Badge>
-                    <div className="font-medium">{result.estimatedCosts.privateCollegeFee}</div>
-                  </div>
-                )}
+              <h4 className="font-semibold text-sm">Fee Estimate</h4>
+              <div className="grid grid-cols-1 gap-3">
+                <div className="p-3 border rounded">
+                  <Badge variant="secondary" className="mb-2">Government College</Badge>
+                  <div className="font-medium">{result.estimatedCosts.governmentCollegeFee}</div>
+                </div>
               </div>
             </div>
           )}

@@ -2,7 +2,7 @@
 
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { CheckCircle2, Circle, ArrowRight } from 'lucide-react';
+import { CheckCircle2, Circle, ArrowRight, Sparkles, MapPin } from 'lucide-react';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
 import { cn } from '@/lib/utils';
@@ -121,7 +121,7 @@ export function JourneyTimeline({ currentStage, hasCompletedQuiz }: JourneyTimel
                                                     repeat: Infinity,
                                                 }}
                                             >
-                                                <span className="text-2xl">⭐</span>
+                                                <Sparkles className="h-6 w-6 text-amber-400 fill-amber-400" />
                                             </motion.div>
                                         )}
 
@@ -168,7 +168,10 @@ export function JourneyTimeline({ currentStage, hasCompletedQuiz }: JourneyTimel
                                         transform: 'translateX(-50%)'
                                     }}
                                 >
-                                    ⭐ YOU ARE HERE
+                                    <div className="flex items-center justify-center gap-1">
+                                        <MapPin className="h-4 w-4" />
+                                        YOU ARE HERE
+                                    </div>
                                 </motion.div>
                             )}
                         </div>

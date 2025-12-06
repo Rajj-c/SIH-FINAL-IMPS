@@ -99,6 +99,7 @@ export interface QuestionBank {
     values?: EnhancedQuizQuestion[];
     skills?: EnhancedQuizQuestion[];
     learningStyle?: EnhancedQuizQuestion[];
+    preferences?: EnhancedQuizQuestion[];
 }
 
 export interface QuizResponse {
@@ -184,7 +185,16 @@ export function calculateRIASECScores(
  */
 export function determineStreamFromRIASEC(scores: RIASECScores): RIASECResult {
     const sortedTypes = (Object.entries(scores) as [keyof RIASECScores, number][])
-        .sort(([, a], [, b]) => b - a)
+        .sort(([, a], [, b]) => {
+            if (b !== a) return b - a;
+            return 0; // We'll handle the key sorting in the map or just rely on stable sort if available, but JS sort isn't guaranteed stable for all engines/versions in all contexts.
+            // Actually, let's do the tie-breaker right here:
+        })
+        // Better implementation with explicit key access
+        .sort(([typeA, scoreA], [typeB, scoreB]) => {
+            if (scoreB !== scoreA) return scoreB - scoreA;
+            return typeA.localeCompare(typeB);
+        })
         .map(([type]) => type);
 
     const topTypes = sortedTypes.slice(0, 3);

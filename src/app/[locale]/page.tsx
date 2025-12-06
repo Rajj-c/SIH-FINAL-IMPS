@@ -28,6 +28,8 @@ import { LanguageSwitcher } from '@/components/LanguageSwitcher';
 export default function Home() {
   const { setGuestProfile } = useAuth();
   const t = useTranslations('HomePage');
+  const tNav = useTranslations('Navigation');
+  const tCommon = useTranslations('Common');
 
   return (
     <>
@@ -37,7 +39,7 @@ export default function Home() {
           <div className="container flex h-14 items-center px-4 md:px-6">
             <Link href="/" className="flex items-center gap-2 font-bold text-lg">
               <Logo className="h-8 w-8 text-primary" />
-              <span className="font-headline">EduPath Navigator</span>
+              <span className="font-headline">{tCommon('appName')}</span>
             </Link>
             <div className="ml-auto flex items-center gap-2">
               <LanguageSwitcher />
@@ -45,25 +47,25 @@ export default function Home() {
                 <DropdownMenuTrigger asChild>
                   <Button>
                     <LogIn className="mr-2 h-4 w-4" />
-                    Login / Sign Up
+                    {tNav('loginSignup')}
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end">
                   <DropdownMenuItem asChild>
                     <Link href="/login">
                       <Users className="mr-2 h-4 w-4" />
-                      Student Login
+                      {tNav('studentLogin')}
                     </Link>
                   </DropdownMenuItem>
                   <DropdownMenuItem asChild>
                     <Link href="/parent-zone/login">
                       <HeartHandshake className="mr-2 h-4 w-4" />
-                      Parent Login
+                      {tNav('parentLogin')}
                     </Link>
                   </DropdownMenuItem>
                   <DropdownMenuItem onSelect={() => setGuestProfile('student')}>
                     <User className="mr-2 h-4 w-4" />
-                    Continue as Guest
+                    {tNav('guestMode')}
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>

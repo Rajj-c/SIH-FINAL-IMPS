@@ -171,16 +171,26 @@ export async function fetchOpenStreetMapColleges(
 
                 const distance = calculateDistance(latitude, longitude, lat, lon);
 
+                const isGovernment =
+                    element.tags.operator?.toLowerCase().includes('government') ||
+                    element.tags.operator?.toLowerCase().includes('govt') ||
+                    element.tags.operator?.toLowerCase().includes('public') ||
+                    element.tags.name?.toLowerCase().includes('government') ||
+                    element.tags.name?.toLowerCase().includes('govt') ||
+                    element.tags.name?.toLowerCase().includes('state university');
+
+                if (!isGovernment) return null;
+
                 return {
                     id: `osm-${element.id}`,
                     name: element.tags.name || 'Unknown College',
-                    district: element.tags['addr:city'] || element.tags['addr:district'] || 'Unknown',
-                    state: element.tags['addr:state'] || 'Unknown',
-                    type: element.tags.operator?.includes('Government') || element.tags.operator?.includes('Govt') ? 'Government' : 'Private',
+                    district: element.tags['addr:city'] || element.tags['addr:town'] || element.tags['addr:district'] || element.tags['addr:county'] || element.tags['addr:suburb'] || 'Unknown',
+                    state: element.tags['addr:state'] || element.tags['is_in:state'] || 'Unknown',
+                    type: 'Government',
                     courses: [], // OSM doesn't have course data
                     eligibility: 'Contact college for details',
                     imageUrl: 'https://picsum.photos/seed/osm' + element.id + '/600/400',
-                    about: element.tags.description || `${element.tags.name} is an educational institution.`,
+                    about: element.tags.description || `${element.tags.name} is a government educational institution.`,
                     level: 'after_12th' as const,
                     fee: 'Contact for fee details',
                     latitude: lat,

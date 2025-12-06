@@ -12,7 +12,7 @@ export function createGenericCollege(name: string): College {
     name: name,
     district: "Location Unavailable",
     state: "India",
-    type: "Private",
+    type: "Government",
     courses: ["Various Courses"],
     eligibility: "Please check official website for eligibility criteria.",
     imageUrl: `https://placehold.co/600x400?text=${encodeURIComponent(name)}`,

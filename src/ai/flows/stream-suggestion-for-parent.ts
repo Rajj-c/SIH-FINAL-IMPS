@@ -81,9 +81,9 @@ Your task is to analyze the parent's answers and provide a thoughtful, balanced 
 
 5.  **Generate REALISTIC Fee Information:** Based on current Indian education costs (as of 2025-2026), **ALWAYS use "Rs" for currency (never use ₹ symbol)**:
     *   For Government colleges: Most undergraduate courses are Rs 20,000-Rs 1,00,000 per year
-    *   For Private colleges: Ranges from Rs 1,00,000-Rs 5,00,000+ per year depending on course
-    *   Engineering: Govt Rs 50,000-Rs 1,00,000/year, Private Rs 2,00,000-Rs 10,00,000/year
-    *   Medical: Govt Rs 10,000-Rs 50,000/year, Private Rs 10,00,000-Rs 25,00,000/year
+    *   For Government colleges: Most undergraduate courses are Rs 20,000-Rs 1,00,000 per year
+    *   Engineering: Govt Rs 50,000-Rs 1,00,000/year
+    *   Medical: Govt Rs 10,000-Rs 50,000/year
     *   Commerce/Arts: Generally lower, Rs 10,000-Rs 2,00,000/year
     *   Consider additional expenses: Hostel (Rs 50,000-Rs 1,50,000/year), Books (Rs 10,000-Rs 30,000/year), Coaching (Rs 50,000-Rs 2,00,000/year)
     *   Align fee estimates with the parent's stated budget comfort
@@ -97,9 +97,9 @@ Your task is to analyze the parent's answers and provide a thoughtful, balanced 
     *   **IMPORTANT: Provide real, working website URLs for each scholarship**
 
 7.  **Recommend 2-3 Example Colleges:** Based on location preference, budget, and suggested path:
-    *   Mix of government and private if budget allows
-    *   Consider the parent's preference for institution type
-    *   Use realistic college names or types (Government Polytechnic, Private Engineering College, State University)
+    *   **RECOMMEND ONLY GOVERNMENT COLLEGES (State or Central Govt).**
+    *   Do NOT recommend private colleges.
+    *   Use realistic college names or types (Government Polytechnic, IITs, NITs, State Universities)
     *   Fee format: "Rs 30,000-Rs 50,000/year" (use "Rs", not ₹)
     *   **Include specific details:** courses offered, facilities available, and key highlights/achievements
     *   **IMPORTANT: Provide official college website URLs for each recommended college**

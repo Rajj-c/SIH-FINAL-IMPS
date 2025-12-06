@@ -22,6 +22,10 @@ import type { QuizQuestion } from '@/lib/types';
 import { motion } from 'framer-motion';
 import { CollegeDetailsModal } from '@/components/colleges/CollegeDetailsModal';
 import { createGenericCollege } from '@/lib/utils';
+import { calculateRIASECScores, type RIASECScores, type QuizResponse } from '@/lib/quiz/riasec-scoring';
+import { getCareerRecommendation } from '@/lib/career-recommendations';
+import { questionBankFor10th, questionBankFor12th } from '@/lib/quiz/question-bank';
+import { LoadingAnimation } from '@/components/ui/LoadingAnimation';
 
 // Debounce function to prevent rapid API calls while editing
 function debounce<F extends (...args: any[]) => any>(func: F, waitFor: number) {
@@ -70,7 +74,7 @@ const getPersonalityColor = (type: string) => {
 };
 
 function ResultsDisplay() {
-  const { userProfile, loading, quizAnswers, updateQuizAnswers, resetQuizAnswers } = useAuth();
+  const { userProfile, loading, quizAnswers, updateQuizAnswers, resetQuizAnswers, saveQuizResult } = useAuth();
   const router = useRouter();
   const searchParams = useSearchParams();
   const justCompleted = searchParams?.get('completed') === 'true';
@@ -93,6 +97,10 @@ function ResultsDisplay() {
     }
   }, [justCompleted, quizAnswers]);
 
+  // ... (existing imports)
+
+  // ... (inside ResultsDisplay component)
+
   useEffect(() => {
     if (quizAnswers && userProfile) {
       const formattedAnswers = quizQuestions.reduce((acc, q) => {
@@ -104,6 +112,43 @@ function ResultsDisplay() {
         return acc;
       }, {} as Record<string, string>);
 
+      // --- DETERMINISTIC CALCULATION START ---
+      // 1. Prepare inputs for RIASEC calculation
+      const questionBank = userProfile.classLevel === '10' ? questionBankFor10th : questionBankFor12th;
+      const allQuestions = [
+        ...questionBank.baseline,
+        ...Object.values(questionBank.deepdive).flat(),
+      ];
+      const responses: QuizResponse[] = Object.entries(quizAnswers).map(([questionId, answer]) => ({
+        questionId,
+        answer: answer,
+      }));
+
+      // 2. Calculate RIASEC Scores
+      const riasecScores = responses.length > 0
+        ? calculateRIASECScores(responses, allQuestions)
+        : undefined;
+
+      // 3. Get Deterministic Recommendations (Top 3)
+      const fixedRecs = getCareerRecommendation(quizAnswers, userProfile, riasecScores);
+
+      // 4. Prepare Constraint for AI
+      const fixedRecommendationsConstraint = fixedRecs ? fixedRecs.map(rec => ({
+        courseName: rec.courseName,
+        stream: rec.stream,
+        personalityType: riasecScores
+          ? Object.entries(riasecScores).sort(([, a], [, b]) => b - a)[0][0] // Top RIASEC code
+          : 'Unknown'
+      })) : undefined;
+      // --- DETERMINISTIC CALCULATION END ---
+
+      // Check if we already have a persisted result
+      if (userProfile.quizResult) {
+        setSuggestion(userProfile.quizResult as StreamSuggestionOutput);
+        setSuggestionLoading(false);
+        return;
+      }
+
       setSuggestionLoading(true);
 
       (async () => {
@@ -111,8 +156,11 @@ function ResultsDisplay() {
           const result = await debouncedSuggestStream({
             quizAnswers: JSON.stringify(formattedAnswers),
             classLevel: userProfile.classLevel || '12',
+            fixedRecommendations: fixedRecommendationsConstraint, // Pass the constraint array
           });
           setSuggestion(result);
+          // Persist the result so it doesn't change on reload
+          await saveQuizResult(result);
         } catch (error) {
           console.error('Error getting stream suggestion:', error);
         } finally {
@@ -120,7 +168,7 @@ function ResultsDisplay() {
         }
       })();
     }
-  }, [quizAnswers, userProfile, quizQuestions, debouncedSuggestStream]);
+  }, [quizAnswers, userProfile, quizQuestions, debouncedSuggestStream, saveQuizResult]);
 
 
   const handleRetakeQuiz = async () => {
@@ -139,9 +187,8 @@ function ResultsDisplay() {
     }
   };
 
-  if (loading || waitingForData) {
-    return <SuggestionSkeleton />;
-  }
+  // Loading state handled in render
+
 
   if (!userProfile || !quizAnswers) {
     return (
@@ -176,8 +223,10 @@ function ResultsDisplay() {
         </Card>
       </motion.div>
 
-      {suggestionLoading ? (
-        <SuggestionSkeleton />
+      {(loading || waitingForData || suggestionLoading) ? (
+        <div className="py-12">
+          <LoadingAnimation />
+        </div>
       ) : suggestion ? (
         <>
           {/* Personality Type */}

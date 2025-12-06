@@ -25,7 +25,7 @@ const otpSchema = z.object({
     otp: z.string().length(6, { message: 'OTP must be 6 digits.' }),
 });
 
-export function PhoneLoginForm({ isSignup = false }: { isSignup?: boolean }) {
+export function PhoneLoginForm({ isSignup = false, userType }: { isSignup?: boolean; userType?: 'student' | 'parent' }) {
     const [step, setStep] = useState<'phone' | 'otp'>('phone');
     const [isLoading, setIsLoading] = useState(false);
     const [confirmationResult, setConfirmationResult] = useState<ConfirmationResult | null>(null);
@@ -102,6 +102,9 @@ export function PhoneLoginForm({ isSignup = false }: { isSignup?: boolean }) {
         if (!confirmationResult) return;
         setIsLoading(true);
         try {
+            if (isSignup && userType) {
+                sessionStorage.setItem('signup_user_type', userType);
+            }
             await completePhoneLogin(confirmationResult, values.otp, isSignup);
             toast({
                 title: 'Verified!',

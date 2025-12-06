@@ -4,8 +4,6 @@ import { useCallback, useState, useEffect } from 'react';
 import {
     ReactFlow,
     Background,
-    Controls,
-    MiniMap,
     useNodesState,
     useEdgesState,
     Node,
@@ -33,9 +31,12 @@ interface CareerFlowChartProps {
     onNodeClick?: (nodeData: any) => void;
     suggestedStream?: 'science' | 'commerce' | 'arts';
     viewMode?: 'suggested' | 'all';
+    userClass?: string;
+    userStream?: string;
+    recommendedCourseId?: string;
 }
 
-function FlowChartContent({ onNodeClick, suggestedStream, viewMode }: CareerFlowChartProps) {
+function FlowChartContent({ onNodeClick, suggestedStream, viewMode, userClass, userStream, recommendedCourseId }: CareerFlowChartProps) {
     const [selectedStream, setSelectedStream] = useState<'class10' | 'science' | 'commerce' | 'arts'>('class10');
     const [nodes, setNodes, onNodesChange] = useNodesState<Node>([]);
     const [edges, setEdges, onEdgesChange] = useEdgesState<Edge>([]);
@@ -46,21 +47,71 @@ function FlowChartContent({ onNodeClick, suggestedStream, viewMode }: CareerFlow
         if (viewMode === 'suggested' && suggestedStream) {
             setSelectedStream(suggestedStream);
         } else if (viewMode === 'all') {
-            // Default to class 10 or keep current
+            // Logic for Default View based on Class 12
+            if (userClass === '12' && userStream) {
+                const streamMap: Record<string, 'science' | 'commerce' | 'arts'> = {
+                    'science': 'science',
+                    'commerce': 'commerce',
+                    'arts': 'arts'
+                };
+
+                // Flexible matching for stream name (e.g. "Science (PCM)" -> "science")
+                const normalizedStream = userStream.toLowerCase();
+                let foundStream: 'science' | 'commerce' | 'arts' | undefined;
+
+                if (normalizedStream.includes('science')) foundStream = 'science';
+                else if (normalizedStream.includes('commerce')) foundStream = 'commerce';
+                else if (normalizedStream.includes('art') || normalizedStream.includes('humanit')) foundStream = 'arts';
+
+                if (foundStream) {
+                    setSelectedStream(foundStream);
+                } else {
+                    setSelectedStream('class10'); // Fallback
+                }
+            } else {
+                setSelectedStream('class10');
+            }
         }
-    }, [viewMode, suggestedStream]);
+    }, [viewMode, suggestedStream, userClass, userStream]);
 
     // Update nodes/edges when stream changes
     useEffect(() => {
-        const currentNodes = careerFlows[selectedStream].nodes;
-        const currentEdges = careerFlows[selectedStream].edges;
+        const flowData = careerFlows[selectedStream];
+        if (!flowData) return;
+
+        let currentNodes = flowData.nodes;
+        const currentEdges = flowData.edges;
+
+        // Visual Highlighting Logic for Recommended Course
+        if (recommendedCourseId) {
+            currentNodes = currentNodes.map(node => {
+                // Check if this node is the recommended one (fuzzy match or direct ID)
+                // We check both ID and Label for robustness
+                const isRecommended =
+                    node.id === recommendedCourseId ||
+                    node.data.label === recommendedCourseId ||
+                    (node.data.label && typeof node.data.label === 'string' &&
+                        (node.data.label as string).toLowerCase().includes(recommendedCourseId.toLowerCase()));
+
+                if (isRecommended) {
+                    return {
+                        ...node,
+                        data: {
+                            ...node.data,
+                            isRecommended: true // Flag for CustomNodes
+                        }
+                    };
+                }
+                return node;
+            });
+        }
 
         setNodes(currentNodes);
         setEdges(currentEdges);
 
         // Fit view after a short delay to allow rendering
         setTimeout(() => fitView({ duration: 800 }), 100);
-    }, [selectedStream, setNodes, setEdges, fitView]);
+    }, [selectedStream, setNodes, setEdges, fitView, recommendedCourseId]);
 
     const handleStreamChange = useCallback((stream: 'class10' | 'science' | 'commerce' | 'arts') => {
         setSelectedStream(stream);
@@ -79,10 +130,12 @@ function FlowChartContent({ onNodeClick, suggestedStream, viewMode }: CareerFlow
                 {/* Stream Selector - Only show if NOT in suggested mode or if user wants to explore */}
                 <div className="bg-white/90 dark:bg-black/90 backdrop-blur-md p-1.5 rounded-xl border shadow-lg">
                     <Tabs value={selectedStream} onValueChange={(v) => handleStreamChange(v as any)}>
-                        <TabsList className="grid grid-cols-2 md:grid-cols-4 h-auto gap-1 bg-transparent">
-                            <TabsTrigger value="class10" className="text-xs data-[state=active]:bg-primary/10 data-[state=active]:text-primary">
-                                🎓 10th
-                            </TabsTrigger>
+                        <TabsList className={`grid h-auto gap-1 bg-transparent ${userClass === '12' ? 'grid-cols-3' : 'grid-cols-2 md:grid-cols-4'}`}>
+                            {userClass !== '12' && (
+                                <TabsTrigger value="class10" className="text-xs data-[state=active]:bg-primary/10 data-[state=active]:text-primary">
+                                    🎓 10th
+                                </TabsTrigger>
+                            )}
                             <TabsTrigger value="science" className="text-xs data-[state=active]:bg-blue-100 data-[state=active]:text-blue-700">
                                 🔬 Sci
                             </TabsTrigger>
@@ -119,7 +172,7 @@ function FlowChartContent({ onNodeClick, suggestedStream, viewMode }: CareerFlow
                 onNodesChange={onNodesChange}
                 onEdgesChange={onEdgesChange}
                 onNodeClick={onNodeClickInternal}
-                nodeTypes={nodeTypes}
+                nodeTypes={nodeTypes as any}
                 fitView
                 minZoom={0.2}
                 maxZoom={2}
@@ -127,14 +180,7 @@ function FlowChartContent({ onNodeClick, suggestedStream, viewMode }: CareerFlow
                 className="bg-slate-50 dark:bg-slate-950"
             >
                 <Background color="#94a3b8" gap={20} size={1} className="opacity-20" />
-                <MiniMap
-                    className="!bg-white/80 dark:!bg-black/80 !border-none !rounded-lg !shadow-lg backdrop-blur-sm m-4"
-                    nodeColor={(node) => {
-                        if (node.type === 'startNode') return '#3b82f6';
-                        if (node.type === 'careerNode') return '#10b981';
-                        return '#e2e8f0';
-                    }}
-                />
+
             </ReactFlow>
 
             {/* Overlay for Suggested Mode */}
