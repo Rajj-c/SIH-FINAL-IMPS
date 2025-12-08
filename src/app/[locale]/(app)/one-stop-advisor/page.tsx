@@ -198,7 +198,7 @@ function AdvisorContent() {
                         <AllPaths
                             streamFilter={recommendation.stream}
                             userClass={userProfile?.classLevel}
-                            userStream={userProfile?.stream}
+                            userStream={userProfile?.studentStream}
                             recommendedCourseId={recommendation?.courseId}
                         />
                     </TabsContent>
