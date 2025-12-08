@@ -2,7 +2,7 @@
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Briefcase, IndianRupee, Award, TrendingUp } from 'lucide-react';
+import { Briefcase, Award, TrendingUp } from 'lucide-react';
 import { jobRoles } from '@/lib/data/government-exams';
 import {
     Accordion,
@@ -48,7 +48,7 @@ export function JobRoles() {
                             </p>
 
                             <div className="flex items-center gap-2 text-sm font-medium">
-                                <IndianRupee className="h-4 w-4 text-green-600" />
+
                                 <span>{role.salary}</span>
                             </div>
 

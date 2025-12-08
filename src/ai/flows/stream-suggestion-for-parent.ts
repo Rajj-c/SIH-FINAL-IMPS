@@ -1,9 +1,7 @@
 /**
  * @fileOverview Suggests a suitable academic stream for a student based on their parent's answers.
  *
- * - suggestStreamForParent - A function that suggests a stream based on a parent's quiz answers.
- * - ParentStreamSuggestionInput - The input type for the suggestStreamForParent function.
- * - ParentStreamSuggestionOutput - The return type for the suggestStreamForParent function.
+
  */
 
 'use server';
