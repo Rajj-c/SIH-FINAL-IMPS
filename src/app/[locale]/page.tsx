@@ -18,12 +18,13 @@ import {
 import { useAuth } from '@/hooks/use-auth';
 import { GuestModeDialog } from '@/components/common/GuestModeDialog';
 import { HeroSection } from '@/components/landing/HeroSection';
-import { FeatureGrid } from '@/components/landing/FeatureGrid';
-import { TeamSection } from '@/components/landing/TeamSection';
-import { CTASection } from '@/components/landing/CTASection';
+import { CareerChoiceSection } from '@/components/landing/CareerChoiceSection';
+import { AwarenessComparisonSection } from '@/components/landing/AwarenessComparisonSection';
+import { SuccessStoriesSection } from '@/components/landing/SuccessStoriesSection';
+import { PersonalityCTASection } from '@/components/landing/PersonalityCTASection';
+
 import { useTranslations } from 'next-intl';
 import { LanguageSwitcher } from '@/components/LanguageSwitcher';
-
 
 export default function Home() {
   const { setGuestProfile } = useAuth();
@@ -75,9 +76,10 @@ export default function Home() {
 
         <main className="flex-1">
           <HeroSection title={t('title')} subtitle={t('subtitle')} />
-          <FeatureGrid />
-          <CTASection />
-          <TeamSection />
+          <CareerChoiceSection id="career-choice-section" />
+          <AwarenessComparisonSection />
+          <SuccessStoriesSection />
+          <PersonalityCTASection />
         </main>
 
         <footer className="flex flex-col gap-2 sm:flex-row py-6 w-full shrink-0 items-center px-4 md:px-6 border-t bg-muted/20">
@@ -101,7 +103,7 @@ export default function Home() {
             </Link>
           </nav>
         </footer>
-      </div>
+      </div >
     </>
   );
 }

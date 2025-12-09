@@ -16,7 +16,8 @@ import {
     MessageCircle,
     ArrowRight,
     CheckCircle2,
-    LucideIcon
+    LucideIcon,
+    Users
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
@@ -34,11 +35,12 @@ interface QuickActionItem {
 interface QuickActionsGridProps {
     savedItemsCount: number;
     hasCompletedQuiz: boolean;
+    onShareWithParent?: () => void;
 }
 
 import { useTranslations } from 'next-intl';
 
-export function QuickActionsGrid({ savedItemsCount, hasCompletedQuiz }: QuickActionsGridProps) {
+export function QuickActionsGrid({ savedItemsCount, hasCompletedQuiz, onShareWithParent }: QuickActionsGridProps) {
     const t = useTranslations('Dashboard.quickActions');
 
     const actions: QuickActionItem[] = [
@@ -117,6 +119,16 @@ export function QuickActionsGrid({ savedItemsCount, hasCompletedQuiz }: QuickAct
             description: t('saved.desc', { count: savedItemsCount }),
             icon: Bookmark,
             link: '/saved',
+        },
+        // Parent Share Action
+        {
+            id: 'share',
+            title: 'Sync with Parent',
+            description: 'Share your progress with your parents',
+            icon: Users,
+            link: '#', // We'll handle click
+            color: 'from-blue-500/20 to-blue-500/10',
+            badge: 'New'
         },
     ];
 
@@ -234,8 +246,18 @@ export function QuickActionsGrid({ savedItemsCount, hasCompletedQuiz }: QuickAct
                         transition={{ delay: (idx + 1) * 0.05 }}
                         className="h-full"
                     >
-                        <Card className="h-full hover:shadow-lg transition-shadow duration-300 group cursor-pointer">
-                            <Link href={action.link}>
+                        <Card
+                            className="h-full hover:shadow-lg transition-shadow duration-300 group cursor-pointer"
+                            onClick={(e) => {
+                                if (action.id === 'share' && onShareWithParent) {
+                                    e.preventDefault();
+                                    onShareWithParent();
+                                }
+                            }}
+                        >
+                            <Link href={action.link} onClick={(e) => {
+                                if (action.id === 'share') e.preventDefault();
+                            }}>
                                 <CardHeader className="pb-3">
                                     <div className="flex items-start justify-between mb-2">
                                         <div className={cn(

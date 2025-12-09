@@ -5,7 +5,7 @@ import { RoadmapProvider } from './RoadmapContext';
 import { YearlyTimeline } from './YearlyTimeline';
 import { TaskSuggester } from './TaskSuggester';
 import { MonthlyPlanner } from './MonthlyPlanner';
-import { CalendarDays, Map, Target, Sparkles } from 'lucide-react';
+import { CalendarDays, Map, Target, Sparkles, GitBranch } from 'lucide-react';
 import { DynamicCareerFlow } from '@/components/career-flow/DynamicCareerFlow';
 import { SkillGapTracker } from './SkillGapTracker';
 import { PlanBSelector } from './PlanBSelector';
@@ -15,8 +15,10 @@ import { SmartAlerts } from './SmartAlerts';
 import { ExportPDF } from './ExportPDF';
 import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '@/lib/utils';
-
 import { DailyQuickWins } from './DailyQuickWins';
+import { CareerFlowMap } from './CareerFlowMap';
+
+export type PlanType = { id: string; name: string };
 
 function RoadmapContent() {
     return (
@@ -43,8 +45,6 @@ function RoadmapContent() {
     );
 }
 
-export type PlanType = { id: string; name: string };
-
 export function InteractiveRoadmap({
     careerGoal,
     courseId,
@@ -54,9 +54,10 @@ export function InteractiveRoadmap({
     courseId?: string,
     plans?: { A: PlanType, B: PlanType, C: PlanType }
 }) {
-    const [activeTab, setActiveTab] = React.useState('timeline');
+    const [activeTab, setActiveTab] = React.useState('flow');
 
     const tabs = [
+        { id: 'flow', label: 'Flow Map', icon: GitBranch },
         { id: 'timeline', label: 'Timeline', icon: CalendarDays },
         { id: 'skills', label: 'Skills', icon: Target },
         { id: 'vision', label: 'Vision', icon: Sparkles },
@@ -70,7 +71,7 @@ export function InteractiveRoadmap({
                     <div>
                         <h2 className="text-2xl font-bold tracking-tight">Your Future Diary 📖</h2>
                         <p className="text-muted-foreground">
-                            Plan your journey year by year. Own your future.
+                            Plan your journey step by step. Own your future.
                         </p>
                     </div>
                     <div className="flex items-center gap-2">
@@ -82,7 +83,7 @@ export function InteractiveRoadmap({
 
                 {/* Custom Animated Tabs */}
                 <div className="relative">
-                    <div className="flex items-center gap-8 border-b border-border/50 pb-1">
+                    <div className="flex items-center gap-8 border-b border-border/50 pb-1 overflow-x-auto">
                         {tabs.map((tab) => {
                             const Icon = tab.icon;
                             const isActive = activeTab === tab.id;
@@ -91,7 +92,7 @@ export function InteractiveRoadmap({
                                     key={tab.id}
                                     onClick={() => setActiveTab(tab.id)}
                                     className={cn(
-                                        "relative flex items-center gap-2 px-2 py-3 text-sm font-medium transition-colors hover:text-primary/80",
+                                        "relative flex items-center gap-2 px-2 py-3 text-sm font-medium transition-colors hover:text-primary/80 whitespace-nowrap",
                                         isActive ? "text-primary" : "text-muted-foreground"
                                     )}
                                 >
@@ -120,6 +121,10 @@ export function InteractiveRoadmap({
                             exit={{ opacity: 0, y: -10 }}
                             transition={{ duration: 0.2 }}
                         >
+                            {activeTab === 'flow' && (
+                                <CareerFlowMap courseName={careerGoal} />
+                            )}
+
                             {activeTab === 'timeline' && <RoadmapContent />}
 
                             {activeTab === 'skills' && (

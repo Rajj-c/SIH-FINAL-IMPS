@@ -40,7 +40,8 @@ export const additionalColleges: College[] = [
         mediumOfInstruction: ['English', 'Telugu'],
         establishedYear: 1983,
         affiliation: 'State University',
-        placementRate: 55
+        placementRate: 55,
+        averagePackage: '3.5 LPA'
     },
 
     {
@@ -101,7 +102,8 @@ export const additionalColleges: College[] = [
         mediumOfInstruction: ['English', 'Telugu'],
         establishedYear: 1976,
         affiliation: 'State University',
-        placementRate: 60
+        placementRate: 60,
+        averagePackage: '4.0 LPA'
     },
 
     // ==================== TAMIL NADU ====================
@@ -163,7 +165,9 @@ export const additionalColleges: College[] = [
         hostelFees: 'Rs. 5,000 - Rs. 10,000 per year',
         mediumOfInstruction: ['English', 'Tamil'],
         establishedYear: 1875,
-        affiliation: 'Bharathiar University'
+        affiliation: 'Bharathiar University',
+        placementRate: 55,
+        averagePackage: '2.8 LPA'
     },
 
     // ==================== KARNATAKA ====================
@@ -194,7 +198,8 @@ export const additionalColleges: College[] = [
         mediumOfInstruction: ['English', 'Kannada'],
         establishedYear: 1964,
         affiliation: 'State University',
-        placementRate: 65
+        placementRate: 65,
+        averagePackage: '4.5 LPA'
     },
 
     {
@@ -320,7 +325,8 @@ export const additionalColleges: College[] = [
         establishedYear: 1857,
         affiliation: 'State University',
         nirfRank: 25,
-        placementRate: 70
+        placementRate: 70,
+        averagePackage: '5.2 LPA'
     },
 
     // ==================== UTTAR PRADESH ====================
@@ -351,7 +357,8 @@ export const additionalColleges: College[] = [
         mediumOfInstruction: ['English', 'Hindi'],
         establishedYear: 1920,
         affiliation: 'State University',
-        placementRate: 62
+        placementRate: 62,
+        averagePackage: '4.2 LPA'
     },
 
     {
@@ -413,7 +420,8 @@ export const additionalColleges: College[] = [
         mediumOfInstruction: ['English', 'Hindi'],
         establishedYear: 1947,
         affiliation: 'State University',
-        placementRate: 60
+        placementRate: 60,
+        averagePackage: '4.0 LPA'
     },
 
     // ==================== GUJARAT ====================
@@ -444,7 +452,8 @@ export const additionalColleges: College[] = [
         mediumOfInstruction: ['English', 'Gujarati', 'Hindi'],
         establishedYear: 1949,
         affiliation: 'State University',
-        placementRate: 64
+        placementRate: 64,
+        averagePackage: '4.8 LPA'
     },
 
     {
@@ -507,7 +516,8 @@ export const additionalColleges: College[] = [
         mediumOfInstruction: ['English', 'Hindi'],
         establishedYear: 1917,
         affiliation: 'State University',
-        placementRate: 55
+        placementRate: 55,
+        averagePackage: '3.8 LPA'
     },
 
     {
@@ -570,7 +580,8 @@ export const additionalColleges: College[] = [
         mediumOfInstruction: ['English', 'Odia'],
         establishedYear: 1943,
         affiliation: 'State University',
-        placementRate: 58
+        placementRate: 58,
+        averagePackage: '4.0 LPA'
     },
 
     {
@@ -633,7 +644,8 @@ export const additionalColleges: College[] = [
         mediumOfInstruction: ['English', 'Malayalam'],
         establishedYear: 1937,
         affiliation: 'State University',
-        placementRate: 65
+        placementRate: 65,
+        averagePackage: '4.5 LPA'
     },
 
     {
@@ -663,7 +675,8 @@ export const additionalColleges: College[] = [
         mediumOfInstruction: ['English', 'Malayalam'],
         establishedYear: 1968,
         affiliation: 'State University',
-        placementRate: 63
+        placementRate: 63,
+        averagePackage: '4.2 LPA'
     },
 
 
@@ -695,7 +708,8 @@ export const additionalColleges: College[] = [
         mediumOfInstruction: ['English'],
         establishedYear: 1960,
         affiliation: 'MSBTE (Autonomous)',
-        placementRate: 80
+        placementRate: 80,
+        averagePackage: '3.5 LPA'
     },
 
     {
@@ -725,7 +739,8 @@ export const additionalColleges: College[] = [
         mediumOfInstruction: ['English', 'Hindi'],
         establishedYear: 1962,
         affiliation: 'BTE Delhi',
-        placementRate: 88
+        placementRate: 88,
+        averagePackage: '3.8 LPA'
     },
     {
         id: 'govt-poly-pune',
@@ -754,7 +769,8 @@ export const additionalColleges: College[] = [
         mediumOfInstruction: ['English'],
         establishedYear: 1957,
         affiliation: 'MSBTE (Autonomous)',
-        placementRate: 92
+        placementRate: 92,
+        averagePackage: '4.0 LPA'
     },
     {
         id: 'thiagarajar-poly-salem',
@@ -783,7 +799,8 @@ export const additionalColleges: College[] = [
         mediumOfInstruction: ['English'],
         establishedYear: 1958,
         affiliation: 'DOTE Tamil Nadu',
-        placementRate: 95
+        placementRate: 95,
+        averagePackage: '3.8 LPA'
     },
 
     // ==================== ITI INSTITUTES ====================

@@ -1,14 +1,62 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Calculator, TrendingUp, Award, BarChart3 } from 'lucide-react';
 import { CollegeCostCalculator } from '@/components/financial/CollegeCostCalculator';
 import { EMICalculator } from '@/components/financial/EMICalculator';
 import { ScholarshipMatcher } from '@/components/financial/ScholarshipMatcher';
 import { FeeComparisonTool } from '@/components/financial/FeeComparisonTool';
+import { useSearchParams } from 'next/navigation';
+
+import { College } from '@/lib/types';
 
 export default function FinancialToolsPage() {
+    const searchParams = useSearchParams();
+    const childUid = searchParams.get('child');
+
+    const [suggestedCourse, setSuggestedCourse] = useState<string | undefined>();
+    const [courseDuration, setCourseDuration] = useState<number | undefined>();
+    const [suggestedCollege, setSuggestedCollege] = useState<College | undefined>();
+
+    useEffect(() => {
+        async function fetchChildData() {
+            if (!childUid) return;
+
+            try {
+                const { getSavedCareerPaths, getSavedColleges } = await import('@/lib/firebase/database');
+                const [paths, colleges] = await Promise.all([
+                    getSavedCareerPaths(childUid),
+                    getSavedColleges(childUid)
+                ]);
+
+                if (paths.length > 0) {
+                    const topPath = paths[0];
+                    setSuggestedCourse(topPath.name); // Corrected property name from 'title' to 'name'
+
+                    // Simple heuristic for duration
+                    const titleLower = topPath.name.toLowerCase();
+                    if (titleLower.includes('b.tech') || titleLower.includes('engineering')) {
+                        setCourseDuration(4);
+                    } else if (titleLower.includes('mbbs') || titleLower.includes('medical')) {
+                        setCourseDuration(5);
+                    } else if (titleLower.includes('mba') || titleLower.includes('m.tech')) {
+                        setCourseDuration(2);
+                    } else {
+                        setCourseDuration(3);
+                    }
+                }
+
+                if (colleges.length > 0) {
+                    setSuggestedCollege(colleges[0]);
+                }
+            } catch (error) {
+                console.error("Error fetching child data:", error);
+            }
+        }
+        fetchChildData();
+    }, [childUid]);
+
     return (
         <div className="space-y-6">
             <div className="text-center max-w-3xl mx-auto">
@@ -18,6 +66,11 @@ export default function FinancialToolsPage() {
                 <p className="text-muted-foreground text-lg">
                     Make informed financial decisions for your child&apos;s education
                 </p>
+                {suggestedCourse && (
+                    <div className="mt-2 inline-block px-3 py-1 bg-orange-100 text-orange-700 rounded-full text-sm font-medium">
+                        Planning for: {suggestedCourse}
+                    </div>
+                )}
             </div>
 
             <Tabs defaultValue="cost" className="w-full">
@@ -46,11 +99,11 @@ export default function FinancialToolsPage() {
 
                 <div className="mt-6">
                     <TabsContent value="cost">
-                        <CollegeCostCalculator />
+                        <CollegeCostCalculator suggestedDuration={courseDuration} suggestedCollege={suggestedCollege} />
                     </TabsContent>
 
                     <TabsContent value="emi">
-                        <EMICalculator />
+                        <EMICalculator suggestedCourse={suggestedCourse} courseDuration={courseDuration} />
                     </TabsContent>
 
                     <TabsContent value="scholarships">

@@ -179,6 +179,7 @@ export interface UserProfile extends SignUpData {
   quizResult?: QuizResult; // Persisted AI analysis result
   parentQuizAnswers?: Record<string, string>; // For parents
   bookmarkedResources?: number[];
+  parentShareCode?: string;
 
   // Parent-specific fields
   annualIncome?: 'below-6' | 'below-8' | 'above-8';

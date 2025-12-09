@@ -28,7 +28,16 @@ import { useMemo, useEffect } from 'react';
 import { CareerPathNode } from '@/lib/types';
 import { useRouter } from 'next/navigation';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import { AlertCircle } from 'lucide-react';
+import { AlertCircle, Users, Copy, Check, Loader2 } from 'lucide-react';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
+import { useState } from 'react';
 
 import { useTranslations } from 'next-intl';
 
@@ -46,6 +55,33 @@ export default function DashboardPage() {
       }
     }
   }, [userProfile, loading, router]);
+
+  const [shareCode, setShareCode] = useState<string | null>(userProfile?.parentShareCode || null);
+  const [generatingCode, setGeneratingCode] = useState(false);
+  const [isShareDialogOpen, setIsShareDialogOpen] = useState(false);
+  const [copied, setCopied] = useState(false);
+
+  const generateShareCode = async () => {
+    if (!userProfile) return;
+    setGeneratingCode(true);
+    try {
+      const { generateParentShareCode } = await import('@/lib/firebase/database');
+      const code = await generateParentShareCode(userProfile.uid);
+      setShareCode(code);
+    } catch (error) {
+      console.error("Failed to generate code", error);
+    } finally {
+      setGeneratingCode(false);
+    }
+  };
+
+  const copyToClipboard = () => {
+    if (shareCode) {
+      navigator.clipboard.writeText(shareCode);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    }
+  };
 
   // Calculate Career Readiness Score
   const readinessScore = useMemo(() => {
@@ -204,11 +240,53 @@ export default function DashboardPage() {
         {/* NearbyColleges removed as per Phase 2 plan */}
       </div>
 
-      {/* Quick Actions with Featured One-Stop Advisor */}
+      {/* Quick Actions with Featured One-Stop Advisor and Parent Share */}
       <QuickActionsGrid
         savedItemsCount={savedColleges.length + savedCareerPaths.length}
         hasCompletedQuiz={quizTaken}
+        onShareWithParent={() => setIsShareDialogOpen(true)}
       />
+
+      <Dialog open={isShareDialogOpen} onOpenChange={setIsShareDialogOpen}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Share with Parent</DialogTitle>
+            <DialogDescription>
+              Share your progress, saved colleges, and roadmap with your parents.
+              Ask them to enter this code in their Parent Zone.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="flex flex-col items-center justify-center p-6 space-y-4">
+            {shareCode ? (
+              <div className="flex items-center space-x-2">
+                <div className="text-4xl font-bold tracking-widest text-primary border-2 border-primary/20 rounded-lg px-6 py-3 bg-primary/5">
+                  {shareCode}
+                </div>
+                <Button size="icon" variant="outline" onClick={copyToClipboard}>
+                  {copied ? <Check className="h-4 w-4 text-green-500" /> : <Copy className="h-4 w-4" />}
+                </Button>
+              </div>
+            ) : (
+              <Button onClick={generateShareCode} disabled={generatingCode} className="w-full">
+                {generatingCode ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    Generating Code...
+                  </>
+                ) : (
+                  <>
+                    <Users className="mr-2 h-4 w-4" />
+                    Generate Share Code
+                  </>
+                )}
+              </Button>
+            )}
+            <p className="text-xs text-muted-foreground text-center">
+              This code allows your parents to view your dashboard data. They cannot make changes.
+            </p>
+          </div>
+        </DialogContent>
+      </Dialog>
 
       {/* Journey Map */}
       <JourneyMap

@@ -4,28 +4,35 @@ service cloud.firestore {
   match /databases/{database}/documents {
     
     // Users collection
+    // Users collection
     match /users/{userId} {
-      // Allow users to read and write their own data
-      allow read, write: if request.auth != null && request.auth.uid == userId;
+      // Allow any authenticated user to read (needed for Parent-Student Sync)
+      allow read: if request.auth != null;
+      // Only allow users to write to their own data
+      allow write: if request.auth != null && request.auth.uid == userId;
       
       // Saved Colleges subcollection
       match /savedColleges/{collegeId} {
-        allow read, write: if request.auth != null && request.auth.uid == userId;
+         allow read: if request.auth != null;
+         allow write: if request.auth != null && request.auth.uid == userId;
       }
       
       // Saved Career Paths subcollection
       match /savedCareerPaths/{pathId} {
-        allow read, write: if request.auth != null && request.auth.uid == userId;
+         allow read: if request.auth != null;
+         allow write: if request.auth != null && request.auth.uid == userId;
       }
       
       // Quiz History subcollection (for future use)
       match /quizHistory/{quizId} {
-        allow read, write: if request.auth != null && request.auth.uid == userId;
+         allow read: if request.auth != null;
+         allow write: if request.auth != null && request.auth.uid == userId;
       }
       
       // Reminders subcollection (for future use)
       match /reminders/{reminderId} {
-        allow read, write: if request.auth != null && request.auth.uid == userId;
+         allow read: if request.auth != null;
+         allow write: if request.auth != null && request.auth.uid == userId;
       }
     }
   }

@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
-import { Bot, X, Sparkles } from 'lucide-react';
+import { Bot, X, Sparkles, WifiOff } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useChat } from '@/hooks/use-chat';
 import { ChatMessage } from '@/components/chat/ChatMessage';
@@ -13,6 +13,19 @@ export function ChatWidget() {
     const { isOpen, toggleChat, messages, isLoading, clearChat, history, loadSession } = useChat();
     const scrollRef = useRef<HTMLDivElement>(null);
     const [showHistory, setShowHistory] = useState(false);
+    const [isOnline, setIsOnline] = useState(true);
+
+    useEffect(() => {
+        setIsOnline(navigator.onLine);
+        const handleOnline = () => setIsOnline(true);
+        const handleOffline = () => setIsOnline(false);
+        window.addEventListener('online', handleOnline);
+        window.addEventListener('offline', handleOffline);
+        return () => {
+            window.removeEventListener('online', handleOnline);
+            window.removeEventListener('offline', handleOffline);
+        };
+    }, []);
 
     // Auto-scroll to bottom when new messages arrive
     useEffect(() => {
@@ -139,6 +152,14 @@ export function ChatWidget() {
                                             </div>
                                         </div>
                                     )}
+                                    {!isOnline && (
+                                        <div className="flex justify-center my-4">
+                                            <div className="flex items-center gap-2 bg-yellow-50 text-yellow-800 px-3 py-1.5 rounded-full text-xs font-medium border border-yellow-200">
+                                                <WifiOff className="h-3 w-3" />
+                                                You are currently offline
+                                            </div>
+                                        </div>
+                                    )}
                                 </div>
                             ) : (
                                 /* History View */
@@ -177,7 +198,13 @@ export function ChatWidget() {
                             {/* Input Area (only show if not viewing history) */}
                             {!showHistory && (
                                 <div className="border-t p-4 bg-muted/30">
-                                    <ChatInput />
+                                    {isOnline ? (
+                                        <ChatInput />
+                                    ) : (
+                                        <div className="text-center text-xs text-muted-foreground py-2 mb-2 bg-gray-50 rounded-lg">
+                                            Chat is unavailable while offline
+                                        </div>
+                                    )}
                                 </div>
                             )}
                         </Card>

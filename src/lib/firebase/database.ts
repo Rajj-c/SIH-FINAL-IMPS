@@ -7,10 +7,12 @@ import {
     getDoc,
     query,
     orderBy,
+    where,
+    limit,
     Timestamp
 } from 'firebase/firestore';
 import { db } from './client';
-import type { College, CareerPathNode, SavedCollege, SavedCareerPath } from '../types';
+import type { College, CareerPathNode, SavedCollege, SavedCareerPath, UserProfile } from '../types';
 
 // ============================================
 // Saved Colleges
@@ -159,10 +161,42 @@ export async function getBookmarkedResources(userId: string): Promise<number[]> 
     return (userData.bookmarkedResources as number[]) || [];
 }
 
-/**
- * Check if a resource is bookmarked
- */
 export async function isResourceBookmarked(userId: string, resourceId: number): Promise<boolean> {
     const bookmarks = await getBookmarkedResources(userId);
     return bookmarks.includes(resourceId);
+}
+
+// ============================================
+// Parent-Student Sync
+// ============================================
+
+/**
+ * Generate a unique 6-digit code for a student to share with their parent
+ */
+export async function generateParentShareCode(userId: string): Promise<string> {
+    // Generate a random 6-digit code
+    const code = Math.floor(100000 + Math.random() * 900000).toString();
+
+    // Save to user profile
+    await setDoc(doc(db, 'users', userId), { parentShareCode: code }, { merge: true });
+
+    return code;
+}
+
+/**
+ * Find a student by their share code
+ */
+
+
+export async function getStudentByShareCode(code: string): Promise<UserProfile | null> {
+    const usersRef = collection(db, 'users');
+    const q = query(usersRef, where('parentShareCode', '==', code), limit(1));
+    const querySnapshot = await getDocs(q);
+
+    if (querySnapshot.empty) {
+        return null;
+    }
+
+    const userDoc = querySnapshot.docs[0];
+    return { uid: userDoc.id, ...userDoc.data() } as UserProfile;
 }

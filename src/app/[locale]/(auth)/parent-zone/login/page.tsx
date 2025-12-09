@@ -18,6 +18,8 @@ import { getAuthErrorMessage } from '@/lib/auth-errors';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { PhoneLoginForm } from '@/components/auth/PhoneLoginForm';
 
+import { GoogleLoginButton } from '@/components/auth/GoogleLoginButton';
+
 const formSchema = z.object({
   email: z.string().email({ message: 'Please enter a valid email.' }),
   password: z.string().min(1, { message: 'Password is required.' }),
@@ -26,6 +28,9 @@ const formSchema = z.object({
 export default function ParentLoginPage() {
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
+  // const router = useRouter(); // router is not used for push anymore, but might be needed if we add the useEffect. 
+  // However, useAuth handles it. I'll comment it out or remove it if unused.
+  // Actually, I'll keep it available just in case, or remove if unused.
   const router = useRouter();
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -44,7 +49,7 @@ export default function ParentLoginPage() {
         title: 'Welcome back!',
         description: 'Successfully logged in to your parent account.',
       });
-      router.push('/parent-zone');
+      // router.push('/parent-zone'); // Removed to rely on useAuth
     } catch (error) {
       console.error(error);
       toast({
@@ -139,6 +144,19 @@ export default function ParentLoginPage() {
               <PhoneLoginForm isSignup={false} />
             </TabsContent>
           </Tabs>
+
+          <div className="relative my-6">
+            <div className="absolute inset-0 flex items-center">
+              <span className="w-full border-t" />
+            </div>
+            <div className="relative flex justify-center text-xs uppercase">
+              <span className="bg-background px-2 text-muted-foreground">
+                Or continue with
+              </span>
+            </div>
+          </div>
+
+          <GoogleLoginButton />
         </CardContent>
         <CardFooter className="flex flex-col space-y-4 border-t bg-gray-50/50 dark:bg-gray-900/50 p-6">
           <div className="text-center text-sm text-muted-foreground">

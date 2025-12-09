@@ -31,6 +31,7 @@ import { useRouter } from 'next/navigation';
 import { getAuthErrorMessage } from '@/lib/auth-errors';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { PhoneLoginForm } from '@/components/auth/PhoneLoginForm';
+import { GoogleLoginButton } from '@/components/auth/GoogleLoginButton';
 
 const formSchema = z.object({
   name: z.string().min(2, { message: 'Name must be at least 2 characters.' }),
@@ -208,6 +209,19 @@ export default function ParentSignUpPage() {
               <PhoneLoginForm isSignup={true} userType="parent" />
             </TabsContent>
           </Tabs>
+
+          <div className="relative my-6">
+            <div className="absolute inset-0 flex items-center">
+              <span className="w-full border-t" />
+            </div>
+            <div className="relative flex justify-center text-xs uppercase">
+              <span className="bg-background px-2 text-muted-foreground">
+                Or continue with
+              </span>
+            </div>
+          </div>
+
+          <GoogleLoginButton />
         </CardContent>
         <CardFooter className="flex flex-col space-y-4 border-t bg-gray-50/50 dark:bg-gray-900/50 p-6">
           <div className="text-center text-sm text-muted-foreground">

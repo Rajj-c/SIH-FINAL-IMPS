@@ -1,7 +1,7 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useSearchParams } from 'next/navigation';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import { BarChart3, Plus, X } from 'lucide-react';
 
@@ -10,13 +10,12 @@ interface CollegeComparison {
     name: string;
     tuition: number;
     hostel: number;
-    distance: number;
     placement: number;
 }
 
 export function FeeComparisonTool() {
     const [colleges, setColleges] = useState<CollegeComparison[]>([
-        { id: 1, name: '', tuition: 0, hostel: 0, distance: 0, placement: 0 },
+        { id: 1, name: '', tuition: 0, hostel: 0, placement: 0 },
     ]);
 
     const addCollege = () => {
@@ -27,11 +26,52 @@ export function FeeComparisonTool() {
                 name: '',
                 tuition: 0,
                 hostel: 0,
-                distance: 0,
                 placement: 0,
             },
         ]);
     };
+
+    const searchParams = useSearchParams();
+    const childUid = searchParams.get('child');
+
+    useEffect(() => {
+        async function loadChildColleges() {
+            if (!childUid) return;
+
+            try {
+                const { getSavedColleges } = await import('@/lib/firebase/database');
+                const saved = await getSavedColleges(childUid);
+
+                if (saved.length > 0) {
+                    const mapped = saved.map(c => {
+                        const parseFee = (str?: string) => {
+                            if (!str) return 0;
+                            // Check for Lakhs
+                            const isLakh = str.toLowerCase().includes('lakh') || str.toLowerCase().includes('lpa');
+                            // Extract first number found
+                            const match = str.replace(/,/g, '').match(/(\d+(\.\d+)?)/);
+                            if (!match) return 0;
+                            let val = parseFloat(match[0]);
+                            if (isLakh) val *= 100000;
+                            return val;
+                        };
+
+                        return {
+                            id: Date.now() + Math.random(),
+                            name: c.name,
+                            tuition: parseFee(c.fee) || 50000,
+                            hostel: parseFee(c.hostelFees || c.hostelInfo?.fees) || 60000,
+                            placement: parseFee(c.averagePackage) / 100000 || 3.5 // Convert back to LPA for display
+                        };
+                    });
+                    setColleges(mapped);
+                }
+            } catch (e) {
+                console.error("Failed to load child colleges", e);
+            }
+        }
+        loadChildColleges();
+    }, [childUid]);
 
     const removeCollege = (id: number) => {
         if (colleges.length > 1) {
@@ -132,20 +172,6 @@ export function FeeComparisonTool() {
                             </tr>
 
                             <tr className="border-b">
-                                <td className="p-3 font-medium">Distance from Home (km)</td>
-                                {colleges.map((college) => (
-                                    <td key={college.id} className="p-3">
-                                        <Input
-                                            type="number"
-                                            value={college.distance}
-                                            onChange={(e) => updateCollege(college.id, 'distance', Number(e.target.value))}
-                                            placeholder="0"
-                                        />
-                                    </td>
-                                ))}
-                            </tr>
-
-                            <tr className="border-b">
                                 <td className="p-3 font-medium">Avg. Placement Package (Rs LPA)</td>
                                 {colleges.map((college) => (
                                     <td key={college.id} className="p-3">
@@ -160,14 +186,20 @@ export function FeeComparisonTool() {
                             </tr>
 
                             <tr className="bg-blue-50 dark:bg-blue-950/20">
-                                <td className="p-3 font-semibold">ROI (4 years)</td>
+                                <td className="p-3 font-semibold">Cost Recovery Time</td>
                                 {colleges.map((college) => {
                                     const totalCost = (college.tuition + college.hostel) * 4;
-                                    const expectedEarnings = college.placement * 100000;
-                                    const roi = totalCost > 0 ? ((expectedEarnings / totalCost) * 100).toFixed(0) : 0;
+                                    const annualEarnings = college.placement * 100000;
+                                    const yearsToRecover = annualEarnings > 0 ? (totalCost / annualEarnings).toFixed(1) : 'N/A';
+
                                     return (
                                         <td key={college.id} className="p-3">
-                                            <div className="text-lg font-bold text-blue-600">{roi}%</div>
+                                            <div className="text-lg font-bold text-blue-600">
+                                                {yearsToRecover === 'N/A' ? 'N/A' : `${yearsToRecover} Years`}
+                                            </div>
+                                            <div className="text-xs text-muted-foreground mt-1">
+                                                to earn back fees
+                                            </div>
                                         </td>
                                     );
                                 })}

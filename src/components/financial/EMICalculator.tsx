@@ -4,7 +4,14 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Calculator } from 'lucide-react';
 
-export function EMICalculator() {
+import { Lightbulb } from 'lucide-react';
+
+interface EMICalculatorProps {
+    suggestedCourse?: string;
+    courseDuration?: number;
+}
+
+export function EMICalculator({ suggestedCourse, courseDuration }: EMICalculatorProps) {
     const [loanAmount, setLoanAmount] = useState(500000);
     const [interestRate, setInterestRate] = useState(8.5);
     const [tenure, setTenure] = useState(5);
@@ -29,8 +36,21 @@ export function EMICalculator() {
                     </div>
                 </div>
             </CardHeader>
-            <CardContent className="space-y-4">
-                <div className="space-y-4">
+            <CardContent className="space-y-6">
+                {suggestedCourse && (
+                    <div className="bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800 rounded-lg p-4 flex gap-3">
+                        <Lightbulb className="h-5 w-5 text-amber-600 dark:text-amber-500 shrink-0 mt-0.5" />
+                        <div className="space-y-1">
+                            <h4 className="font-semibold text-sm text-amber-800 dark:text-amber-400">Smart Insight</h4>
+                            <p className="text-sm text-amber-700 dark:text-amber-500">
+                                Since you are targeting <strong>{suggestedCourse}</strong> {courseDuration ? `(${courseDuration} years)` : ''},
+                                we recommend a repayment tenure of at least <strong>{(courseDuration || 4) + 3} years</strong> to keep EMIs manageable after graduation.
+                            </p>
+                        </div>
+                    </div>
+                )}
+
+                <div className="space-y-6">
                     <div>
                         <div className="flex justify-between mb-2">
                             <Label>Loan Amount</Label>

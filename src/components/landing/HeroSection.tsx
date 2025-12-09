@@ -186,24 +186,36 @@ export function HeroSection({ title, subtitle }: HeroSectionProps) {
                         <span className="tracking-wide">AI-Powered Career Guidance</span>
                     </motion.div>
 
-                    <h1 className="text-5xl md:text-7xl lg:text-8xl font-bold tracking-tight font-headline bg-clip-text text-transparent bg-gradient-to-b from-foreground to-foreground/70 pb-2">
-                        {title}
+                    <h1 className="text-6xl md:text-8xl lg:text-9xl font-bold tracking-tight font-headline text-slate-800 leading-tight pb-4">
+                        Discover Your Future <br />
+                        <span className="text-slate-700">Today.</span>
                     </h1>
 
-                    <p className="mx-auto max-w-2xl text-muted-foreground text-lg md:text-xl leading-relaxed font-medium">
-                        {subtitle}
+                    <p className="mx-auto max-w-2xl text-slate-500 text-xl font-medium">
+                        One-Stop Personalized Career & Education Advisor
                     </p>
                 </motion.div>
             </div>
 
             {/* Scroll Indicator */}
             <motion.div
-                className="absolute bottom-10 left-1/2 -translate-x-1/2 text-muted-foreground"
+                className="absolute bottom-12 left-1/2 -translate-x-1/2 cursor-pointer z-50 group"
                 animate={{ y: [0, 10, 0] }}
                 transition={{ duration: 2, repeat: Infinity }}
             >
-                <ChevronDown className="h-8 w-8" />
+                <div
+                    onClick={() => document.getElementById('career-choice-section')?.scrollIntoView({ behavior: 'smooth' })}
+                    className="flex flex-col items-center gap-2"
+                >
+                    <span className="text-sm font-semibold text-green-600 bg-green-50 px-3 py-1 rounded-full border border-green-200 shadow-sm opacity-0 group-hover:opacity-100 transition-opacity">
+                        Click Here to Start
+                    </span>
+                    <div className="w-14 h-14 bg-gradient-to-br from-blue-500 to-teal-500 rounded-full flex items-center justify-center text-white shadow-lg shadow-blue-200 transition-transform group-hover:scale-110">
+                        <ChevronDown className="h-8 w-8" />
+                    </div>
+                    <span className="text-xs text-muted-foreground font-medium opacity-60">Discover Your Path</span>
+                </div>
             </motion.div>
-        </section>
+        </section >
     );
 }

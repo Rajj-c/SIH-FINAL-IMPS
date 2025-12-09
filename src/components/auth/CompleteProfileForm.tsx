@@ -36,7 +36,7 @@ const profileSchema = z.object({
 export function CompleteProfileForm() {
     const [isLoading, setIsLoading] = useState(false);
     const { toast } = useToast();
-    const { updateUserProfile, user } = useAuth();
+    const { updateUserProfile, user, logout } = useAuth();
 
     const [defaultUserType] = useState(() => {
         if (typeof window !== 'undefined') {
@@ -287,7 +287,27 @@ export function CompleteProfileForm() {
                         </Button>
                     </form>
                 </Form>
+
+                <div className="mt-6 text-center">
+                    <Button
+                        variant="link"
+                        size="sm"
+                        onClick={async () => {
+                            try {
+                                await user?.delete(); // Optional: Delete the temp user if they want to start over completely? 
+                                // Actually, just logging out is safer. But if they just created it via Google and want to use a different one, logout is fine.
+                                // If they want to "cancel" signup, logout is the way.
+                                logout();
+                            } catch (e) {
+                                logout();
+                            }
+                        }}
+                        className="text-muted-foreground hover:text-primary"
+                    >
+                        Not you? Sign Out / Start Over
+                    </Button>
+                </div>
             </CardContent>
-        </Card>
+        </Card >
     );
 }
