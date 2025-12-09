@@ -216,7 +216,7 @@ const getNodeDetails = (node: Node) => {
                 fees: college.fee,
                 hostelFees: college.hostelFees,
                 contact: college.contactInfo,
-                contact: college.contactInfo,
+
                 mapUrl: college.googleMapsUrl,
                 placementStats: {
                     average: "Rs. 8.5 LPA",

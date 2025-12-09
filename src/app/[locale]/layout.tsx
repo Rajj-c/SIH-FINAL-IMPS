@@ -5,6 +5,7 @@ import { cn } from '@/lib/utils';
 import { AuthProvider } from '@/hooks/use-auth';
 import { NextIntlClientProvider } from 'next-intl';
 import { getMessages } from 'next-intl/server';
+import { GoogleTranslateFix } from '@/components/GoogleTranslateFix';
 
 export const metadata: Metadata = {
   title: 'EduPath Navigator',
@@ -34,6 +35,7 @@ export default async function RootLayout({
       </head>
       <body className={cn('font-body antialiased min-h-screen flex flex-col')}>
         <NextIntlClientProvider messages={messages}>
+          <GoogleTranslateFix />
           <AuthProvider>
             {children}
           </AuthProvider>

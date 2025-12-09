@@ -1,37 +1,49 @@
 'use client';
 
-import { useLocale } from 'next-intl';
-import { useRouter, usePathname } from '@/navigation';
-import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
-} from '@/components/ui/select';
+import React, { useEffect } from 'react';
 
 export function LanguageSwitcher() {
-    const locale = useLocale();
-    const router = useRouter();
-    const pathname = usePathname();
+    // Determine the user's preferred language or default to English
 
-    const handleChange = (value: string) => {
-        router.replace(pathname, { locale: value });
-    };
+    useEffect(() => {
+        // Function to initialize the widget
+        const initWidget = () => {
+            // @ts-ignore
+            if (window.google && window.google.translate && window.google.translate.TranslateElement) {
+                // @ts-ignore
+                new window.google.translate.TranslateElement({
+                    pageLanguage: 'en',
+                    includedLanguages: 'en,hi,te,kn,ta,ml',
+                    layout: (window as any).google.translate.TranslateElement.InlineLayout.SIMPLE,
+                    autoDisplay: false,
+                }, 'google_translate_element');
+            }
+        }
+
+        // 1. If script isn't there, add it
+        if (!document.querySelector('script[src*="translate.google.com"]')) {
+            // @ts-ignore
+            window.googleTranslateElementInit = initWidget;
+
+            const addScript = document.createElement("script");
+            addScript.setAttribute(
+                "src",
+                "//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"
+            );
+            document.body.appendChild(addScript);
+        } else {
+            // 2. If script is there, manually init (because we navigated/re-mounted)
+            // Check if element is empty to avoid double-init
+            const target = document.getElementById('google_translate_element');
+            if (target && target.innerHTML === "") {
+                initWidget();
+            }
+        }
+    }, []);
 
     return (
-        <Select value={locale} onValueChange={handleChange}>
-            <SelectTrigger className="w-[100px] h-8 text-xs">
-                <SelectValue placeholder="Language" />
-            </SelectTrigger>
-            <SelectContent>
-                <SelectItem value="en">English</SelectItem>
-                <SelectItem value="hi">हिंदी</SelectItem>
-                <SelectItem value="te">తెలుగు</SelectItem>
-                <SelectItem value="kn">ಕನ್ನಡ</SelectItem>
-                <SelectItem value="ml">മലയാളം</SelectItem>
-                <SelectItem value="pa">ਪੰਜਾਬੀ</SelectItem>
-            </SelectContent>
-        </Select>
+        <div className="flex items-center">
+            <div id="google_translate_element" className="google-translate-container" />
+        </div>
     );
 }
