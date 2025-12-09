@@ -30,6 +30,10 @@ export interface Course {
         senior: string;
         growth: string;
     };
+    // New Detailed Fields for Flow Map
+    syllabusTopics?: string[];
+    studyResources?: string[];
+    preparationStrategy?: string;
 }
 
 // ==================== SCIENCE STREAM COURSES ====================
@@ -45,7 +49,7 @@ export const scienceCourses: Course[] = [
         classLevel: '12',
         duration: '4 years',
         eligibility: '12th with Physics, Chemistry, Mathematics (PCM)',
-        entranceExams: ['JEE Main', 'JEE Advanced', 'BITSAT', 'State CETs'],
+        entranceExams: ['JEE Main', 'JEE Advanced', 'BITSAT', 'VITEEE', 'SRMJEEE'],
         avgSalary: 'Rs. 6-12 LPA',
         topSalary: 'Rs. 25-50 LPA',
         demand: 'Very High',
@@ -63,7 +67,22 @@ export const scienceCourses: Course[] = [
             mid: 'Rs.15 - 30 LPA',
             senior: 'Rs.40 LPA - Rs.1 Cr+',
             growth: 'Exponential (Fastest growing sector)'
-        }
+        },
+        syllabusTopics: [
+            "Data Structures & Algorithms (DSA)",
+            "Object-Oriented Programming (OOPs)",
+            "Database Management Systems (DBMS)",
+            "Operating Systems (OS)",
+            "Computer Networks",
+            "Artificial Intelligence & Machine Learning"
+        ],
+        studyResources: [
+            "Books: 'Introduction to Algorithms' by CLRS, 'Operating System Concepts' by Galvin",
+            "Platforms: LeetCode (for coding practice), GeeksforGeeks",
+            "Courses: CS50 by Harvard (edX), NPTEL Online Courses",
+            "YouTube Channels: Striver, Abdul Bari, Traversy Media"
+        ],
+        preparationStrategy: "Focus heavily on Problem Solving and DSA from Day 1. Build 2-3 solid projects (Full Stack or AI) rather than many small ones. Consistent practice on LeetCode is key for placements."
     },
     {
         id: 'btech-mechanical',
@@ -92,7 +111,21 @@ export const scienceCourses: Course[] = [
             mid: 'Rs.12 - 20 LPA',
             senior: 'Rs.30 LPA+',
             growth: 'Steady & Stable'
-        }
+        },
+        syllabusTopics: [
+            "Engineering Thermodynamics",
+            "Fluid Mechanics",
+            "Strength of Materials",
+            "Theory of Machines",
+            "Manufacturing Processes",
+            "CAD/CAM/CAE"
+        ],
+        studyResources: [
+            "Books: 'Engineering Thermodynamics' by P.K. Nag, 'Fluid Mechanics' by R.K. Bansal",
+            "Software: AutoCAD, SolidWorks, ANSYS",
+            "NPTEL Courses on Robotics and Automation"
+        ],
+        preparationStrategy: "Develop strong conceptual understanding of Physics. Gain practical proficiency in CAD software like SolidWorks or AutoCAD. Internships in manufacturing plants are highly valuable."
     },
     {
         id: 'btech-civil',
@@ -113,6 +146,19 @@ export const scienceCourses: Course[] = [
         skills: ['Structural Design', 'AutoCAD', 'Project Management', 'Surveying'],
         description: 'Design and construction of infrastructure, buildings, roads, and bridges.',
         icon: '🏗️',
+        syllabusTopics: [
+            "Structural Analysis",
+            "Geotechnical Engineering",
+            "Transportation Engineering",
+            "Environmental Engineering",
+            "Construction Project Management"
+        ],
+        studyResources: [
+            "Books: 'Structural Analysis' by Hibbeler",
+            "Software: AutoCAD, STAAD Pro, Revit",
+            "IS Codes (Indian Standards) for construction"
+        ],
+        preparationStrategy: "Master the basics of Mechanics and Strength of Materials. Learn to read architectural drawings. GATE preparation can open doors to top PSUs."
     },
 
     // Medical
@@ -130,7 +176,7 @@ export const scienceCourses: Course[] = [
         topSalary: 'Rs. 30-100 LPA',
         demand: 'Very High',
         difficulty: 5,
-        topColleges: ['AIIMS Delhi', 'JIPMER', 'GMC Chandigarh'],
+        topColleges: ['AIIMS Delhi', 'JIPMER', 'GMC Chandigarh', 'KGMU Lucknow', 'CMC Vellore'],
         careers: ['Doctor (General Physician)', 'Surgeon', 'Medical Officer', 'Healthcare Consultant'],
         skills: ['Medical Knowledge', 'Patient Care', 'Diagnosis', 'Emergency Response', 'Research'],
         description: 'Comprehensive medical training to become a licensed medical practitioner.',
@@ -143,7 +189,21 @@ export const scienceCourses: Course[] = [
             mid: 'Rs.18 - 35 LPA (Specialist)',
             senior: 'Rs.50 LPA - Rs.2 Cr+ (Senior Consultant)',
             growth: 'Late Bloomer (Peeks after age 30)'
-        }
+        },
+        syllabusTopics: [
+            "Human Anatomy & Physiology",
+            "Biochemistry",
+            "Pathology",
+            "Pharmacology",
+            "Microbiology",
+            "General Medicine & Surgery"
+        ],
+        studyResources: [
+            "Books: 'Gray's Anatomy', 'Guyton and Hall Textbook of Medical Physiology', 'Robbins Pathology'",
+            "Apps: Marrow, Prepladder (for NEET PG prep)",
+            "Journals: The Lancet, NEJM"
+        ],
+        preparationStrategy: "NEET UG is the gateway - focus entirely on NCERT Biology. For MBBS, consistency is key. Clinical rotations are where you learn the real art of medicine. Plan for PG (NEET PG/NEXT) early on."
     },
     {
         id: 'bds',
@@ -164,6 +224,18 @@ export const scienceCourses: Course[] = [
         skills: ['Dental Procedures', 'Patient Care', 'Diagnosis', 'Surgery'],
         description: 'Study of dental science and oral health care.',
         icon: '🦷',
+        syllabusTopics: [
+            "Dental Anatomy",
+            "Oral Pathology",
+            "Prosthodontics",
+            "Periodontics",
+            "Oral Surgery"
+        ],
+        studyResources: [
+            "Books: 'Wheeler's Dental Anatomy', 'Carranza's Periodontology'",
+            "Dental Pulse Academy"
+        ],
+        preparationStrategy: "Focus on manual dexterity and fine motor skills. Practical work in phantom head labs is crucial. Establishing a private clinic often yields better returns than hospital jobs."
     },
 
     // Research/Pure Science
@@ -186,6 +258,18 @@ export const scienceCourses: Course[] = [
         skills: ['Research', 'Mathematics', 'Analytical Thinking', 'Lab Work'],
         description: 'Foundation in physics for research and higher studies (M.Sc, PhD).',
         icon: '🔬',
+        syllabusTopics: [
+            "Classical Mechanics",
+            "Quantum Physics",
+            "Electromagnetism",
+            "Statistical Mechanics",
+            "Optics"
+        ],
+        studyResources: [
+            "Books: 'Concepts of Physics' by H.C. Verma, 'Introduction to Electrodynamics' by Griffiths",
+            "Feynman Lectures on Physics"
+        ],
+        preparationStrategy: "Build a rock-solid mathematical foundation. Participate in summer research programs at IITs/IISERs. Plan for JAM/JEST for Master's admission."
     },
 ];
 
@@ -219,7 +303,20 @@ export const commerceCourses: Course[] = [
             mid: 'Rs.20 - 35 LPA',
             senior: 'Rs.50 LPA - Rs.1 Cr+',
             growth: 'High (Professional Expert)'
-        }
+        },
+        syllabusTopics: [
+            "Principles and Practice of Accounting",
+            "Business Laws & Company Law",
+            "Taxation (Direct & Indirect)",
+            "Auditing and Assurance",
+            "Strategic Financial Management"
+        ],
+        studyResources: [
+            "ICAI Study Material (The Bible for CA)",
+            "RTPs (Revision Test Papers) and MTPs",
+            "YouTube: CA Neeraj Arora, Swapnil Patni Classes"
+        ],
+        preparationStrategy: "Consistency is everything. Clear Foundation, then complete Articleship seriously (practical knowledge is key). Do multiple revisions of ICAI study modules before exams."
     },
     {
         id: 'bcom',

@@ -167,64 +167,88 @@ function CareerFlowContent({ courseName, stream }: { courseName: string, stream:
         // 1. Show Details
         setSelectedNodeData(node.data);
 
-        // 2. Expand Logic
-        if (expandedNodes.has(node.id)) return; // Already expanded
+        // 2. Toggle Logic
+        if (expandedNodes.has(node.id)) {
+            // --- COLLAPSE LOGIC ---
+            const getDescendants = (parentId: string, currentEdges: Edge[]): string[] => {
+                const children = currentEdges
+                    .filter(e => e.source === parentId)
+                    .map(e => e.target);
 
-        // Determine which flow/ID to look up
-        // Check for Bridge Mapping first
-        const lookupId = BRIDGE_NODES[node.id] || node.id;
+                let descendants = [...children];
+                children.forEach(childId => {
+                    descendants = [...descendants, ...getDescendants(childId, currentEdges)];
+                });
+                return descendants;
+            };
 
-        let newEdges: Edge[] = [];
-        let newNodes: Node[] = [];
+            const descendantsToRemove = getDescendants(node.id, edges);
 
-        // Helper to search in a flow
-        const findChildren = (flow: any, sourceId: string) => {
-            const relevantEdges = flow.edges.filter((e: Edge) => e.source === sourceId);
-            const targetIds = relevantEdges.map((e: Edge) => e.target);
-            const relevantNodes = flow.nodes.filter((n: Node) => targetIds.includes(n.id));
-            return { edges: relevantEdges, nodes: relevantNodes };
-        };
+            // Remove nodes and edges
+            setNodes(nds => nds.filter(n => !descendantsToRemove.includes(n.id)));
+            setEdges(eds => eds.filter(e => !descendantsToRemove.includes(e.source) && !descendantsToRemove.includes(e.target)));
 
-        // Search in ALL flows for children (robustness)
-        Object.values(careerFlows).forEach(flow => {
-            const result = findChildren(flow, lookupId);
-            // If we used a bridge ID, we need to rewrite the source of the new edges to match the CLICKED node ID
-            if (lookupId !== node.id && result.edges.length > 0) {
-                const remappedEdges = result.edges.map((e: Edge) => ({
-                    ...e,
-                    id: `e-${node.id}-${e.target}`, // New unique ID
-                    source: node.id // Connect to the actual clicked node
-                }));
-                newEdges = [...newEdges, ...remappedEdges];
-            } else {
-                newEdges = [...newEdges, ...result.edges];
-            }
-            newNodes = [...newNodes, ...result.nodes];
-        });
-
-        // Valid children found?
-        if (newNodes.length > 0) {
-            // Deduplicate nodes (just in case)
-            const uniqueNewNodes = newNodes.filter(n => !nodes.some(existing => existing.id === n.id));
-
-            // Add to graph
-            const updatedNodes = [...nodes, ...uniqueNewNodes];
-            const updatedEdges = [...edges, ...newEdges];
-
-            // Re-layout
-            const layouted = getLayoutedElements(updatedNodes, updatedEdges);
-            setNodes(layouted.nodes);
-            setEdges(layouted.edges);
-            setExpandedNodes(prev => new Set(prev).add(node.id));
-
-            // Fit view to potentially seeing new nodes
-            setTimeout(() => fitView({ duration: 800, minZoom: 0.5 }), 200);
-        } else {
-            // No children found - maybe a leaf node
-            toast({
-                title: "Reached the end!",
-                description: "This is a final node. Check details in the panel.",
+            // Update expanded state
+            setExpandedNodes(prev => {
+                const next = new Set(prev);
+                next.delete(node.id);
+                descendantsToRemove.forEach(id => next.delete(id));
+                return next;
             });
+
+            // Re-layout slightly to fix positions if needed (optional, but good for cleanup)
+            // For now, simpler is better: just remove.
+
+        } else {
+            // --- EXPAND LOGIC ---
+
+            // Determine which flow/ID to look up
+            const lookupId = BRIDGE_NODES[node.id] || node.id;
+
+            let newEdges: Edge[] = [];
+            let newNodes: Node[] = [];
+
+            // Helper to search in a flow
+            const findChildren = (flow: any, sourceId: string) => {
+                const relevantEdges = flow.edges.filter((e: Edge) => e.source === sourceId);
+                const targetIds = relevantEdges.map((e: Edge) => e.target);
+                const relevantNodes = flow.nodes.filter((n: Node) => targetIds.includes(n.id));
+                return { edges: relevantEdges, nodes: relevantNodes };
+            };
+
+            // Search in ALL flows for children
+            Object.values(careerFlows).forEach(flow => {
+                const result = findChildren(flow, lookupId);
+                if (lookupId !== node.id && result.edges.length > 0) {
+                    const remappedEdges = result.edges.map((e: Edge) => ({
+                        ...e,
+                        id: `e-${node.id}-${e.target}`, // New unique ID
+                        source: node.id // Connect to the actual clicked node
+                    }));
+                    newEdges = [...newEdges, ...remappedEdges];
+                } else {
+                    newEdges = [...newEdges, ...result.edges];
+                }
+                newNodes = [...newNodes, ...result.nodes];
+            });
+
+            if (newNodes.length > 0) {
+                const uniqueNewNodes = newNodes.filter(n => !nodes.some(existing => existing.id === n.id));
+                const updatedNodes = [...nodes, ...uniqueNewNodes];
+                const updatedEdges = [...edges, ...newEdges];
+
+                const layouted = getLayoutedElements(updatedNodes, updatedEdges);
+                setNodes(layouted.nodes);
+                setEdges(layouted.edges);
+                setExpandedNodes(prev => new Set(prev).add(node.id));
+
+                setTimeout(() => fitView({ duration: 800, minZoom: 0.5 }), 200);
+            } else {
+                toast({
+                    title: "Reached the end!",
+                    description: "This is a final node. Check details in the panel.",
+                });
+            }
         }
 
     }, [nodes, edges, expandedNodes, setNodes, setEdges, fitView]);

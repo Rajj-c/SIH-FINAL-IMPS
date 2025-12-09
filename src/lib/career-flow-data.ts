@@ -458,6 +458,35 @@ export const scienceFlowNodes: Node[] = [
             ]
         },
     },
+    // New Engineering Branches
+    {
+        id: 'civil-engg',
+        type: 'degreeNode',
+        position: { x: 700, y: 350 },
+        data: {
+            label: 'Civil Engineering',
+            salary: 'Rs. 4-10 LPA',
+            demand: 'Steady',
+            icon: '🏗️',
+            description: 'Infrastructure design and construction. Roads, Bridges, Dams.',
+            skills: ['Structure Design', 'AutoCAD', 'Project Management'],
+            learningPath: [{ step: 'Degree', detail: 'B.Tech Civil' }]
+        }
+    },
+    {
+        id: 'biotech-engg',
+        type: 'degreeNode',
+        position: { x: 900, y: 350 },
+        data: {
+            label: 'Biotechnology',
+            salary: 'Rs. 4-9 LPA',
+            demand: 'Growing',
+            icon: '🧬',
+            description: 'Biological systems for tech applications. Genetic engineering, pharma, agriculture.',
+            skills: ['Genetics', 'Lab Skills', 'Bioinformatics'],
+            learningPath: [{ step: 'Degree', detail: 'B.Tech Biotech' }]
+        }
+    },
 
     // --- Medical Branch (PCB) ---
     {
@@ -537,13 +566,141 @@ export const scienceFlowNodes: Node[] = [
             icon: '📣',
             skills: ['SEO/SEM', 'Social Media Strategy', 'Analytics', 'Content Marketing'],
             learningPath: [
-                { step: 'Skills', detail: 'Learn Digital Marketing Tools' },
-                { step: 'Certifications', detail: 'Google / Meta Certifications' },
-                { step: 'Portfolio', detail: 'Build Personal Brand / Pages' },
                 { step: 'Freelancing', detail: 'Work on Live Projects' },
                 { step: 'Job', detail: 'Digital Marketing Executive' }
             ]
         },
+    },
+
+    // --- CS Specializations (New Depth) ---
+    {
+        id: 'cyber-security',
+        type: 'careerNode',
+        position: { x: -150, y: 700 }, // Deep branch
+        data: {
+            label: 'Cybersecurity Expert',
+            salary: 'Rs. 10-35 LPA',
+            demand: 'Critical',
+            icon: '🔒',
+            description: 'Protect systems and networks from digital attacks. High demand due to increasing cyber threats.',
+            skills: ['Network Security', 'Ethical Hacking', 'Cryptography', 'Risk Analysis'],
+            learningPath: [{ step: 'Certifications', detail: 'CEH, CISSP' }]
+        }
+    },
+    {
+        id: 'cloud-devops',
+        type: 'careerNode',
+        position: { x: 50, y: 700 },
+        data: {
+            label: 'Cloud & DevOps',
+            salary: 'Rs. 12-40 LPA',
+            demand: 'Very High',
+            icon: '☁️',
+            description: 'Manage cloud infrastructure and deployment pipelines. Essential for modern software delivery.',
+            skills: ['AWS/Azure', 'Docker', 'Kubernetes', 'CI/CD'],
+            learningPath: [{ step: 'Certification', detail: 'AWS Solutions Architect' }]
+        }
+    },
+
+    // --- Medical Specializations (New Depth) ---
+    {
+        id: 'cardiology',
+        type: 'careerNode',
+        position: { x: 600, y: 700 },
+        data: {
+            label: 'Cardiologist',
+            salary: 'Rs. 30 LPA - 1 Cr+',
+            demand: 'High',
+            icon: '❤️',
+            description: 'Heart specialist. Requires DM Cardiology after MD Medicine.',
+            skills: ['Cardiac Care', 'Surgery', 'ECG Analysis'],
+            learningPath: [{ step: 'Super Specialization', detail: 'DM Cardiology (3 Yrs)' }]
+        }
+    },
+    {
+        id: 'neurology',
+        type: 'careerNode',
+        position: { x: 800, y: 700 },
+        data: {
+            label: 'Neurologist',
+            salary: 'Rs. 30 LPA - 1 Cr+',
+            demand: 'High',
+            icon: '🧠',
+            description: 'Brain and nervous system specialist. Highly complex and respected field.',
+            skills: ['Neuroscience', 'Diagnosis', 'Patient Care'],
+            learningPath: [{ step: 'Super Specialization', detail: 'DM Neurology (3 Yrs)' }]
+        }
+    },
+    // --- Broad Medical Options (BDS, Pharma, Nursing, Ayush) ---
+    {
+        id: 'bds',
+        type: 'degreeNode',
+        position: { x: 900, y: 350 },
+        data: {
+            label: 'BDS (Dentistry)',
+            salary: 'Rs. 5-15 LPA',
+            demand: 'Steady',
+            icon: '🦷',
+            description: 'Dental Surgery. Diagnose and treat oral health issues. Good private practice potential.',
+            skills: ['Dental Surgery', 'Patient Care', 'Precision'],
+            learningPath: [{ step: 'Degree', detail: 'BDS (5 Years)' }]
+        }
+    },
+    {
+        id: 'ayush',
+        type: 'degreeNode',
+        position: { x: 1050, y: 350 },
+        data: {
+            label: 'AYUSH (BAMS/BHMS)',
+            salary: 'Rs. 4-10 LPA',
+            demand: 'Rising',
+            icon: '🌿',
+            description: 'Ayurveda, Yoga, Unani, Siddha, and Homeopathy. Holistic healing focus.',
+            skills: ['Holistic Health', 'Natural Medicine'],
+            learningPath: [{ step: 'Degree', detail: 'BAMS / BHMS (5.5 Years)' }]
+        }
+    },
+    {
+        id: 'pharma',
+        type: 'degreeNode',
+        position: { x: 1200, y: 350 },
+        data: {
+            label: 'B.Pharm',
+            salary: 'Rs. 3-8 LPA',
+            demand: 'High',
+            icon: '💊',
+            description: 'Pharmaceutical sciences. Drug manufacturing, quality control, and testing.',
+            skills: ['Chemistry', 'Lab Safety', 'Regulations'],
+            learningPath: [{ step: 'Degree', detail: 'B.Pharm (4 Years)' }]
+        }
+    },
+    {
+        id: 'nursing',
+        type: 'degreeNode',
+        position: { x: 1350, y: 350 },
+        data: {
+            label: 'B.Sc Nursing',
+            salary: 'Rs. 3-6 LPA',
+            demand: 'Very High',
+            icon: '💉',
+            description: 'Patient care and hospital management. Critical role in healthcare ecosystem.',
+            skills: ['Patient Care', 'Empathy', 'Medical Basics'],
+            learningPath: [{ step: 'Degree', detail: 'B.Sc Nursing (4 Years)' }]
+        }
+    },
+    {
+        id: 'research-career',
+        type: 'careerNode',
+        position: { x: 1200, y: 550 },
+        data: {
+            label: 'Clinical Researcher',
+            salary: 'Rs. 5-12 LPA',
+            demand: 'High',
+            icon: '🧪',
+            description: 'Conduct clinical trials and research new drugs/treatments.',
+            skills: ['Data Analysis', 'Clinical Guidelines', 'Research'],
+            learningPath: [{ step: 'Master\'s', detail: 'M.Pharm / M.Sc Clinical Research' }]
+        }
     },
 ];
 
@@ -568,6 +725,21 @@ export const scienceFlowEdges: Edge[] = [
 
     { id: 'e-mbbs-spec', source: 'mbbs', target: 'specialist-career' },
     { id: 'e-pharma-res', source: 'pharma', target: 'research-career' },
+
+    // New Specialization Edges
+    { id: 'e-cs-cyber', source: 'cs-engg', target: 'cyber-security' },
+    { id: 'e-cs-cloud', source: 'cs-engg', target: 'cloud-devops' },
+    { id: 'e-spec-cardio', source: 'specialist-career', target: 'cardiology' },
+    { id: 'e-spec-neuro', source: 'specialist-career', target: 'neurology' },
+
+    // New Engineering Edges
+    { id: 'e-engg-civil', source: 'engineering', target: 'civil-engg' },
+    { id: 'e-engg-bio', source: 'engineering', target: 'biotech-engg' },
+
+    // New Medical Edges
+    { id: 'e-med-bds', source: 'medical', target: 'bds' },
+    { id: 'e-med-ayush', source: 'medical', target: 'ayush' },
+    { id: 'e-med-nursing', source: 'medical', target: 'nursing' },
 ];
 
 export const commerceFlowNodes: Node[] = [
@@ -790,14 +962,102 @@ export const commerceFlowNodes: Node[] = [
             ]
         },
     },
+    // --- Commerce Specializations ---
+    {
+        id: 'audit-career',
+        type: 'careerNode',
+        position: { x: 0, y: 700 }, // Deep branch
+        data: {
+            label: 'Statutory Auditor',
+            salary: 'Rs. 8-20 LPA',
+            demand: 'High',
+            icon: '📋',
+            description: 'Inspect financial records to ensure accuracy and compliance. Crucial for corporate trust.',
+            skills: ['Auditing Standards', 'Risk Assessment', 'Detail Oriented'],
+            learningPath: [{ step: 'Certificate', detail: 'CA / CPA' }]
+        }
+    },
+    {
+        id: 'tax-consultant',
+        type: 'careerNode',
+        position: { x: 200, y: 700 }, // Deep branch
+        data: {
+            label: 'Tax Consultant',
+            salary: 'Rs. 10-25 LPA',
+            demand: 'Seasonal High',
+            icon: '🧾',
+            description: 'Expert in direct and indirect taxation. Advise companies on saving tax legally.',
+            skills: ['GST', 'Income Tax Law', 'Litigation'],
+            learningPath: [{ step: 'Experience', detail: 'Work in Tax Firm' }]
+        }
+    },
+    {
+        id: 'finance-manager',
+        type: 'careerNode',
+        position: { x: 600, y: 700 }, // Deep branch
+        data: {
+            label: 'Finance Manager',
+            salary: 'Rs. 15-35 LPA',
+            demand: 'High',
+            icon: '📉',
+            description: 'Manage the financial health of an organization. Budgeting, forecasting, and reporting.',
+            skills: ['Financial Planning', 'Excel', 'Leadership'],
+            learningPath: [{ step: 'Promoted', detail: 'From Analyst/Associate' }]
+        }
+    },
+    // --- Broad Commerce Options ---
+    {
+        id: 'bba',
+        type: 'degreeNode',
+        position: { x: 900, y: 350 },
+        data: {
+            label: 'BBA / BMS',
+            salary: 'Rs. 3-6 LPA',
+            demand: 'Steady',
+            icon: '👔',
+            description: 'Bachelor of Business Administration. Management basics. Good stepping stone for MBA.',
+            skills: ['Business Basics', 'Management', 'Communication'],
+            learningPath: [{ step: 'Degree', detail: 'BBA (3 Years)' }]
+        }
+    },
+    {
+        id: 'economics-hons',
+        type: 'degreeNode',
+        position: { x: 1050, y: 350 },
+        data: {
+            label: 'BA/B.Sc Economics',
+            salary: 'Rs. 6-12 LPA',
+            demand: 'High',
+            icon: '📈',
+            description: 'Study of markets and economy. Leads to roles in Data Science, Finance, and Policy.',
+            skills: ['Econometrics', 'Statistics', 'Analysis'],
+            learningPath: [{ step: 'Degree', detail: 'BA Economics Hons' }]
+        }
+    },
 ];
 
 export const commerceFlowEdges: Edge[] = [
     { id: 'e-start-prof', source: 'start', target: 'professional', animated: true, style: { stroke: '#f59e0b' } },
     { id: 'e-start-deg', source: 'start', target: 'degree', animated: true, style: { stroke: '#3b82f6' } },
 
+    // New Broad Edges
+    { id: 'e-start-bba', source: 'start', target: 'bba', animated: true, style: { stroke: '#3b82f6' } },
+    { id: 'e-start-eco', source: 'start', target: 'economics-hons', animated: true, style: { stroke: '#3b82f6' } },
+
     { id: 'e-prof-ca', source: 'professional', target: 'ca' },
     { id: 'e-prof-cfa', source: 'professional', target: 'cfa' },
+
+    // MBA Edges
+    { id: 'e-deg-mba', source: 'degree', target: 'mba' },
+    { id: 'e-mba-prod', source: 'mba', target: 'manager-career' },
+    { id: 'e-mba-mkt', source: 'mba', target: 'marketing-career' },
+
+    // CA Specializations
+    { id: 'e-ca-audit', source: 'ca', target: 'audit-career' },
+    { id: 'e-ca-tax', source: 'ca', target: 'tax-consultant' },
+
+    // MBA Specializations
+    { id: 'e-mba-fin', source: 'mba', target: 'finance-manager' },
     { id: 'e-ca-fin', source: 'ca', target: 'finance-career' },
     { id: 'e-cfa-fin', source: 'cfa', target: 'finance-career' },
 
@@ -1072,11 +1332,44 @@ export const artsFlowNodes: Node[] = [
             ]
         },
     },
+    // --- Broad Arts Options ---
+    {
+        id: 'psychology',
+        type: 'degreeNode',
+        position: { x: 1100, y: 350 },
+        data: {
+            label: 'BA Psychology',
+            salary: 'Rs. 4-10 LPA',
+            demand: 'Rising',
+            icon: '🧠',
+            description: 'Study of human behavior. Clinical, Child, or Organizational Psychology.',
+            skills: ['Empathy', 'Research', 'Counseling'],
+            learningPath: [{ step: 'Degree', detail: 'BA/B.Sc Psychology' }]
+        }
+    },
+    {
+        id: 'hotel-mgmt',
+        type: 'degreeNode',
+        position: { x: 1250, y: 350 },
+        data: {
+            label: 'Hotel Management',
+            salary: 'Rs. 3-8 LPA',
+            demand: 'High',
+            icon: '🏨',
+            description: 'Hospitality and tourism. Chef, Hotel Manager, Event Planner.',
+            skills: ['Hospitality', 'Communication', 'Management'],
+            learningPath: [{ step: 'Degree', detail: 'BHM / B.Sc Hospitality' }]
+        }
+    },
 ];
 
 export const artsFlowEdges: Edge[] = [
     { id: 'e-start-law', source: 'start', target: 'law', animated: true, style: { stroke: '#dc2626' } },
     { id: 'e-start-create', source: 'start', target: 'creative', animated: true, style: { stroke: '#8b5cf6' } },
+
+    // New Broad Edges
+    { id: 'e-start-psych', source: 'start', target: 'psychology', animated: true, style: { stroke: '#8b5cf6' } },
+    { id: 'e-start-hm', source: 'start', target: 'hotel-mgmt', animated: true, style: { stroke: '#8b5cf6' } },
 
     { id: 'e-law-nlu', source: 'law', target: 'nlu' },
     { id: 'e-law-civil', source: 'law', target: 'civil-services' },
@@ -1087,6 +1380,11 @@ export const artsFlowEdges: Edge[] = [
     { id: 'e-create-mass', source: 'creative', target: 'mass-comm' },
     { id: 'e-des-ux', source: 'design', target: 'ux-career' },
     { id: 'e-mass-media', source: 'mass-comm', target: 'media-career' },
+
+    // Arts Specializations
+    { id: 'e-law-corp', source: 'law', target: 'corp-lawyer' },
+    { id: 'e-law-lit', source: 'law', target: 'litigation-career' },
+    { id: 'e-des-fashion', source: 'design', target: 'fashion-designer' },
 ];
 
 export const careerFlows = {

@@ -9,10 +9,11 @@ import {
     orderBy,
     where,
     limit,
-    Timestamp
+    Timestamp,
+    addDoc
 } from 'firebase/firestore';
 import { db } from './client';
-import type { College, CareerPathNode, SavedCollege, SavedCareerPath, UserProfile } from '../types';
+import type { College, CareerPathNode, SavedCollege, SavedCareerPath, UserProfile, MentorshipRequest } from '../types';
 
 // ============================================
 // Saved Colleges
@@ -199,4 +200,16 @@ export async function getStudentByShareCode(code: string): Promise<UserProfile |
 
     const userDoc = querySnapshot.docs[0];
     return { uid: userDoc.id, ...userDoc.data() } as UserProfile;
+}
+/**
+ * Save a new mentorship request
+ */
+export async function saveMentorshipRequest(request: Omit<MentorshipRequest, 'id' | 'createdAt' | 'status'>): Promise<string> {
+    const requestsRef = collection(db, 'mentorship_requests');
+    const docRef = await addDoc(requestsRef, {
+        ...request,
+        status: 'pending',
+        createdAt: Timestamp.now()
+    });
+    return docRef.id;
 }

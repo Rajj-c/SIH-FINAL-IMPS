@@ -44,7 +44,8 @@ import {
     Target,
     Download,
     Share2,
-    CheckCircle2
+    CheckCircle2,
+    RefreshCcw
 } from 'lucide-react';
 import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
@@ -56,6 +57,7 @@ import {
     SheetContent,
     SheetTitle,
 } from "@/components/ui/sheet";
+import { allCourses } from '@/lib/courses-database';
 
 // --- DATA: Specific Job Insights ---
 const JOB_INSIGHTS_DATA: any = {
@@ -198,109 +200,9 @@ const JOB_INSIGHTS_DATA: any = {
     }
 };
 
-// --- Helper for Side Panel Details ---
-const getNodeDetails = (node: Node) => {
-    const label = node.data.label as string;
-    const type = node.type;
+// --- Moved inside component to access props ---
+// See inside CareerFlowMap function
 
-    // 1. College Details
-    if (type === 'college') {
-        const college = additionalColleges.find(c => c.name === label);
-        if (college) {
-            return {
-                type: 'college',
-                name: college.name,
-                location: `${college.district}, ${college.state}`,
-                cutoff: "85% - 98% (Based on Category)",
-                eligibility: college.eligibility,
-                fees: college.fee,
-                hostelFees: college.hostelFees,
-                contact: college.contactInfo,
-
-                mapUrl: college.googleMapsUrl,
-                placementStats: {
-                    average: "Rs. 8.5 LPA",
-                    highest: "Rs. 42 LPA",
-                    percentage: "94% Placed"
-                },
-                facilities: ["Advanced AI Labs", "Incubation Center", "Digital Library", "Olympic-size Pool"],
-                roiDescription: "Excellent ROI. Low fees compared to private universities with comparable placement records."
-            };
-        }
-    }
-
-    // 2. Course Details
-    if (type === 'course') {
-        return {
-            type: 'course',
-            name: label.replace('Suggested: ', ''),
-            duration: '4 Years (8 Semesters)',
-            eligibility: '10+2 with PCM (Min 60%)',
-            description: 'A comprehensive program designed to build strong fundamentals in engineering and technology.',
-            topRecruiters: ['Google', 'Microsoft', 'TCS', 'Infosys'],
-            futureScope: "High Demand in AI, Cloud, and Web3 Industries",
-            difficulty: "Moderate to High",
-            syllabusHighlights: [
-                "Data Structures & Algorithms",
-                "Operating Systems",
-                "Database Management",
-                "Computer Networks"
-            ],
-            careerOpportunities: [
-                "Software Engineer",
-                "Data Scientist",
-                "System Architect",
-                "Cyber Security Analyst"
-            ]
-        };
-    }
-
-    // 3. Job Details (PREMIUM VIEW)
-    if (type === 'job') {
-        const key = Object.keys(JOB_INSIGHTS_DATA).find(k => label.includes(k) || k.includes(label));
-        const jobData = key ? JOB_INSIGHTS_DATA[key] : JOB_INSIGHTS_DATA['DEFAULT_TECH'];
-        return {
-            type: 'job',
-            title: label,
-            ...jobData,
-            roleDescription: jobData.roleDescription,
-            demand: jobData.demand,
-            avgSalary: jobData.avgSalary,
-            roiDescription: jobData.roiDescription
-        };
-    }
-
-    // 4. Resource Details
-    if (type === 'resource') {
-        return {
-            type: 'resource',
-            title: label,
-            exams: [
-                { name: 'JEE Mains', date: 'January & April' },
-                { name: 'BITSAT', date: 'May' }
-            ],
-            materials: [
-                'NCERT Physics, Chemistry, Maths',
-                'H.C. Verma Concepts of Physics',
-                'Previous Year Question Papers'
-            ],
-            strategy: "Focus on problem-solving speed. Master NCERT for Chemistry. Practice at least 25 mock tests.",
-            difficulty: "High",
-            timeCommitment: "4-6 Hours/Day",
-            syllabusHighlights: ["Mechanics", "Organic Chemistry", "Calculus", "Modern Physics"]
-        }
-    }
-    // Handle 'rich' variants by stripping prefix
-    if (type && type.startsWith('rich')) {
-        const baseType = type.replace('rich', '').toLowerCase();
-        // ... recursion mapping would be needed if we reused this strict type check
-        // but we can just loosely return defaults or mock.
-        // Actually we should just pass the `data` directly in props for rich nodes 
-        // to avoid circular dependency or complex lookups.
-    }
-
-    return { type: 'generic', title: label };
-};
 
 // --- RICH NODES (For Export View) ---
 // These nodes render the FULL detail card directly on the canvas
@@ -469,6 +371,14 @@ const JobNode = (props: any) => <CustomNode {...props} icon={Briefcase} color="b
 const ExamNode = (props: any) => <CustomNode {...props} icon={Trophy} color="bg-red-500" borderColor="border-red-200" />;
 const StartupNode = (props: any) => <CustomNode {...props} icon={Lightbulb} color="bg-yellow-500" borderColor="border-yellow-200" />;
 
+const ExploreNode = ({ data }: any) => (
+    <div className="relative px-4 py-2 shadow-sm rounded-full border border-primary/50 bg-primary/5 hover:bg-primary/10 hover:scale-105 transition-all cursor-pointer group flex items-center gap-2" title="Click to see other colleges">
+        <Handle type="target" position={Position.Left} className="!bg-primary/50 !w-2 !h-2" />
+        <RefreshCcw size={14} className="text-primary group-hover:rotate-180 transition-transform duration-500" />
+        <span className="text-xs font-semibold text-primary">Explore More Colleges</span>
+    </div>
+);
+
 
 const nodeTypes = {
     course: CourseNode,
@@ -477,6 +387,7 @@ const nodeTypes = {
     job: JobNode,
     exam: ExamNode,
     startup: StartupNode,
+    explore: ExploreNode,
     // Register Rich Types
     richJob: RichJobNode,
     richCollege: RichCollegeNode,
@@ -507,6 +418,7 @@ export function CareerFlowMap({ courseName = 'B.Tech Computer Science' }: Career
     const [edges, setEdges, onEdgesChange] = useEdgesState<Edge>([]);
     const [selectedNode, setSelectedNode] = useState<Node | null>(null);
     const [isSheetOpen, setIsSheetOpen] = useState(false);
+    const [collegePage, setCollegePage] = useState(0);
 
     // Independent Path View
     const [isPathViewOpen, setIsPathViewOpen] = useState(false);
@@ -514,7 +426,188 @@ export function CareerFlowMap({ courseName = 'B.Tech Computer Science' }: Career
     const [isolatedEdges, setIsolatedEdges, onIsolatedEdgesChange] = useEdgesState<Edge>([]);
     const printRef = useRef<HTMLDivElement>(null);
 
+
+    // --- Helper for Side Panel Details (Moved Inside for Prop Access) ---
+    const getNodeDetails = (node: Node) => {
+        const label = node.data.label as string;
+        const type = node.type;
+
+        // 1. College Details
+        if (type === 'college') {
+            const college = additionalColleges.find(c => c.name === label);
+            if (college) {
+                return {
+                    type: 'college',
+                    name: college.name,
+                    location: `${college.district}, ${college.state}`,
+                    cutoff: "85% - 98% (Based on Category)",
+                    eligibility: college.eligibility,
+                    fees: college.fee,
+                    hostelFees: college.hostelFees,
+                    contact: college.contactInfo,
+                    mapUrl: college.googleMapsUrl,
+                    placementStats: {
+                        average: "Rs. 8.5 LPA",
+                        highest: "Rs. 42 LPA",
+                        percentage: "94% Placed"
+                    },
+                    facilities: ["Advanced AI Labs", "Incubation Center", "Digital Library", "Olympic-size Pool"],
+                    roiDescription: "Excellent ROI. Low fees compared to private universities with comparable placement records."
+                };
+            }
+        }
+
+        // 2. Course Details
+        if (type === 'course') {
+            const looseMatch = courseName.split(' ')[0]; // e.g. "B.Tech"
+            const courseData = allCourses.find(c => c.name === courseName || c.name.includes(looseMatch));
+
+            return {
+                type: 'course',
+                name: label.replace('Suggested: ', ''),
+                duration: courseData?.duration || '4 Years',
+                eligibility: courseData?.eligibility || '10+2 with PCM',
+                description: courseData?.description || 'A comprehensive program designed to build strong careers.',
+                topRecruiters: ['Google', 'Microsoft', 'TCS', 'Infosys'], // Could also add to DB
+                futureScope: courseData?.futureRole || "High Demand Global Career",
+                difficulty: "Moderate to High",
+                syllabusHighlights: courseData?.syllabusTopics || [
+                    "Core Fundamentals",
+                    "Advanced Specialization",
+                    "Practical Labs",
+                    "Project Work"
+                ],
+                careerOpportunities: courseData?.careers || [
+                    "Software Engineer",
+                    "Data Scientist",
+                    "System Architect"
+                ]
+            };
+        }
+
+        // 3. Job Details
+        if (type === 'job') {
+            const key = Object.keys(JOB_INSIGHTS_DATA).find(k => label.includes(k) || k.includes(label));
+            const jobData = key ? JOB_INSIGHTS_DATA[key] : JOB_INSIGHTS_DATA['DEFAULT_TECH'];
+            return {
+                type: 'job',
+                title: label,
+                ...jobData,
+                roleDescription: jobData.roleDescription,
+                demand: jobData.demand,
+                avgSalary: jobData.avgSalary,
+                roiDescription: jobData.roiDescription
+            };
+        }
+
+        // 4. Resource Details
+        if (type === 'resource') {
+            // Find current course from DB
+            const looseMatch = courseName.split(' ')[0];
+            const courseData = allCourses.find(c => c.name === courseName || c.name.includes(looseMatch));
+
+            return {
+                type: 'resource',
+                title: label,
+                exams: courseData?.entranceExams?.map(exam => ({ name: exam, date: 'Check Website' })) || [
+                    { name: 'National Level Exam', date: 'April/May' },
+                    { name: 'State Level Exam', date: 'May/June' }
+                ],
+                materials: courseData?.studyResources || [
+                    'Standard Textbooks',
+                    'Previous Year Papers',
+                    'Online Mock Tests'
+                ],
+                strategy: courseData?.preparationStrategy || "Consistency is key. Focus on core concepts and regular practice.",
+                difficulty: "High",
+                timeCommitment: "4-6 Hours/Day",
+                syllabusHighlights: courseData?.syllabusTopics?.slice(0, 4) || ["Core Subject 1", "Core Subject 2"]
+            }
+        }
+
+        // Handle 'rich' variants or return generic
+        if (node.data.details) return node.data.details;
+
+        return { type: 'generic', title: label };
+    };
+
     const onNodeClick = useCallback((event: any, node: Node) => {
+        // --- EXPLORE HANDLER ---
+        if (node.type === 'explore') {
+            const newPage = collegePage + 1;
+            setCollegePage(newPage);
+
+            const looseMatch = courseName.split(' ')[0];
+            const allRelevantColleges = additionalColleges
+                .filter(c => c.courses.some(course => course.includes(looseMatch)));
+
+            const PAGE_SIZE = 3;
+            const totalPages = Math.ceil(Math.max(allRelevantColleges.length, 1) / PAGE_SIZE);
+            const wrappedPage = newPage % totalPages;
+            const startIdx = wrappedPage * PAGE_SIZE;
+            const currentBatch = allRelevantColleges.slice(startIdx, startIdx + PAGE_SIZE);
+
+            const X_OFFSET = 300;
+            const parentNode = nodes.find(n => n.id === '1');
+            if (!parentNode) return;
+
+            setNodes((nds) => {
+                const filtered = nds.filter(n => !n.id.startsWith('col-') && n.type !== 'explore');
+                const newColNodes = currentBatch.map((college, index) => ({
+                    id: `col-${newPage}-${index}`,
+                    type: 'college',
+                    position: {
+                        x: parentNode.position.x + X_OFFSET,
+                        y: 300 + (index - 1) * 150
+                    },
+                    data: {
+                        label: college.name,
+                        subLabel: 'Top College',
+                        bgClass: 'bg-purple-500',
+                        step: 2
+                    }
+                }));
+
+                const exploreNode = {
+                    id: `explore`,
+                    type: 'explore',
+                    position: {
+                        x: parentNode.position.x + X_OFFSET,
+                        y: 300 + (currentBatch.length - 1) * 150 + 120
+                    },
+                    data: { label: 'Explore More' }
+                };
+
+                return [...filtered, ...newColNodes, exploreNode];
+            });
+
+            setEdges((eds) => {
+                const filtered = eds.filter(e => e.source !== '1' || (!e.target.startsWith('col-') && e.target !== 'explore'));
+                const newColEdges = currentBatch.map((_, index) => ({
+                    id: `e1-col-${newPage}-${index}`,
+                    source: '1',
+                    target: `col-${newPage}-${index}`,
+                    type: 'smoothstep',
+                    animated: true,
+                    style: { strokeDasharray: '5,5' },
+                    markerEnd: { type: MarkerType.ArrowClosed },
+                }));
+
+                const exploreEdge = {
+                    id: `e1-explore`,
+                    source: '1',
+                    target: `explore`,
+                    type: 'default',
+                    animated: false,
+                    style: { opacity: 0, pointerEvents: 'none' as const },
+                };
+
+                return [...filtered, ...newColEdges, exploreEdge];
+            });
+            return;
+        }
+
+        // --- NORMAL CLICK HANDLER ---
         setSelectedNode(node);
         setIsSheetOpen(true);
 
@@ -529,14 +622,20 @@ export function CareerFlowMap({ courseName = 'B.Tech Computer Science' }: Career
         // Expansion logic
         if (step === 1) {
             const looseMatch = courseName.split(' ')[0];
-            const relevantColleges = additionalColleges
-                .filter(c => c.courses.some(course => course.includes(looseMatch)))
-                .slice(0, 3);
+            const allRelevantColleges = additionalColleges
+                .filter(c => c.courses.some(course => course.includes(looseMatch)));
+
+            const PAGE_SIZE = 3;
+            // Use current state collegePage
+            const totalPages = Math.ceil(Math.max(allRelevantColleges.length, 1) / PAGE_SIZE);
+            const wrappedPage = collegePage % totalPages;
+            const startIdx = wrappedPage * PAGE_SIZE;
+            const relevantColleges = allRelevantColleges.slice(startIdx, startIdx + PAGE_SIZE);
 
             relevantColleges.forEach((college, index) => {
                 const yPos = 300 + (index - 1) * 150;
                 newNodes.push({
-                    id: `col-${index}`,
+                    id: `col-${collegePage}-${index}`,
                     type: 'college',
                     position: { x: node.position.x + X_OFFSET, y: yPos },
                     data: {
@@ -547,15 +646,38 @@ export function CareerFlowMap({ courseName = 'B.Tech Computer Science' }: Career
                     }
                 });
                 newEdges.push({
-                    id: `e1-col-${index}`,
+                    id: `e1-col-${collegePage}-${index}`,
                     source: '1',
-                    target: `col-${index}`,
+                    target: `col-${collegePage}-${index}`,
                     type: 'smoothstep',
                     animated: true,
                     style: { strokeDasharray: '5,5' },
                     markerEnd: { type: MarkerType.ArrowClosed },
                 });
             });
+
+            // Always add Explore Node if we have results (or logic to show it only if > 3?)
+            // User requested "option called explore more colleges". 
+            // It's safer to always show it so they can cycle, or checks length > 3.
+            if (allRelevantColleges.length > 3) {
+                newNodes.push({
+                    id: `explore`,
+                    type: 'explore',
+                    position: {
+                        x: node.position.x + X_OFFSET,
+                        y: 300 + (relevantColleges.length - 1) * 150 + 120
+                    },
+                    data: { label: 'Explore More' }
+                });
+                newEdges.push({
+                    id: `e1-explore`,
+                    source: '1',
+                    target: `explore`,
+                    type: 'default',
+                    animated: false,
+                    style: { opacity: 0, pointerEvents: 'none' },
+                });
+            }
         }
 
         if (step === 2) {
@@ -618,7 +740,7 @@ export function CareerFlowMap({ courseName = 'B.Tech Computer Science' }: Career
             setEdges((eds) => eds.concat(newEdges));
         }
 
-    }, [courseName, edges, setNodes, setEdges]);
+    }, [courseName, edges, setNodes, setEdges, collegePage]);
 
 
     // --- Path Isolation Logic (UPDATED FOR RICH NODES) ---
@@ -1119,18 +1241,20 @@ export function CareerFlowMap({ courseName = 'B.Tech Computer Science' }: Career
 
                         <div className="flex-1 bg-slate-50 relative overflow-y-auto" ref={printRef}>
                             <div className="h-full w-full min-h-[1000px]">
-                                <ReactFlow
-                                    nodes={isolatedNodes}
-                                    edges={isolatedEdges}
-                                    onNodesChange={onIsolatedNodesChange}
-                                    onEdgesChange={onIsolatedEdgesChange}
-                                    onInit={setIsolatedRfInstance}
-                                    nodeTypes={nodeTypes}
-                                    fitView
-                                    minZoom={0.5}
-                                >
-                                    <Background color="#cbd5e1" gap={25} />
-                                </ReactFlow>
+                                <ReactFlowProvider>
+                                    <ReactFlow
+                                        nodes={isolatedNodes}
+                                        edges={isolatedEdges}
+                                        onNodesChange={onIsolatedNodesChange}
+                                        onEdgesChange={onIsolatedEdgesChange}
+                                        onInit={setIsolatedRfInstance}
+                                        nodeTypes={nodeTypes}
+                                        fitView
+                                        minZoom={0.5}
+                                    >
+                                        <Background color="#cbd5e1" gap={25} />
+                                    </ReactFlow>
+                                </ReactFlowProvider>
                             </div>
                         </div>
 

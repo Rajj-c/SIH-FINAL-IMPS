@@ -8,6 +8,7 @@ import { NearbyColleges } from '@/components/dashboard/NearbyColleges';
 import { OneStopAdvisorHero } from '@/components/dashboard/OneStopAdvisorHero';
 import { JourneyMap } from '@/components/dashboard/JourneyMap';
 import { QuickActionsGrid } from '@/components/dashboard/QuickActionsGrid';
+import { MentorLockCard } from '@/components/dashboard/MentorLockCard';
 import { useAuth } from '@/hooks/use-auth';
 import { getCareerRecommendation } from '@/lib/career-recommendations';
 import { getCourseById } from '@/lib/courses-database';
@@ -94,9 +95,9 @@ export default function DashboardPage() {
       score += 30;
     }
 
-    // Saved items (20 points)
+    // Saved items (Max 30 points)
     const savedCount = savedColleges.length + savedCareerPaths.length;
-    score += Math.min(savedCount * 4, 20);
+    score += Math.min(savedCount * 5, 30); // 5 points per item, max 30
 
     // Profile completeness (20 points)
     if (userProfile.name) score += 5;
@@ -104,11 +105,15 @@ export default function DashboardPage() {
     if (userProfile.gender) score += 5;
     if (userProfile.email) score += 5;
 
-    // Engagement (30 points - based on quiz answers depth)
+    // Engagement / Exploration (20 points)
     if (quizAnswers && Object.keys(quizAnswers).length >= 10) {
-      score += 30;
-    } else if (quizAnswers && Object.keys(quizAnswers).length > 0) {
-      score += 15;
+      score += 10; // Detailed quiz bonus
+    }
+
+    // Milestones: "Explorer" bonus
+    // If they have explored enough (saved > 3 items), give bonus
+    if (savedCount >= 3) {
+      score += 10;
     }
 
     return Math.min(score, 100);
@@ -225,14 +230,22 @@ export default function DashboardPage() {
 
 
       {/* Career Readiness Score */}
-      <CareerReadinessScore
-        score={readinessScore}
-        breakdown={{
-          quizCompleted: quizTaken,
-          savedItemsCount: savedColleges.length + savedCareerPaths.length,
-          profileComplete: !!(userProfile.name && userProfile.classLevel && userProfile.gender),
-        }}
-      />
+      {/* Career Readiness & Mentor Score Section */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="md:col-span-2">
+          <CareerReadinessScore
+            score={readinessScore}
+            breakdown={{
+              quizCompleted: quizTaken,
+              savedItemsCount: savedColleges.length + savedCareerPaths.length,
+              profileComplete: !!(userProfile.name && userProfile.classLevel && userProfile.gender),
+            }}
+          />
+        </div>
+        <div className="md:col-span-1">
+          <MentorLockCard currentScore={readinessScore} />
+        </div>
+      </div>
 
       {/* Personalized Insights */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
