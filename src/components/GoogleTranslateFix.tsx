@@ -8,12 +8,12 @@ export const GoogleTranslateFix = () => {
         const originalRemoveChild = Node.prototype.removeChild;
         Node.prototype.removeChild = function <T extends Node>(child: T): T {
             try {
-                return originalRemoveChild.call(this, child);
+                return originalRemoveChild.call(this, child) as T;
             } catch (error) {
                 console.warn('Google Translate Fix: Ignored removeChild error', error);
                 // If the node isn't found, we just return the child and ignore the error
                 // to prevent React from crashing.
-                return child as T;
+                return child;
             }
         };
 
@@ -24,14 +24,14 @@ export const GoogleTranslateFix = () => {
             referenceNode: Node | null
         ): T {
             try {
-                return originalInsertBefore.call(this, newNode, referenceNode);
+                return originalInsertBefore.call(this, newNode, referenceNode) as T;
             } catch (error) {
                 console.warn('Google Translate Fix: Ignored insertBefore error', error);
                 // If reference node is not found, typically we might want to append, 
                 // but for now, ignoring might be safer or just letting it fail silently 
                 // to keep the app running.
                 // However, usually removeChild is the main crasher.
-                return newNode as T;
+                return newNode;
             }
         };
     }, []);

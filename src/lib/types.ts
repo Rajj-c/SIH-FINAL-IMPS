@@ -333,3 +333,16 @@ export interface AptitudeReport {
   overallConfidence: number;
 }
 
+export interface MentorshipRequest {
+  id: string;
+  userId: string;
+  studentName: string;
+  mentorName: string;
+  mentorId: string;
+  status: 'pending' | 'accepted' | 'rejected' | 'completed';
+  topic: string;
+  message: string;
+  createdAt: any;
+  scheduledAt?: any;
+}
+

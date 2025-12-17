@@ -131,7 +131,7 @@ export function HeroSection({ title, subtitle }: HeroSectionProps) {
     }, []);
 
     return (
-        <section className="relative w-full min-h-[90vh] flex items-center justify-center overflow-hidden bg-background">
+        <section className="relative w-full min-h-[90vh] flex flex-col items-center justify-between overflow-hidden bg-background">
             {/* Canvas Background - Increased Opacity */}
             <canvas
                 ref={canvasRef}
@@ -169,12 +169,12 @@ export function HeroSection({ title, subtitle }: HeroSectionProps) {
                 </motion.div>
             </div>
 
-            <div className="container relative z-10 px-4 md:px-6 mx-auto text-center pointer-events-none">
+            <div className="flex-1 flex items-center justify-center w-full z-10 pointer-events-none p-4">
                 <motion.div
                     initial={{ opacity: 0, y: 30 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.8, ease: "easeOut" }}
-                    className="space-y-8 max-w-5xl mx-auto"
+                    className="space-y-8 max-w-5xl mx-auto text-center"
                 >
                     <motion.div
                         initial={{ opacity: 0, scale: 0.9 }}
@@ -199,7 +199,7 @@ export function HeroSection({ title, subtitle }: HeroSectionProps) {
 
             {/* Scroll Indicator */}
             <motion.div
-                className="absolute bottom-12 left-1/2 -translate-x-1/2 cursor-pointer z-50 group"
+                className="mb-12 cursor-pointer z-50 group pointer-events-auto"
                 animate={{ y: [0, 10, 0] }}
                 transition={{ duration: 2, repeat: Infinity }}
             >

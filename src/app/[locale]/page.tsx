@@ -26,6 +26,8 @@ import { PersonalityCTASection } from '@/components/landing/PersonalityCTASectio
 import { useTranslations } from 'next-intl';
 import { LanguageSwitcher } from '@/components/LanguageSwitcher';
 
+import { TeamSection } from '@/components/landing/TeamSection';
+
 export default function Home() {
   const { setGuestProfile } = useAuth();
   const t = useTranslations('HomePage');
@@ -79,6 +81,7 @@ export default function Home() {
           <CareerChoiceSection id="career-choice-section" />
           <AwarenessComparisonSection />
           <SuccessStoriesSection />
+          <TeamSection />
           <PersonalityCTASection />
         </main>
 
