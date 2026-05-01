@@ -113,5 +113,5 @@ We are a passionate team of tech pioneers cultivating the future of education:
 This repository holds the grand finale code for our winning SIH product. We poured our hearts into addressing the educational gap and empowering students from all backgrounds (urban, semi-urban, and rural) to make confident career decisions. 
 
 <div align="center">
-  <p>Built with ❤️ by Team EduPath Navigator</p>
+  <p>Built with ❤️ by Team Tech Pioneers</p>
 </div>
